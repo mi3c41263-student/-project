@@ -1,0 +1,311 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.22631) Professional' Language: 'zh' Physical Memory: 16057 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Lian" at "2026-03-20T03:59:16.2287216Z"
+Process architecture: x64
+Date: 2026-03-20T03:59:16Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker0
+-projectPath
+C:/Users/Lian/Desktop/UnityProject/OfficeProject
+-logFile
+Logs/AssetImportWorker0.log
+-srvPort
+53773
+-licensingIpc
+LicenseClient-Lian
+-job-worker-count
+7
+-background-job-worker-count
+8
+-gc-helper-count
+1
+-name
+AssetImport
+Successfully changed project path to: C:/Users/Lian/Desktop/UnityProject/OfficeProject
+C:/Users/Lian/Desktop/UnityProject/OfficeProject
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [29300]  Target information:
+
+Player connection [29300]  * "[IP] 192.168.56.1 [Port] 0 [Flags] 2 [Guid] 2544917247 [EditorId] 2544917247 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [29300]  * "[IP] 192.168.116.1 [Port] 0 [Flags] 2 [Guid] 2544917247 [EditorId] 2544917247 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [29300]  * "[IP] 192.168.190.1 [Port] 0 [Flags] 2 [Guid] 2544917247 [EditorId] 2544917247 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [29300]  * "[IP] 172.19.0.1 [Port] 0 [Flags] 2 [Guid] 2544917247 [EditorId] 2544917247 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [29300]  * "[IP] 192.168.1.149 [Port] 0 [Flags] 2 [Guid] 2544917247 [EditorId] 2544917247 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [29300] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [29300] Host joined alternative multi-casting on [225.0.0.222:34997]...
+JobSystem: Creating JobQueue using job-worker-count value 7
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 3.04 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.10f1 (e35f0c77bd8e)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/Lian/Desktop/UnityProject/OfficeProject/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: Intel(R) UHD Graphics (ID=0xa720)
+    Vendor:   Intel
+    VRAM:     8028 MB
+    Driver:   32.0.101.7082
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56676
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              c5db0ec8ea464fa8afaa91b054b38cd2
+  Correlation Id:          4da173526c537dd3373b9cf2597f42f2
+  External correlation Id: 5034820513768000423
+  Machine Id:              mznwUjAaYpgRTn3OMeXcDJW1Rss=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-Lian" (connect: 0.00s, validation: 0.00s, handshake: 0.96s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Lian-notifications" at "2026-03-20T03:59:17.1932072Z"
+[Licensing::Module] Licensing Background thread has ended after 0.97s
+[Licensing::Module] Licensing is initialized (took 0.11s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-Q9EA-B73R-T8TP-5CAU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: 2026-03-30T04:53:37Z
+[Licensing::Module] License group:
+  Id: ewogICJzdWJzR3JvdXAiIDogInVuaXR5IGVkaXRvciIsCiAgIm5hbWVzcGFjZSIgOiAidW5pdHlfZWRpdG9yIiwKICAidHlwZSIgOiAiRURJVE9SIiwKICAidGFnIiA6ICJVbml0eVBlcnNvbmFsXXXX
+  Product: Unity Personal Version
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.116878 seconds.
+- Loaded All Assemblies, in  0.609 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 294 ms
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.805 seconds
+Domain Reload Profiling: 1413ms
+	BeginReloadAssembly (185ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (49ms)
+	RebuildNativeTypeToScriptingClass (17ms)
+	initialDomainReloadingComplete (164ms)
+	LoadAllAssembliesAndSetupDomain (192ms)
+		LoadAssemblies (182ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (186ms)
+			TypeCache.Refresh (184ms)
+				TypeCache.ScanAssembly (168ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (805ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (770ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (373ms)
+			SetLoadedEditorAssemblies (4ms)
+			BeforeProcessingInitializeOnLoad (129ms)
+			ProcessInitializeOnLoadAttributes (183ms)
+			ProcessInitializeOnLoadMethodAttributes (82ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Import Worker Mode flag is 0x00
+Begin MonoManager ReloadAssembly
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-Q9EA-B73R-T8TP-5CAU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: 2026-03-30T04:53:37Z
+[Licensing::Module] License group:
+  Id: ewogICJzdWJzR3JvdXAiIDogInVuaXR5IGVkaXRvciIsCiAgIm5hbWVzcGFjZSIgOiAidW5pdHlfZWRpdG9yIiwKICAidHlwZSIgOiAiRURJVE9SIiwKICAidGFnIiA6ICJVbml0eVBlcnNvbmFsXXXX
+  Product: Unity Personal Version
+  Type: Assigned
+  Expiration: Unlimited
+- Loaded All Assemblies, in  0.886 seconds
+Refreshing native plugins compatible for Editor in 0.76 ms, found 3 plugins.
+Native extension for Android target not found
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+[Package Manager] Failed to launch server process. Reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] Unable to send message (not connected to server process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.828 seconds
+Domain Reload Profiling: 1710ms
+	BeginReloadAssembly (208ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (38ms)
+	RebuildCommonClasses (37ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (39ms)
+	LoadAllAssembliesAndSetupDomain (584ms)
+		LoadAssemblies (429ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (270ms)
+			TypeCache.Refresh (195ms)
+				TypeCache.ScanAssembly (173ms)
+			BuildScriptInfoCaches (62ms)
+			ResolveRequiredComponents (9ms)
+	FinalizeReload (828ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (615ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (10ms)
+			SetLoadedEditorAssemblies (4ms)
+			BeforeProcessingInitializeOnLoad (166ms)
+			ProcessInitializeOnLoadAttributes (353ms)
+			ProcessInitializeOnLoadMethodAttributes (79ms)
+			AfterProcessingInitializeOnLoad (3ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (5ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Refreshing native plugins compatible for Editor in 0.85 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 16 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 6185 unused Assets / (4.2 MB). Loaded Objects now: 6987.
+Memory consumption went from 151.0 MB to 146.8 MB.
+Total: 11.899000 ms (FindLiveObjects: 0.981600 ms CreateObjectMapping: 0.737300 ms MarkObjects: 8.221300 ms  DeleteObjects: 1.955200 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 1429674.689390 seconds.
+  path: Assets/VNB - Office Set/Prefabs/Office/wall_tv.prefab
+  artifactKey: Guid(500e25948fbfa3c4a9bf620c6601bde6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/VNB - Office Set/Prefabs/Office/wall_tv.prefab using Guid(500e25948fbfa3c4a9bf620c6601bde6) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '7066d2df10734b5d62a1f13443fc9e50') in 0.4965943 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 12
+
+========================================================================
+Received Import Request.
+  Time since last request: 3260.017259 seconds.
+  path: Assets/SoupGames/LPMOfficePack/Prefabs/floor_grass.prefab
+  artifactKey: Guid(680e95faa836db5488d447536f6d2924) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/SoupGames/LPMOfficePack/Prefabs/floor_grass.prefab using Guid(680e95faa836db5488d447536f6d2924) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: '947b67c65def384cd044369262262646') in 0.1340415 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 9
+
+========================================================================
+Received Import Request.
+  Time since last request: 2.685120 seconds.
+  path: Assets/SoupGames/LPMOfficePack/Prefabs/floor_grass.prefab
+  artifactKey: Guid(680e95faa836db5488d447536f6d2924) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/SoupGames/LPMOfficePack/Prefabs/floor_grass.prefab using Guid(680e95faa836db5488d447536f6d2924) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: '5af7a5de6097fefea3418f8bff668f92') in 0.0344737 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 9
+
+========================================================================
+Received Import Request.
+  Time since last request: 28.277622 seconds.
+  path: Assets/SoupGames/LPMOfficePack/Prefabs/floppy_disk.prefab
+  artifactKey: Guid(8a5aa31bbd7fd4642ae2a9500ca89bf2) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/SoupGames/LPMOfficePack/Prefabs/floppy_disk.prefab using Guid(8a5aa31bbd7fd4642ae2a9500ca89bf2) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: '74fbe644683d232d7a45de3d04cfd0fd') in 0.0281855 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 9
+
+========================================================================
+Received Import Request.
+  Time since last request: 25.730326 seconds.
+  path: Assets/SoupGames/LPMOfficePack/Prefabs/floppy_disk.prefab
+  artifactKey: Guid(8a5aa31bbd7fd4642ae2a9500ca89bf2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/SoupGames/LPMOfficePack/Prefabs/floppy_disk.prefab using Guid(8a5aa31bbd7fd4642ae2a9500ca89bf2) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '704911874da2d19b2e56b7c1fea17934') in 0.0364158 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 10
+
+========================================================================
+Received Import Request.
+  Time since last request: 69.099649 seconds.
+  path: Assets/SoupGames/LPMOfficePack/Prefabs/fridge.prefab
+  artifactKey: Guid(7e6aaebcbb3ab184cb800d56db9e73bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/SoupGames/LPMOfficePack/Prefabs/fridge.prefab using Guid(7e6aaebcbb3ab184cb800d56db9e73bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'f23ccad924deb5abf8953d9ec1bb8e61') in 0.028593 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 10
+
+========================================================================
+Received Import Request.
+  Time since last request: 3.780144 seconds.
+  path: Assets/SoupGames/LPMOfficePack/Prefabs/jukebox.prefab
+  artifactKey: Guid(2c4e674004b97bb49b73c1863d5914ba) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/SoupGames/LPMOfficePack/Prefabs/jukebox.prefab using Guid(2c4e674004b97bb49b73c1863d5914ba) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '598b854a044e897629755a138cceb73b') in 0.0306022 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 10
+
+========================================================================
+Received Import Request.
+  Time since last request: 5608.837995 seconds.
+  path: Assets/SoupGames/LPMOfficePack/Scenes/New Lighting Settings.lighting
+  artifactKey: Guid(db4baaf5dbbb9f7469f72b3546b1dc76) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/SoupGames/LPMOfficePack/Scenes/New Lighting Settings.lighting using Guid(db4baaf5dbbb9f7469f72b3546b1dc76) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter)LightingSettings: switching bake backend from 2 to 1.
+ -> (artifact id: '43351a5b1495e502d773e79d467a6f7a') in 0.046455 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 1
+
