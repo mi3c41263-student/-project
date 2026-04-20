@@ -1,8 +1,29 @@
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Log]s/
-/[MemoryCaptures]/
+# 這會忽略所有 Unity 產生的暫存檔和編譯檔
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+
+# 忽略 Visual Studio 產生的專案檔 (每個人的電腦環境不同，不需要上傳)
 *.csproj
+*.unityproj
 *.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# 忽略系統隱藏檔
+.DS_Store
+Thumbs.db
