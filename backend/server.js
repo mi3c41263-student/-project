@@ -14,5 +14,5 @@ app.use('/api', authRoutes);
 // --- 啟動伺服器 ---
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 ISO 後端伺服器運作中：http://localhost:${PORT}`);
+    console.log(` ISO 後端伺服器運作中：http://localhost:${PORT}`);
 });

@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ✨ 關鍵修復：拍完照後推回畫面外
                 element.style.left = '-9999px';
 
-                alert("✅ 歷史筆記已成功匯出為 PDF 稽核報告！");
+                alert(" 歷史筆記已成功匯出為 PDF 稽核報告！");
 
                 this.innerHTML = originalText;
                 this.disabled = false;

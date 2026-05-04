@@ -1,0 +1,423 @@
+/* =========================================
+   1. 基礎樣式與全螢幕漸層背景
+========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+/* =========================================
+   1. 基礎樣式與全螢幕漸層背景 (曜石黑對比版)
+========================================= */
+body {
+    height: 100vh;
+    display: flex;
+    /* 拿掉干擾的藍色，換成極致的曜石黑、炭灰與深邃的午夜色 */
+    background: linear-gradient(-45deg, #050505, #13151a, #1c1e26, #08090a);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: #ffffff;
+    overflow: hidden; 
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 動態粒子背景層 (固定在全螢幕底層) */
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* =========================================
+   2. 左側：品牌資訊區 (深色全螢幕版)
+========================================= */
+.left-panel {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    /* 淡淡的深色科技網點 */
+    background-image: radial-gradient(rgba(0, 168, 255, 0.1) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+/* 確保內容浮在光暈與網點上方 */
+.left-panel > * {
+    position: relative;
+    z-index: 10;
+}
+
+/* 背景的柔和彩色浮動光球 */
+.left-panel::before, .left-panel::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    animation: floatBlob 10s infinite alternate ease-in-out;
+}
+
+.left-panel::before {
+    width: 400px; height: 400px;
+    background: rgba(0, 168, 255, 0.15); /* 科技青光 */
+    top: -100px; left: -100px;
+}
+
+.left-panel::after {
+    width: 350px; height: 350px;
+    background: rgba(140, 82, 255, 0.12); /* 虛擬紫光 */
+    bottom: -50px; right: -50px;
+    animation-delay: -5s;
+}
+
+@keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 80px) scale(1.2); }
+}
+
+/* Logo 發光玻璃背板 */
+.logo-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 168, 255, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.5);
+    margin-bottom: 30px;
+    border: 1px solid rgba(0, 168, 255, 0.5);
+}
+
+.brand-logo {
+    max-width: 280px;
+    display: block;
+    margin-bottom: 20px;
+    /* 魔法在這裡：增加 1.5 倍飽和度、1.1 倍對比，並加上雙層立體光暈 */
+    filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 15px rgba(0, 168, 255, 0.8)) drop-shadow(0 0 30px rgba(0, 102, 204, 0.5));
+    animation: logoPulse 4s infinite alternate;
+}
+@keyframes logoPulse {
+    0% { 
+        filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 10px rgba(0, 168, 255, 0.5)); 
+    }
+    100% { 
+        /* 呼吸到最亮時，光暈擴散範圍變大 */
+        filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 25px rgba(0, 168, 255, 1)) drop-shadow(0 0 45px rgba(0, 102, 204, 0.7)); 
+    }
+}
+
+/* 左側文字改為亮色系 */
+.left-panel h1 {
+    font-size: 2.4rem;
+    color: #ffffff;
+    margin-bottom: 16px;
+    text-align: center;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(0, 168, 255, 0.5); /* 霓虹文字陰影 */
+}
+
+.left-panel p {
+    font-size: 1.1rem;
+    color: #a0aec0;
+    text-align: center;
+    line-height: 1.6;
+    max-width: 420px;
+}
+
+/* 特色標籤 (深色玻璃質感) */
+.feature-badges {
+    display: flex;
+    gap: 16px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.badge {
+    background: rgba(17, 34, 64, 0.6);
+    border: 1px solid rgba(0, 168, 255, 0.3);
+    color: #00a8ff;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.badge:hover {
+    background: rgba(0, 168, 255, 0.2);
+    border-color: #00a8ff;
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 168, 255, 0.3);
+}
+
+/* =========================================
+   3. 右側：登入表單區
+========================================= */
+.right-panel {
+    flex: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    background: transparent; /* 讓底層的全螢幕漸層透出來 */
+}
+
+/* 登入玻璃框與霓虹呼吸燈 */
+:root {
+    --logo-blue: #0066cc;
+    --logo-cyan: #00a8ff;
+    --text-light: #e2e8f0;
+    --text-muted: #8892b0;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 440px;
+    padding: 50px;
+    background: rgba(17, 34, 64, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 168, 255, 0.3);
+    border-radius: 16px;
+    z-index: 10;
+    transform-style: preserve-3d; /* 讓 3D 傾斜有層次感 */
+    animation: containerGlow 4s infinite alternate;
+}
+
+@keyframes containerGlow {
+    0% { 
+        box-shadow: 0 0 20px rgba(0, 168, 255, 0.1), inset 0 0 10px rgba(0, 168, 255, 0.05); 
+        border-color: rgba(0, 168, 255, 0.2);
+    }
+    100% { 
+        box-shadow: 0 0 40px rgba(0, 168, 255, 0.4), inset 0 0 20px rgba(0, 168, 255, 0.1); 
+        border-color: rgba(0, 168, 255, 0.6);
+    }
+}
+
+.login-container h2 {
+    font-size: 2rem;
+    color: #ffffff;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.form-group label i {
+    color: var(--logo-cyan);
+    margin-right: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 1.05rem;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.form-group input::placeholder {
+    color: #64748b;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--logo-cyan);
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 168, 255, 0.2);
+}
+
+/* 密碼顯示/隱藏圖示定位 */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    padding-right: 40px; 
+}
+
+#togglePassword {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.3s;
+    font-size: 1.1rem;
+}
+
+#togglePassword:hover {
+    color: var(--logo-cyan);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.remember-me input {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.forgot-link {
+    color: var(--logo-cyan);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.forgot-link:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* 動態流光按鈕 */
+.btn-login {
+    width: 100%;
+    padding: 16px;
+    background-size: 200% auto;
+    background-image: linear-gradient(to right, #0066cc 0%, #00a8ff 51%, #0066cc 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 168, 255, 0.4);
+    transition: 0.5s;
+}
+
+.btn-login i {
+    margin-left: 8px;
+}
+
+.btn-login:hover {
+    background-position: right center;
+    box-shadow: 0 0 25px rgba(0, 168, 255, 0.8);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.register-hint {
+    text-align: center;
+    margin-top: 24px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.register-hint a {
+    color: var(--logo-cyan);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.register-hint a:hover {
+    color: #ffffff;
+}
+
+.system-footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.85rem;
+    color: #495670;
+}
+
+/* =========================================
+   4. 彈出視窗 (Modal)
+========================================= */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #112240;
+    border: 1px solid rgba(0, 168, 255, 0.3);
+    padding: 40px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #ffffff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

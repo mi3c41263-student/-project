@@ -1,14 +1,5 @@
 const bcrypt = require('bcrypt');
-
-// --- 模擬資料庫 (之後可以搬到 models 裡面) ---
-const users = [
-    {
-        id: 1,
-        username: "test01@iso.com",
-        passwordHash: "$2b$10$EixZ9.5uV6.p.6G3h5V6.O6u6.6u6.6u6.6u6.6u6.6u6.6u6.6u6", // Password123
-        role: "一般學員"
-    }
-];
+const db = require('../db'); //  關鍵：引入我們剛剛寫好的真實 MySQL 連線池
 
 // --- 驗證規則 ---
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
@@ -18,34 +9,40 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // 1. 處理註冊邏輯 (Register)
 // =========================================
 const registerUser = async (req, res) => {
-    const { username, password } = req.body;
+    // 假設前端註冊時傳來的是信箱作為帳號，我們將它拆分
+    const { username, password } = req.body; 
+    const email = username; // 前端把信箱放在 username 欄位傳過來
 
-    if (!emailRegex.test(username)) {
-        return res.status(400).json({ success: false, message: "⚠️ 電子郵件格式錯誤" });
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: "電子郵件格式錯誤" });
     }
     if (!passwordRegex.test(password)) {
-        return res.status(400).json({ success: false, message: "⚠️ 密碼強度不足！" });
-    }
-
-    if (users.find(u => u.username === username)) {
-        return res.status(409).json({ success: false, message: "❌ 此帳號已被註冊" });
+        return res.status(400).json({ success: false, message: "密碼強度不足！(需包含大小寫英文字母、數字，且至少8碼)" });
     }
 
     try {
+        // 1. 檢查 MySQL 資料庫中是否已經有這個信箱
+        const checkSql = "SELECT * FROM users WHERE email = ?";
+        const [existingUsers] = await db.query(checkSql, [email]);
+
+        if (existingUsers.length > 0) {
+            return res.status(409).json({ success: false, message: "此帳號已被註冊" });
+        }
+
+        // 2. 密碼 Bcrypt 加密
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = {
-            id: users.length + 1,
-            username: username,
-            passwordHash: hashedPassword,
-            role: "一般學員"
-        };
-        users.push(newUser);
+        // 3. 準備寫入 MySQL (把信箱 @ 前面的字串當作顯示名稱 username)
+        const displayName = email.split('@')[0];
+        const insertSql = "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)";
+        const [result] = await db.query(insertSql, [displayName, email, hashedPassword]);
 
-        console.log(`✅ 新使用者註冊成功：${username}`);
-        res.status(201).json({ success: true, message: "✨ 註冊成功！請使用新帳號登入。" });
+        console.log(` 新使用者註冊成功寫入 DB：${email}`);
+        res.status(201).json({ success: true, message: " 註冊成功！請使用新帳號登入。" });
+
     } catch (error) {
+        console.error("註冊伺服器錯誤:", error);
         res.status(500).json({ success: false, message: "伺服器內部錯誤" });
     }
 };
@@ -55,60 +52,59 @@ const registerUser = async (req, res) => {
 // =========================================
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
-
-    const user = users.find(u => u.username === username);
-    if (!user) {
-        return res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
-    }
+    const email = username; 
 
     try {
-        const isMatch = await bcrypt.compare(password, user.passwordHash);
+        // 1. 去 MySQL 資料庫尋找這個信箱
+        const sql = "SELECT * FROM users WHERE email = ?";
+        const [users] = await db.query(sql, [email]);
+
+        // 如果資料庫沒這個人
+        if (users.length === 0) {
+            return res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
+        }
+
+        const user = users[0]; // 取得該筆使用者資料
+
+        // 2. 使用 bcrypt 比對密碼
+        const isMatch = await bcrypt.compare(password, user.password_hash);
         
         if (isMatch) {
-            console.log(`🔓 使用者登入：${username}`);
-            res.json({ success: true, message: "登入成功！正在載入儀表板..." });
+            console.log(` 使用者成功登入：${email}`);
+            // 回傳使用者的 ID 與名稱給前端 (千萬不要回傳密碼！)
+            res.json({ 
+                success: true, 
+                message: "登入成功！正在載入儀表板...",
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email
+                }
+            });
         } else {
             res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
         }
     } catch (error) {
+        console.error("登入伺服器錯誤:", error);
         res.status(500).json({ success: false, message: "伺服器內部錯誤" });
     }
 };
 
-// 將這兩個 function 匯出，讓其他人可以使用
-module.exports = {
-    registerUser,
-    loginUser
-};
 // =========================================
 // 3. 取得使用者學習成果數據 (Get Stats)
 // =========================================
 const getUserStats = async (req, res) => {
-    // 1. 從網址列取得前端傳來的 userId (例如 /api/stats?userId=1)
     const userId = req.query.userId;
 
-    // 2. 模擬多使用者的成績資料庫
+    // 目前為了讓你的前端「雷達圖」可以動，我們先暫時用模擬數據回傳
+    // 未來你可以把它改成從 MySQL 的 `user_scores` 資料表去撈取真實分數！
     const userStatsDB = {
-        "1": { // 1號使用者 (例如 test01) 的成績
-            radarScores: [85, 60, 90, 75, 80], 
-            totalScore: 78, 
-            trainingHours: 12.5, 
-            blocks: 42 
-        },
-        "2": { // 2號使用者的成績 (通常會比較強或比較弱，用來對比)
-            radarScores: [95, 90, 85, 88, 92], 
-            totalScore: 90, 
-            trainingHours: 25.0, 
-            blocks: 120 
-        }
+        "1": { radarScores: [85, 60, 90, 75, 80], totalScore: 78, trainingHours: 12.5, blocks: 42 },
+        "2": { radarScores: [95, 90, 85, 88, 92], totalScore: 90, trainingHours: 25.0, blocks: 120 }
     };
 
-    // 3. 根據 userId 尋找成績，如果找不到就給預設的 0 分面板
     const stats = userStatsDB[userId] || {
-        radarScores: [0, 0, 0, 0, 0],
-        totalScore: 0,
-        trainingHours: 0,
-        blocks: 0
+        radarScores: [0, 0, 0, 0, 0], totalScore: 0, trainingHours: 0, blocks: 0
     };
 
     res.json({ 
@@ -116,4 +112,11 @@ const getUserStats = async (req, res) => {
         message: "成功獲取專屬學習數據",
         data: stats 
     });
+};
+
+// 🌟 關鍵：將這「三個」function 匯出給 authRoutes.js 使用
+module.exports = {
+    registerUser,
+    loginUser,
+    getUserStats
 };
