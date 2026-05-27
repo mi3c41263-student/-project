@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系統儀表板 - ISO愛搜查</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="logo.png" alt="ISO愛搜查" class="sidebar-logo">
+            </div>
+
+            <nav class="sidebar-menu">
+                <p class="menu-label" data-i18n="nav-core">核心訓練</p>
+                <a href="#" class="menu-item" data-i18n="nav-vr"><i class="fa-solid fa-vr-cardboard"></i> VR 情境模擬</a>
+                <a href="#" class="menu-item" data-i18n="nav-manual"><i class="fa-solid fa-shield-halved"></i> 資安規範手冊</a>
+
+                <p class="menu-label" data-i18n="nav-history">學習歷程</p>
+                <a href="#" class="menu-item active" data-i18n="nav-notes"><i class="fa-solid fa-book-open"></i> 學習筆記</a>
+                <a href="#" class="menu-item" data-i18n="nav-analysis"><i class="fa-solid fa-chart-pie"></i> 學習成果分析</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div class="user-info">
+                        <span class="name">測試員 01</span>
+                        <span class="role">一般學員</span>
+                    </div>
+                </div>
+                <a href="login.html" class="logout-btn" data-i18n="nav-logout"><i class="fa-solid fa-right-from-bracket"></i> 登出</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="topbar">
+                <div class="breadcrumb">
+                    <h2 id="pageTitle" data-i18n="top-title">學習筆記</h2>
+                    <span id="pageSubtitle" class="subtitle" data-i18n="top-subtitle">沉澱並複習您的資安防禦實務</span>
+                </div>
+                
+                <div class="topbar-actions">
+                    <div id="systemClock" class="system-clock"></div>
+                    <button class="action-btn"><i class="fa-regular fa-bell"></i></button>
+                    <button class="action-btn" id="settingsBtn"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                
+                <div id="notesSection" class="section-container">
+                    <div class="toolbar glass-panel">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" data-i18n-placeholder="search-ph" placeholder="搜尋筆記關鍵字 (例如: 門禁、釣魚)...">
+                        </div>
+                        <div class="filter-tags">
+                            <button class="filter-btn active" data-i18n="filter-all">全部筆記</button>
+                            <button class="filter-btn" data-i18n="filter-social">人員控制</button>
+                            <button class="filter-btn" data-i18n="filter-network">資安事件</button>
+                            <button class="filter-btn" data-i18n="filter-device">實體安全</button>
+                        </div>
+                    </div>
+
+                    <div class="notes-grid">
+                        
+                        <div class="note-card glass-panel">
+                            <div class="note-header">
+                                <span class="note-category tag-device" data-i18n="filter-device">實體安全</span>
+                                <span class="note-date">2026/03/18</span>
+                            </div>
+                            <h3 class="note-title" data-i18n="c1-title">門禁漏洞與桌面淨空缺失</h3>
+                            <p class="note-excerpt" data-i18n="c1-desc">發現使用過期卡片仍可進入大廳 (7.2實體進入控制漏洞)。此外，主管識別證被隨意棄置桌面，測試用USB放在靠近門口的桌緣。印表機上也有未認領的資料，未落實桌面淨空 (7.7)。</p>
+                            <div class="note-footer">
+                                <a href="#" class="read-more" data-i18n="c-readmore">檢視完整筆記 <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+   
+                        <div class="note-card glass-panel">
+                            <div class="note-header">
+                                <span class="note-category tag-social" data-i18n="filter-social">人員控制</span>
+                                <span class="note-date">2026/03/18</span>
+                            </div>
+                            <h3 class="note-title" data-i18n="c2-title">聘用流程與保密協議疏漏</h3>
+                            <p class="note-excerpt" data-i18n="c2-desc">發現公司缺少對求職者的背景查證紀錄 (6.1篩選)。更嚴重的是，有外包人員未簽署保密協議 (6.6 NDA) 就接觸內網。聘用合約也缺少違規懲處機制 (6.2)。</p>
+                            <div class="note-footer">
+                                <a href="#" class="read-more" data-i18n="c-readmore">檢視完整筆記 <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="note-card glass-panel">
+                            <div class="note-header">
+                                <span class="note-category tag-device" data-i18n="filter-device">實體安全</span>
+                                <span class="note-date">2026/03/18</span>
+                            </div>
+                            <h3 class="note-title" data-i18n="c3-title">機房安全與設備安置風險</h3>
+                            <p class="note-excerpt" data-i18n="c3-desc">目擊外包維修工在機房內違規拍照 (7.6在安全區域工作)。機房設備上放著乖乖，且地板下電線有被老鼠啃咬的痕跡，嚴重違反設備安置與保護規範。</p>
+                            <div class="note-footer">
+                                <a href="#" class="read-more" data-i18n="c-readmore">檢視完整筆記 <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="note-card glass-panel">
+                            <div class="note-header">
+                                <span class="note-category tag-network" data-i18n="filter-network">資安事件</span>
+                                <span class="note-date">2026/03/18</span>
+                            </div>
+                            <h3 class="note-title" data-i18n="c4-title">釣魚測試失敗與通報意識</h3>
+                            <p class="note-excerpt" data-i18n="c4-desc">發送模擬釣魚郵件後，員工點擊了惡意附件。但員工卻未向 IT 部門報告 (6.8報告資安事件)。這顯示日常的資訊安全認知教育及訓練 (6.3) 尚未完全落實。</p>
+                            <div class="note-footer">
+                                <a href="#" class="read-more" data-i18n="c-readmore">檢視完整筆記 <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="note-card glass-panel add-new-note" id="addNcrBtn" style="cursor: pointer;">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            <h3 data-i18n="c-add-title">新增稽核發現</h3>
+                            <p data-i18n="c-add-desc">上傳缺失照片與對應法規</p>
+                        </div>
+
+                    </div>
+                </div> <div id="manualSection" class="section-container" style="display: none;">
+                    
+                    <div class="manual-header glass-panel">
+                        <h3 data-i18n="man-iso">ISO 27002:2022 資訊安全控制指南</h3>
+                        <p data-i18n="man-desc">本手冊收錄本次稽核任務之重點控制措施。請熟記以下條文，以利在 VR 情境中準確判斷缺失。</p>
+                    </div>
+
+                    <div class="manual-layout">
+                        <div class="manual-nav glass-panel">
+                            <button class="manual-tab active" data-target="clause6" data-i18n="man-c6">Clause 6: 人員控制措施</button>
+                            <button class="manual-tab" data-target="clause7" data-i18n="man-c7">Clause 7: 實體環境控制</button>
+                        </div>
+
+                        <div class="manual-content glass-panel">
+                            
+                            <div id="clause6" class="clause-panel active">
+                                <h2 data-i18n="man-c6-title" class="clause-main-title">Clause 6 人員控制措施</h2>
+                                
+                                <div class="rule-card">
+                                    <div class="rule-id">6.1</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r61-t">篩選 (Screening)</h4>
+                                        <p data-i18n="r61-d">公司準則應明確記載對求職者的相關背景調查紀錄，確保人員背景符合資安要求。</p>
+                                    </div>
+                                </div>
+
+                                <div class="rule-card">
+                                    <div class="rule-id">6.2</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r62-t">聘用條款及條件 (Terms and conditions of employment)</h4>
+                                        <p data-i18n="r62-d">聘用合約中應包含員工違反資安規定時的懲處機制，以及離職後的保密條款。</p>
+                                    </div>
+                                </div>
+
+                                <div class="rule-card">
+                                    <div class="rule-id">6.3 & 6.4</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r63-t">資訊安全認知、教育訓練與獎懲</h4>
+                                        <p data-i18n="r63-d">定期舉辦資安講習。員工不得隨意放置識別證，重大違規將直接影響績效獎金，情節嚴重者進行行政警告。</p>
+                                    </div>
+                                </div>
+
+                                <div class="rule-card">
+                                    <div class="rule-id">6.6</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r66-t">保密協議 (NDA)</h4>
+                                        <p data-i18n="r66-d">包含正職與外包人員，在接觸內網資源前，必須確保已完成保密協議的簽署流程。</p>
+                                    </div>
+                                </div>
+
+                                <div class="rule-card">
+                                    <div class="rule-id">6.8</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r68-t">報告資安事件</h4>
+                                        <p data-i18n="r68-d">員工如收到可疑郵件或發現異常文件，必須依照標準程序立即向 IT 部門報告。</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="clause7" class="clause-panel">
+                                <h2 data-i18n="man-c7-title" class="clause-main-title">Clause 7 實體與環境控制</h2>
+                                
+                                <div class="rule-card">
+                                    <div class="rule-id">7.1 & 7.2</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r71-t">實體安全周界與進入控制</h4>
+                                        <p data-i18n="r71-d">會議室視訊鏡頭未使用時應關閉，避免正對敏感文件。門禁系統應嚴格管控，過期卡片必須失效。</p>
+                                    </div>
+                                </div>
+
+                                <div class="rule-card">
+                                    <div class="rule-id">7.6</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r76-t">在安全區域工作 (Working in secure areas)</h4>
+                                        <p data-i18n="r76-d">在機房等高度安全區域內，未經授權且無監督人員在場的情況下，嚴禁進行拍照或錄影。</p>
+                                    </div>
+                                </div>
+
+                                <div class="rule-card">
+                                    <div class="rule-id">7.7</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r77-t">桌面淨空及螢幕淨空</h4>
+                                        <p data-i18n="r77-d">機密文件、訪客名片、USB不應隨意放置桌面。印表機資料應及時取走，嚴禁將帳密貼在螢幕上。</p>
+                                    </div>
+                                </div>
+
+                                <div class="rule-card">
+                                    <div class="rule-id">7.10</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r710-t">儲存媒體實體存放安全</h4>
+                                        <p data-i18n="r710-d">含有機密資訊或測試用的 USB 隨身碟，必須妥善保管，不可隨意丟棄於靠近門口或公共區域的桌緣。</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="rule-card">
+                                    <div class="rule-id">7.13 & 7.14</div>
+                                    <div class="rule-text">
+                                        <h4 data-i18n="r714-t">設備維護與汰除保全</h4>
+                                        <p data-i18n="r714-d">機房設備禁止放置飲料食物(如乖乖)，並應防範老鼠破壞線路。報廢設備與碎紙機內的機密文件必須妥善銷毀。</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div> <div id="analysisSection" class="section-container" style="display: none;">
+                    
+                    <div class="analysis-header glass-panel">
+                        <h3 data-i18n="ana-title">防禦能力雷達與綜合評估</h3>
+                        <p data-i18n="ana-desc">基於您在 VR 情境模擬中的決策數據，系統為您生成了專屬的資安能力雷達圖。</p>
+                    </div>
+
+                    <div class="analysis-layout">
+                        <div class="chart-container glass-panel">
+                            <canvas id="securityRadarChart"></canvas>
+                        </div>
+
+                        <div class="stats-container">
+                            <div class="stat-card glass-panel">
+                                <i class="fa-solid fa-shield-virus stat-icon"></i>
+                                <div class="stat-info">
+                                    <span class="stat-label" data-i18n="stat-score">綜合防禦評分</span>
+                                    <span class="stat-value">65<small>分</small></span>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card glass-panel">
+                                <i class="fa-solid fa-clock-rotate-left stat-icon"></i>
+                                <div class="stat-info">
+                                    <span class="stat-label" data-i18n="stat-time">VR 訓練總時數</span>
+                                    <span class="stat-value">2.5<small>小時</small></span>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card glass-panel">
+                                <i class="fa-solid fa-triangle-exclamation stat-icon"></i>
+                                <div class="stat-info">
+                                    <span class="stat-label" data-i18n="stat-block">成功攔截威脅</span>
+                                    <span class="stat-value">12<small>次</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> </div> </main>
+    </div> <div id="noteDetailModal" class="note-modal-overlay">
+        <div class="note-modal-content glass-panel">
+            <button class="close-modal-btn" id="closeNoteModal"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="note-modal-header">
+                <span class="note-category tag-social" id="modalCategory" data-i18n="m-cat">稽核總結</span>
+                <span class="note-date" id="modalDate">2026/03/18</span>
+            </div>
+            
+            <h2 id="modalTitle" class="modal-title" data-i18n="m-title">結束會議：今日三大核心缺失</h2>
+            
+            <div class="modal-body">
+                <p data-i18n="m-p1">在今日的實務演練中，我向資安主管報告了以下三大缺失：</p>
+                <ul>
+                    <li data-i18n="m-li1"><strong>實體門禁控制失效 (7.2)：</strong> 測試大廳門禁時，發現使用過期卡片仍可進入。</li>
+                    <li data-i18n="m-li2"><strong>保密協議 (6.6) 漏洞：</strong> 檢查人資部資料發現，部分外包人員的 NDA 還在跑流程，未簽署即接觸內網資源。</li>
+                    <li data-i18n="m-li3"><strong>缺乏報告資安事件意識 (6.8)：</strong> 員工點擊釣魚文件附件後，卻因為「忙著趕報告」而未進行通報。</li>
+                </ul>
+                <p data-i18n="m-p2">資安主管表示這些發現非常有價值，將針對這些佐證照片重新檢討訓練計畫。</p>
+            </div>
+            
+            <div class="modal-footer-actions">
+                <button class="btn-edit" data-i18n="m-btn-edit"><i class="fa-solid fa-pen-to-square"></i> 編輯報告</button>
+                <button class="btn-delete" data-i18n="m-btn-export"><i class="fa-solid fa-file-export"></i> 匯出 PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="note-modal-overlay">
+        <div class="settings-modal-content glass-panel" style="height: 60vh; min-height: 400px;">
+            <button class="close-modal-btn" id="closeSettingsModal"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="modal-title" style="margin-bottom: 20px;" data-i18n="set-title"><i class="fa-solid fa-sliders"></i> 系統設定</h2>
+            
+            <div class="settings-layout">
+                <div class="settings-sidebar">
+                    <button class="setting-tab active" data-target="tab-account" data-i18n="set-tab-acc"><i class="fa-solid fa-shield-halved"></i> 帳號與安全</button>
+                    <button class="setting-tab" data-target="tab-pref" data-i18n="set-tab-pref"><i class="fa-solid fa-globe"></i> 系統偏好</button>
+                </div>
+
+                <div class="settings-content">
+                    
+                    <div id="tab-account" class="setting-panel active">
+                        <h3 data-i18n="set-acc-title">個人帳號與安全性設定</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 data-i18n="set-pwd">更改密碼</h4>
+                                <p>強制要求密碼複雜度（包含大小寫、數字與特殊符號）。</p>
+                            </div>
+                            <button class="btn-edit">修改</button>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 data-i18n="set-2fa">雙重認證 (2FA)</h4>
+                                <p>綁定 Google Authenticator 或信箱驗證，提升帳號防護層級。</p>
+                            </div>
+                            <label class="toggle-switch"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+
+                    <div id="tab-pref" class="setting-panel">
+                        <h3 data-i18n="set-pref-title">系統偏好設定</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 data-i18n="set-lang">介面語系</h4>
+                                <p>選擇您偏好的系統顯示語言。</p>
+                            </div>
+                            <select id="langSelect" class="cyber-select">
+                                <option value="zh-TW" selected>繁體中文</option>
+                                <option value="en">English</option>
+                                <option value="ja">日本語</option>
+                                <option value="ko">한국어</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div id="ncrModal" class="note-modal-overlay" >
+        <div class="settings-modal-content glass-panel" style="max-width: 850px; height: auto; max-height: 90vh; overflow-y: auto;">
+            <button class="close-modal-btn" id="closeNcrModal"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="modal-title" style="margin-bottom: 25px; color: var(--primary-cyan);">
+                <i class="fa-solid fa-file-shield"></i> 撰寫稽核發現報告 (NCR)
+            </h2>
+            
+            <div class="ncr-layout">
+                <div class="ncr-evidence-panel">
+                    <div class="evidence-image-box">
+                        <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400" alt="VR 證據照片" class="evidence-img">
+                        <div class="evidence-tag">等待判定</div>
+                    </div>
+                    <p class="evidence-time"><i class="fa-regular fa-clock"></i> 拍攝時間：2026-03-25 10:06:30</p>
+                    <p class="evidence-desc" style="color: #8892b0; font-size: 0.9rem; margin-top: 10px;">
+                        提示：請根據左側您在 VR 環境中拍下的現場畫面，於右側填寫對應的 ISO 規範與缺失描述。
+                    </p>
+                </div>
+
+                <div class="ncr-form-panel">
+                    <form id="ncrForm">
+                        <div class="form-group">
+                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">缺失分類 (Category)</label>
+                            <select class="cyber-select" required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px;">
+                                <option value="">請選擇分類...</option>
+                                <option value="people">人員控制措施 (Clause 6)</option>
+                                <option value="physical">實體環境控制 (Clause 7)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">違反條文對應 (Clause Mapping)</label>
+                            <select class="cyber-select" required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px;">
+                                <option value="">請選擇對應條文...</option>
+                                <option value="6.6">6.6 保密協議 (NDA) 流程疏漏</option>
+                                <option value="7.2">7.2 實體進入控制失效</option>
+                                <option value="7.7">7.7 桌面淨空及螢幕淨空違規</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">風險嚴重度 (Severity)</label>
+                            <div class="severity-options" style="display: flex; gap: 15px;">
+                                <label><input type="radio" name="severity" value="high" required> <span style="color: #ff4757;">高風險</span></label>
+                                <label><input type="radio" name="severity" value="medium"> <span style="color: #ffa502;">中風險</span></label>
+                                <label><input type="radio" name="severity" value="low"> <span style="color: #2ed573;">低風險</span></label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">客觀事實描述 (Observation)</label>
+                            <textarea rows="3" placeholder="請具體描述您在 VR 情境中觀察到的缺失狀況..." required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; resize: none;"></textarea>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">改善建議 (Corrective Action)</label>
+                            <textarea rows="2" placeholder="請提出防範此漏洞的具體作法..." required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; resize: none;"></textarea>
+                        </div>
+
+                        <div class="form-actions" style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 15px;">
+                            <button type="button" id="cancelNcrBtn" style="padding: 10px 20px; background: transparent; border: 1px solid #8892b0; color: #8892b0; border-radius: 6px; cursor: pointer;">取消</button>
+                            <button type="submit" style="padding: 10px 20px; background: var(--primary-cyan); border: none; color: #000; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 168, 255, 0.5);">
+                                <i class="fa-solid fa-paper-plane"></i> 提交審核
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="pdfReportTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; padding: 50px; background-color: white; color: black; font-family: 'Noto Sans TC', sans-serif;">
+        
+        <div style="text-align: center; border-bottom: 2px solid #004080; padding-bottom: 20px; margin-bottom: 30px;">
+            <h1 style="color: #004080; margin: 0; font-size: 28px;">ISO/IEC 27002 資訊安全稽核發現報告</h1>
+            <p style="margin: 5px 0 0 0; color: #555; font-size: 14px;">Non-conformity Report (NCR)</p>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 15px;">
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold; width: 20%;">稽核日期</td>
+                <td style="border: 1px solid #ccc; padding: 10px; width: 30%;" id="pdfDate">2026/03/25</td>
+                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold; width: 20%;">稽核員</td>
+                <td style="border: 1px solid #ccc; padding: 10px; width: 30%;" id="pdfAuditor">測試員 01</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold;">缺失分類</td>
+                <td style="border: 1px solid #ccc; padding: 10px;" id="pdfCategory">-</td>
+                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold;">風險嚴重度</td>
+                <td style="border: 1px solid #ccc; padding: 10px; font-weight: bold;" id="pdfSeverity">-</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold;">違反條文</td>
+                <td style="border: 1px solid #ccc; padding: 10px;" colspan="3" id="pdfClause">-</td>
+            </tr>
+        </table>
+
+        <h3 style="color: #004080; border-left: 4px solid #00a8ff; padding-left: 10px; margin-bottom: 15px;">一、 客觀事實描述 (Observation)</h3>
+        <div style="border: 1px solid #ccc; padding: 15px; min-height: 100px; margin-bottom: 30px; background: #fafafa; line-height: 1.6;" id="pdfObservation">
+            </div>
+
+        <h3 style="color: #004080; border-left: 4px solid #00a8ff; padding-left: 10px; margin-bottom: 15px;">二、 改善建議 (Corrective Action)</h3>
+        <div style="border: 1px solid #ccc; padding: 15px; min-height: 100px; margin-bottom: 40px; background: #fafafa; line-height: 1.6;" id="pdfAction">
+            </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 60px;">
+            <div style="width: 45%; text-align: center;">
+                <div style="border-bottom: 1px solid #000; height: 40px; margin-bottom: 10px;"></div>
+                <p style="margin: 0; color: #333;">稽核員簽名 (Auditor)</p>
+            </div>
+            <div style="width: 45%; text-align: center;">
+                <div style="border-bottom: 1px solid #000; height: 40px; margin-bottom: 10px;"></div>
+                <p style="margin: 0; color: #333;">單位主管簽核 (Manager)</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

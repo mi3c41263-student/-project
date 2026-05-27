@@ -1,0 +1,372 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.10f1 (e35f0c77bd8e) revision 14901004'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Lian" at "2026-04-27T02:40:16.6235359Z"
+OS: 'Windows 11  (10.0.22631) Professional' Language: 'zh' Physical Memory: 16057 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-04-27T02:40:16Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker0
+-projectPath
+C:/Users/Lian/Desktop/UnityProject/OfficeProject
+-logFile
+Logs/AssetImportWorker0.log
+-srvPort
+60776
+-licensingIpc
+LicenseClient-Lian
+-job-worker-count
+7
+-background-job-worker-count
+8
+-gc-helper-count
+1
+-name
+AssetImport
+Successfully changed project path to: C:/Users/Lian/Desktop/UnityProject/OfficeProject
+C:/Users/Lian/Desktop/UnityProject/OfficeProject
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [27052]  Target information:
+
+Player connection [27052]  * "[IP] 192.168.56.1 [Port] 0 [Flags] 2 [Guid] 539428495 [EditorId] 539428495 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [27052]  * "[IP] 192.168.116.1 [Port] 0 [Flags] 2 [Guid] 539428495 [EditorId] 539428495 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [27052]  * "[IP] 192.168.190.1 [Port] 0 [Flags] 2 [Guid] 539428495 [EditorId] 539428495 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [27052]  * "[IP] 172.24.64.1 [Port] 0 [Flags] 2 [Guid] 539428495 [EditorId] 539428495 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [27052]  * "[IP] 172.20.10.14 [Port] 0 [Flags] 2 [Guid] 539428495 [EditorId] 539428495 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-Q7IKFD0) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [27052] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [27052] Host joined alternative multi-casting on [225.0.0.222:34997]...
+JobSystem: Creating JobQueue using job-worker-count value 7
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 5.64 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 1.34 ms.
+Initialize engine version: 6000.3.10f1 (e35f0c77bd8e)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/Lian/Desktop/UnityProject/OfficeProject/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: Intel(R) UHD Graphics (ID=0xa720)
+    Vendor:   Intel
+    VRAM:     8028 MB
+    Driver:   32.0.101.7084
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56832
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              3674c650b7c048d18b537732f4337c36
+  Correlation Id:          15b1380a8232386713074321a07b44cc
+  External correlation Id: 690147131675928054
+  Machine Id:              mznwUjAaYpgRTn3OMeXcDJW1Rss=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-Lian" (connect: 0.00s, validation: 0.00s, handshake: 1.12s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Lian-notifications" at "2026-04-27T02:40:17.7451665Z"
+[Licensing::Module] Licensing Background thread has ended after 1.12s
+[Licensing::Module] Licensing is initialized (took 0.06s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-Q9EA-B73R-T8TP-5CAU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: 2026-05-07T03:38:36Z
+[Licensing::Module] License group:
+  Id: ewogICJzdWJzR3JvdXAiIDogInVuaXR5IGVkaXRvciIsCiAgIm5hbWVzcGFjZSIgOiAidW5pdHlfZWRpdG9yIiwKICAidHlwZSIgOiAiRURJVE9SIiwKICAidGFnIiA6ICJVbml0eVBlcnNvbmFsXXXX
+  Product: Unity Personal Version
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.10f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.067234 seconds.
+- Loaded All Assemblies, in  0.687 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 314 ms
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.986 seconds
+Domain Reload Profiling: 1672ms
+	BeginReloadAssembly (188ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (53ms)
+	RebuildNativeTypeToScriptingClass (21ms)
+	initialDomainReloadingComplete (133ms)
+	LoadAllAssembliesAndSetupDomain (290ms)
+		LoadAssemblies (187ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (284ms)
+			TypeCache.Refresh (281ms)
+				TypeCache.ScanAssembly (258ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (986ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (937ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (454ms)
+			SetLoadedEditorAssemblies (8ms)
+			BeforeProcessingInitializeOnLoad (122ms)
+			ProcessInitializeOnLoadAttributes (242ms)
+			ProcessInitializeOnLoadMethodAttributes (110ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Import Worker Mode flag is 0x00
+Begin MonoManager ReloadAssembly
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-Q9EA-B73R-T8TP-5CAU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: 2026-05-07T03:38:36Z
+[Licensing::Module] License group:
+  Id: ewogICJzdWJzR3JvdXAiIDogInVuaXR5IGVkaXRvciIsCiAgIm5hbWVzcGFjZSIgOiAidW5pdHlfZWRpdG9yIiwKICAidHlwZSIgOiAiRURJVE9SIiwKICAidGFnIiA6ICJVbml0eVBlcnNvbmFsXXXX
+  Product: Unity Personal Version
+  Type: Assigned
+  Expiration: Unlimited
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.ai.assistant/Plugins/Shared/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Symbol file LoadedFromMemory is not a mono symbol file
+Symbol file LoadedFromMemory is not a mono symbol file
+- Loaded All Assemblies, in  1.782 seconds
+Refreshing native plugins compatible for Editor in 2.50 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+[Package Manager] Failed to launch server process. Reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] Unable to send message (not connected to server process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Duplicate assembly 'System.Runtime.CompilerServices.Unsafe.dll' with different versions detected, using 'Packages/com.unity.ai.assistant/Plugins/Shared/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' and ignoring 'Packages/com.unity.collections/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.dll, AssemblyName=System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.Refreshing native plugins compatible for Editor in 2.11 ms, found 4 plugins.
+[Package Manager] Failed to launch server process. Reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] Unable to send message (not connected to server process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.469 seconds
+Domain Reload Profiling: 4246ms
+	BeginReloadAssembly (286ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (9ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (53ms)
+	RebuildCommonClasses (52ms)
+	RebuildNativeTypeToScriptingClass (16ms)
+	initialDomainReloadingComplete (132ms)
+	LoadAllAssembliesAndSetupDomain (1289ms)
+		LoadAssemblies (753ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (696ms)
+			TypeCache.Refresh (486ms)
+				TypeCache.ScanAssembly (438ms)
+			BuildScriptInfoCaches (179ms)
+			ResolveRequiredComponents (19ms)
+	FinalizeReload (2469ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2152ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (17ms)
+			SetLoadedEditorAssemblies (10ms)
+			BeforeProcessingInitializeOnLoad (333ms)
+			ProcessInitializeOnLoadAttributes (1494ms)
+			ProcessInitializeOnLoadMethodAttributes (296ms)
+			AfterProcessingInitializeOnLoad (3ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (5ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Refreshing native plugins compatible for Editor in 2.23 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.05 ms.
+Unloading 59 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 10858 unused Assets / (18.6 MB). Loaded Objects now: 11696.
+Memory consumption went from 224.4 MB to 205.8 MB.
+Total: 32.314300 ms (FindLiveObjects: 2.362000 ms CreateObjectMapping: 0.860600 ms MarkObjects: 21.416700 ms  DeleteObjects: 7.672600 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 410451.949142 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'c33431452e53115da7ac55607d09d711') in 0.4797836 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 15
+
+========================================================================
+Received Import Request.
+  Time since last request: 207.321054 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: '3122669e5c2af8caed2a3d9703404c32') in 0.1675984 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 16
+
+========================================================================
+Received Import Request.
+  Time since last request: 11.680718 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'defcb03ed02be1aeb87da3201068de3e') in 0.1944958 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 17
+
+========================================================================
+Received Import Request.
+  Time since last request: 201.788437 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: '959522f38c3c0f77413b33f0653c063f') in 0.0861154 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 17
+
+========================================================================
+Received Import Request.
+  Time since last request: 42.117459 seconds.
+  path: Assets/Scenes/ISO_Audit_Main.unity
+  artifactKey: Guid(7f9f49fc40b83454c91b1d7af6a9c889) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/Scenes/ISO_Audit_Main.unity using Guid(7f9f49fc40b83454c91b1d7af6a9c889) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: 'be1c0f74cd0e9ce1537856f9aea641c7') in 0.0241009 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 1
+
+========================================================================
+Received Import Request.
+  Time since last request: 627.721968 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'c73b0cfc8fda74a98c4051b8d385a407') in 0.2382072 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 18
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.031011 seconds.
+  path: Assets/Scenes/ISO_Audit_Main.unity
+  artifactKey: Guid(7f9f49fc40b83454c91b1d7af6a9c889) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/Scenes/ISO_Audit_Main.unity using Guid(7f9f49fc40b83454c91b1d7af6a9c889) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: 'ca22b40329307dab76f5a5289a6f75ba') in 0.0321251 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 1
+
+========================================================================
+Received Import Request.
+  Time since last request: 95.335430 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: 'f28d3669f311c21ae160453106660d2c') in 0.134443 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 18
+
+========================================================================
+Received Import Request.
+  Time since last request: 7.195510 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '0b9c9195f9e2bf572923c1e6aa8b09cc') in 0.3035037 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 19
+
+========================================================================
+Received Import Request.
+  Time since last request: 80.326668 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: 'd6b86d72b0609d339f54b7f2b0c0d26d') in 0.0774043 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 18
+
+========================================================================
+Received Import Request.
+  Time since last request: 63.203916 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'e0b066d884280c332fe741deffad8137') in 0.3132125 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 19
+
+========================================================================
+Received Import Request.
+  Time since last request: 262.843303 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: '6140e7bde84eaec6cf76916c97290e63') in 0.1018502 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 21
+
+========================================================================
+Received Import Request.
+  Time since last request: 184.743133 seconds.
+  path: Assets/Scenes/ISO_Audit_Main.unity
+  artifactKey: Guid(7f9f49fc40b83454c91b1d7af6a9c889) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/Scenes/ISO_Audit_Main.unity using Guid(7f9f49fc40b83454c91b1d7af6a9c889) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: 'bfe27d914ee67a43d3b22fdbe3583eee') in 0.0246452 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 1
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.235216 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'ea6a3ff53bf5caf83431a56b74d725f8') in 0.2762652 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 22
+
+========================================================================
+Received Import Request.
+  Time since last request: 164.101308 seconds.
+  path: Assets/MSJH_SDF.asset
+  artifactKey: Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d)
+Start importing Assets/MSJH_SDF.asset using Guid(6a4c0f801940a3d46bff11e7192f23b4) Importer(2089858483,b0f066a214c2f5e87bad3c948f4d605d) (ScriptedImporter) -> (artifact id: '19a720c1151e73b27d05a0d4eab096cf') in 0.1984635 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 22
+
