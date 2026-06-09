@@ -174,15 +174,40 @@ const toggleRegPassword = document.getElementById("toggleRegPassword");
         });
     }
 
-    // =========================
-    // 6. 忘記密碼表單送出 (模擬)
+// =========================
+    // 6. 忘記密碼表單送出 (真實連線)
     // =========================
     const forgotPwdForm = document.getElementById("forgotPwdForm");
     if (forgotPwdForm) {
-        forgotPwdForm.addEventListener("submit", function (e) {
+        forgotPwdForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-            alert("重置密碼連結已寄出，請至信箱確認。");
-            closeModal(forgotPwdModal);
+            
+            // 抓取你忘記密碼彈窗裡的信箱輸入框 (請確認你的 input id 是什麼，這裡假設是 forgotEmail)
+            const email = document.getElementById("forgotEmail").value.trim();
+            
+            if (!email) {
+                alert("請輸入您的信箱！");
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:3000/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert("✨ " + data.message);
+                    closeModal(forgotPwdModal);
+                } else {
+                    alert("❌ " + data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("伺服器連線失敗！");
+            }
         });
     }
 });
