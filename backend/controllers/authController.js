@@ -130,40 +130,54 @@ const loginUser = async (req, res) => {
     const email = username; 
 
     try {
-        const sql = "SELECT * FROM users WHERE email = ?";
-        const [users] = await db.query(sql, [email]);
-
-        if (users.length === 0) {
-            return res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
-        }
-
-        const user = users[0]; 
-        const isMatch = await bcrypt.compare(password, user.password_hash);
+        // 1. 用 email 去資料庫找使用者
+        const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
         
-       if (isMatch) {
-            if (!user.is_verified) {
-                return res.status(403).json({ success: false, message: "❌ 您的帳號尚未驗證！請至信箱點擊驗證連結。" });
+        if (users.length > 0) {
+            const user = users[0];
+
+            // 🕵️‍♂️ X光監視器：把資料庫撈出來的東西全部印出來看！
+            console.log("👉 [登入測試] 從資料庫撈出的使用者資料:", user);
+            
+            // 🌟 終極修復：動態抓取正確的資料庫欄位名稱 (password_hash)
+            const dbPassword = user.password_hash || user.password;
+
+            // 🛡️ 新增防呆：如果資料庫裡這個人根本沒密碼，直接擋下！
+            if (!dbPassword) {
+                return res.status(401).json({ success: false, message: "❌ 您的帳號資料異常（無密碼紀錄），請重新註冊一組新帳號！" });
             }
 
-            // 🌟 新增：如果他有開啟 2FA，就先攔截他！
-            if (user.is_2fa_enabled) {
-                return res.json({ 
-                    success: true, 
-                    require2FA: true, // 告訴前端：帳密對了，但還差 2FA！
-                    message: "請輸入雙重認證碼",
-                    userId: user.id   // 把 ID 傳給前端，等一下驗證 2FA 會用到
-                });
+            // 2. 比對「登入密碼」(絕對要確保這裡是 dbPassword)
+            const isMatch = await bcrypt.compare(password, dbPassword);
+
+            if (isMatch) {
+                // 3. 檢查信箱驗證
+                if (!user.is_verified) {
+                    return res.status(403).json({ success: false, message: "❌ 您的帳號尚未驗證！請至信箱點擊驗證連結。" });
+                }
+
+                // 4. 檢查是否有開啟 2FA 攔截
+                if (user.is_2fa_enabled) {
+                    return res.json({ 
+                        success: true, 
+                        require2FA: true, 
+                        message: "請輸入雙重認證碼",
+                        userId: user.id   
+                    });
+                }
+
+                // 5. 沒開啟 2FA，正常放行登入
+                console.log(`使用者成功登入：${email}`);
+                const responseData = {
+                    id: user.id, username: user.username, email: user.email, 
+                    avatar_url: user.avatar_url, bio: user.bio, 
+                    is_2fa_enabled: (user.is_2fa_enabled === 1 || user.is_2fa_enabled === true) 
+                };
+
+                res.json({ success: true, message: "登入成功！正在載入儀表板...", user: responseData });
+            } else {
+                res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
             }
-
-            // 如果沒開啟 2FA，就照常讓他登入
-            console.log(`使用者成功登入：${email}`);
-            const responseData = {
-                id: user.id, username: user.username, email: user.email, 
-                avatar_url: user.avatar_url, bio: user.bio, 
-                is_2fa_enabled: (user.is_2fa_enabled === 1 || user.is_2fa_enabled === true) 
-            };
-
-            res.json({ success: true, message: "登入成功！正在載入儀表板...", user: responseData });
         } else {
             res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
         }
@@ -172,8 +186,6 @@ const loginUser = async (req, res) => {
         res.status(500).json({ success: false, message: "伺服器內部錯誤" });
     }
 };
-
-
 // =========================================
 // 4. 取得使用者學習成果數據 (動態從資料庫計算)
 // =========================================
@@ -506,6 +518,51 @@ const saveVRStats = async (req, res) => {
         res.status(500).json({ success: false, message: "伺服器發生錯誤，無法儲存數據" });
     }
 };
+// =========================================
+// 14. 登入後更改密碼 (Change Password)
+// =========================================
+const changePassword = async (req, res) => {
+    const { userId, currentPassword, newPassword } = req.body;
+
+    if (!userId || !currentPassword || !newPassword) {
+        return res.status(400).json({ success: false, message: "請填寫完整密碼資訊！" });
+    }
+
+   try {
+        const [users] = await db.query("SELECT * FROM users WHERE id = ?", [userId]);
+        if (users.length === 0) return res.status(404).json({ success: false, message: "找不到使用者" });
+
+        const user = users[0];
+
+        // 🌟 終極修復 2：動態抓取正確的資料庫欄位名稱
+        const dbPassword = user.password_hash || user.password;
+
+        // 🕵️‍♂️ 監視器：這次一定印得出東西了！
+        console.log("👉 [修改密碼測試] 前端傳來的舊密碼:", currentPassword);
+        console.log("👉 [修改密碼測試] 資料庫撈出的舊密碼:", dbPassword);
+
+        if (!dbPassword) {
+            return res.status(400).json({ success: false, message: "❌ 您的帳號沒有設定密碼，無法修改！" });
+        }
+
+        // 比對舊密碼
+        const isMatch = await bcrypt.compare(currentPassword, dbPassword);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: "❌ 目前密碼輸入錯誤，請確認！" });
+        }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        
+        // 🌟 終極修復 3：確保更新時寫入正確的欄位名稱 (password_hash)
+        await db.query("UPDATE users SET password_hash = ? WHERE id = ?", [hashedNewPassword, userId]);
+
+        res.json({ success: true, message: "✅ 密碼修改成功！下次請使用新密碼登入。" });
+
+    } catch (error) {
+        console.error("修改密碼錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器發生內部錯誤" });
+    }
+};
 // 🌟 關鍵：將所有功能匯出給路由使用
 module.exports = {
     registerUser,
@@ -521,5 +578,6 @@ module.exports = {
     disable2FA ,
     verifyLogin2FA ,
     getUserStats, 
-    saveVRStats   
+    saveVRStats ,
+    changePassword  
 };

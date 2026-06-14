@@ -24,4 +24,6 @@ router.post('/2fa/disable', authController.disable2FA);
 router.post('/login/2fa', authController.verifyLogin2FA);
 // --- 🎮 VR 數據上傳路徑 ---
 router.post('/stats/save', authController.saveVRStats);
+// --- 更改密碼路徑 ---
+router.post('/change-password', authController.changePassword);
 module.exports = router;

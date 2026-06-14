@@ -1139,3 +1139,9 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
     box-shadow: 0 0 15px rgba(0, 168, 255, 0.5);
     transform: translateY(-2px);
 }
+/* ========================================= */
+/* 🌟 強制提升 SweetAlert2 彈窗與 Toast 的圖層層級 */
+/* ========================================= */
+div.swal2-container {
+    z-index: 99999 !important;
+}

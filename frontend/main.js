@@ -218,8 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =========================================
-    // 7. 即時翻譯引擎
+  // =========================================
+    // 7. 即時翻譯引擎 (僅保留中、英文版)
     // =========================================
     const i18nDictionary = {
         'zh-TW': {
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'm-li1': '<strong>實體門禁控制失效 (7.2)：</strong> 測試大廳門禁時，發現使用過期卡片仍可進入。',
             'm-li2': '<strong>保密協議 (6.6) 漏洞：</strong> 檢查人資部資料發現，部分外包人員的 NDA 還在跑流程，未簽署即接觸內網資源。',
             'm-li3': '<strong>缺乏報告資安事件意識 (6.8)：</strong> 員工點擊釣魚文件附件後，卻因為「忙著趕報告」而未進行通報。',
-            'm-p2': '資安主管表示這些發現非常有價值，將針對這些佐證照片重新檢討訓練計畫。',
+            'm-p2': '資安主管表示這些發現非常有價值，將針對 these 佐證照片重新檢討訓練計畫。',
             'm-btn-edit': '<i class="fa-solid fa-pen-to-square"></i> 編輯報告', 'm-btn-export': '<i class="fa-solid fa-file-export"></i> 匯出 PDF'
         },
         'en': {
@@ -262,15 +262,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // 監聽下拉選單切換
     document.body.addEventListener('change', function(e) {
         if (e.target.id === 'langSelect') {
             const selectedLang = e.target.value;
             const dict = i18nDictionary[selectedLang];
             if (!dict) return;
+            
+            // 翻譯所有帶有 data-i18n 屬性的元素
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (dict[key]) el.innerHTML = dict[key];
             });
+            
+            // 翻譯所有帶有 data-i18n-placeholder 屬性的輸入框
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
                 if (dict[key]) el.setAttribute('placeholder', dict[key]);
@@ -405,31 +410,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalBtnText = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 PDF...';
                 submitBtn.disabled = true;
-
-                // ✨ 關鍵修復：把模板拉回畫面中，藏在所有元素的最底層讓套件拍照
+// ✨ 終極修復：把模板拉回畫面，並強制解除隱藏！
                 const element = document.getElementById('pdfReportTemplate');
+                element.style.display = 'block'; // 👈 關鍵 1：強制顯示出來
+                element.style.position = 'absolute';
                 element.style.left = '0px';
                 element.style.top = '0px';
-                element.style.zIndex = '-9999';
+                element.style.zIndex = '-9999'; // 藏在最下層不讓使用者看到
 
                 const opt = {
                     margin: 0,
                     filename: `ISO稽核報告_${new Date().getTime()}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, scrollY: 0 }, // 修正滾動條造成的位移
+                    html2canvas: { scale: 2, scrollY: 0, backgroundColor: '#1c2638' }, // 保持深色底色
                     jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
                 };
 
-                await html2pdf().set(opt).from(element).save();
-                
-                // ✨ 關鍵修復：拍完照後，把模板推回畫面外
-                element.style.left = '-9999px';
+                // 👈 關鍵 2：給瀏覽器 0.1 秒的時間把畫面渲染出來再拍照
+                setTimeout(async () => {
+                    await html2pdf().set(opt).from(element).save();
+                    
+                    // ✨ 拍完照後，立刻把它隱藏回去
+                    element.style.display = 'none'; 
+                    element.style.left = '-9999px';
 
-                alert("✅ 報告已成功匯出 PDF！");
-                closeNcr();
+                    alert("✅ 報告已成功匯出 PDF！");
+                    closeNcr();
 
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                }, 100);
             } catch (error) {
                 console.error("❌ PDF 生成失敗:", error);
                 alert("生成 PDF 時發生錯誤！");
@@ -463,8 +473,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 匯出中...';
                 this.disabled = true;
 
-                // ✨ 關鍵修復：把模板拉回畫面中
+             // ✨ 終極修復：把模板拉回畫面，並強制解除隱藏！
                 const element = document.getElementById('pdfReportTemplate');
+                element.style.display = 'block'; // 👈 關鍵 1：強制顯示
+                element.style.position = 'absolute';
                 element.style.left = '0px';
                 element.style.top = '0px';
                 element.style.zIndex = '-9999';
@@ -473,20 +485,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     margin: 0,
                     filename: `ISO學習筆記_${new Date().getTime()}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, scrollY: 0 },
+                    html2canvas: { scale: 2, scrollY: 0, backgroundColor: '#1c2638' },
                     jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
                 };
 
-                await html2pdf().set(opt).from(element).save();
-                
-                // ✨ 關鍵修復：拍完照後推回畫面外
-                element.style.left = '-9999px';
+                // 👈 關鍵 2：稍微等一下再拍
+                setTimeout(async () => {
+                    await html2pdf().set(opt).from(element).save();
+                    
+                    // ✨ 拍完照後推回畫面外並隱藏
+                    element.style.display = 'none';
+                    element.style.left = '-9999px';
 
-                alert(" 歷史筆記已成功匯出為 PDF 稽核報告！");
+                    alert("✅ 歷史筆記已成功匯出為 PDF 稽核報告！");
 
-                this.innerHTML = originalText;
-                this.disabled = false;
-
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 100);
             } catch (error) {
                 console.error("PDF 匯出失敗:", error);
                 alert("匯出失敗，請重試！");
@@ -808,6 +823,134 @@ window.initRadarChart = async function() {
                     }
                 } else {
                     e.target.checked = true; // 反悔，保持開啟
+                }
+            }
+        });
+    }
+    // =========================================
+    // 15. 登入後更改密碼 (彈窗升級版)
+    // =========================================
+    const openChangePwdBtn = document.getElementById('openChangePwdBtn');
+    
+    if (openChangePwdBtn) {
+        openChangePwdBtn.addEventListener('click', async function(e) {
+            e.preventDefault(); // 防止 a 標籤亂跳
+
+            // 抓取目前登入者的 ID
+            const currentUserStr = localStorage.getItem('currentUser');
+            if (!currentUserStr) return alert("找不到登入資訊，請重新登入");
+            const user = JSON.parse(currentUserStr);
+
+           // 🌟 1. 彈出輸入密碼的專屬視窗 (加入小眼睛顯示功能)
+            const { value: formValues } = await Swal.fire({
+                title: '<i class="fa-solid fa-lock"></i> 更改密碼',
+                // 👇 更新 HTML 結構，加入相對定位與小眼睛圖示
+                html: `
+                    <div style="text-align: left; margin-top: 10px;">
+                        <label style="color: #8892b0; font-size: 0.9rem;">目前密碼</label>
+                        <div style="position: relative; margin-bottom: 15px;">
+                            <input id="swal-curr-pwd" type="password" class="cyber-input" style="width: 100%; text-align: center; letter-spacing: 3px; padding-right: 40px;" placeholder="輸入目前的密碼">
+                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-curr-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8892b0;"></i>
+                        </div>
+                        
+                        <label style="color: #8892b0; font-size: 0.9rem;">新密碼</label>
+                        <div style="position: relative; margin-bottom: 15px;">
+                            <input id="swal-new-pwd" type="password" class="cyber-input" style="width: 100%; text-align: center; letter-spacing: 3px; padding-right: 40px;" placeholder="至少8碼，含大小寫與數字">
+                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-new-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8892b0;"></i>
+                        </div>
+                        
+                        <label style="color: #8892b0; font-size: 0.9rem;">確認新密碼</label>
+                        <div style="position: relative; margin-bottom: 15px;">
+                            <input id="swal-conf-pwd" type="password" class="cyber-input" style="width: 100%; text-align: center; letter-spacing: 3px; padding-right: 40px;" placeholder="再次輸入新密碼">
+                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-conf-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8892b0;"></i>
+                        </div>
+                    </div>
+                `,
+                background: '#1c2638', color: '#fff',
+                showCancelButton: true,
+                confirmButtonText: '驗證並儲存',
+                cancelButtonText: '取消',
+                confirmButtonColor: 'var(--primary-cyan)',
+                cancelButtonColor: 'transparent',
+                customClass: { cancelButton: 'cyber-cancel-btn' },
+                
+                // 👇 這是新的！當視窗打開時，啟動小眼睛的開關功能
+                didOpen: () => {
+                    const toggleIcons = document.querySelectorAll('.toggle-pwd-icon');
+                    toggleIcons.forEach(icon => {
+                        icon.addEventListener('click', function() {
+                            const targetId = this.getAttribute('data-target');
+                            const inputField = document.getElementById(targetId);
+                            
+                            // 切換密碼顯示狀態
+                            if (inputField.type === "password") {
+                                inputField.type = "text";
+                                this.classList.remove('fa-eye-slash');
+                                this.classList.add('fa-eye');
+                                this.style.color = '#00a8ff'; // 打開時變亮藍色
+                            } else {
+                                inputField.type = "password";
+                                this.classList.remove('fa-eye');
+                                this.classList.add('fa-eye-slash');
+                                this.style.color = '#8892b0'; // 關閉時變回暗灰色
+                            }
+                        });
+                    });
+                },
+
+                preConfirm: () => {
+                    const curr = document.getElementById('swal-curr-pwd').value;
+                    const newPwd = document.getElementById('swal-new-pwd').value;
+                    const conf = document.getElementById('swal-conf-pwd').value;
+
+                    if (!curr || !newPwd || !conf) {
+                        Swal.showValidationMessage('❌ 請填寫所有密碼欄位！');
+                        return false;
+                    }
+                    if (newPwd !== conf) {
+                        Swal.showValidationMessage('❌ 兩次新密碼輸入不一致！');
+                        return false;
+                    }
+                    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+                    if (!passwordRegex.test(newPwd)) {
+                        Swal.showValidationMessage('❌ 密碼強度不足 (需8碼，含大小寫英文字母與數字)！');
+                        return false;
+                    }
+                    return { currentPassword: curr, newPassword: newPwd };
+                }
+            });
+
+            // 🌟 2. 如果使用者按下了「驗證並儲存」且格式都對
+            if (formValues) {
+                try {
+                    // 顯示載入中動畫
+                    Swal.fire({
+                        title: '加密傳輸中...',
+                        background: '#1c2638', color: '#fff',
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    // 發送給 Node.js 後端
+                    const response = await fetch('http://localhost:3000/api/change-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            userId: user.id, 
+                            currentPassword: formValues.currentPassword, 
+                            newPassword: formValues.newPassword 
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        Swal.fire({ icon: 'success', title: '修改成功！', text: data.message, background: '#1c2638', color: '#fff' });
+                    } else {
+                        // 舊密碼打錯
+                        Swal.fire({ icon: 'error', title: '修改失敗', text: data.message, background: '#1c2638', color: '#fff' });
+                    }
+                } catch (error) {
+                    Swal.fire({ icon: 'error', title: '連線失敗', text: '無法連接到伺服器', background: '#1c2638', color: '#fff' });
                 }
             }
         });
