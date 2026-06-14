@@ -278,8 +278,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // =========================================
-    // 8. 頁面載入時：更新左下角使用者資訊
+  // =========================================
+    // 8. 頁面載入時：更新左下角使用者資訊 & 個人檔案設定
     // =========================================
     const userStr = localStorage.getItem('currentUser');
     let currentUserId = null;
@@ -287,10 +287,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userStr) {
         const user = JSON.parse(userStr);
         currentUserId = user.id; 
+        
+        // 1. 載入顯示名稱
         const userNameDisplay = document.querySelector('.user-info .name');
         if (userNameDisplay) {
-            userNameDisplay.textContent = user.username.split('@')[0]; 
+            userNameDisplay.textContent = user.username; 
         }
+
+        // 2. 🌟 載入專屬大頭貼 (左下角側邊欄)
+        if (user.avatar_url) {
+            const sidebarAvatar = document.querySelector('.sidebar .avatar');
+            if (sidebarAvatar) {
+                // 將原本的太空人 icon 替換成使用者上傳的圖片
+                sidebarAvatar.innerHTML = `<img src="${user.avatar_url}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            }
+        }
+
+        // 3. 🌟 預先填入「系統設定」裡的個人檔案表單
+        const profileNameInput = document.getElementById('profileName');
+        const profileBioInput = document.getElementById('profileBio');
+        const avatarPreview = document.getElementById('avatarPreview');
+
+        if (profileNameInput) profileNameInput.value = user.username || '';
+        if (profileBioInput) profileBioInput.value = user.bio || '';
+        // 讓設定視窗裡的大頭貼預覽也變成使用者的圖片
+        if (avatarPreview && user.avatar_url) {
+            avatarPreview.src = user.avatar_url;
+        }
+
     } else {
         // 如果沒有登入紀錄，就把他踢回登入頁面
         // alert("請先登入系統！");
@@ -469,5 +493,323 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+// =========================================
+// 12. 連接後端 API 並動態繪製「能力雷達圖」
+// =========================================
+window.initRadarChart = async function() {
+    const userStr = localStorage.getItem('currentUser');
+    if (!userStr) return; // 防呆：沒登入就不執行
+    const user = JSON.parse(userStr);
 
-}); 
+    let scores = [0, 0, 0, 0, 0]; // 預設雷達圖數值
+
+    try {
+        // 🌟 1. 向 Node.js 後端請求該用戶的成績數據
+        const response = await fetch(`http://localhost:3000/api/stats?userId=${user.id}`);
+        const resData = await response.json();
+
+        if (resData.success) {
+            const stats = resData.data;
+            scores = stats.radarScores; // 覆蓋為後端傳來的真實陣列
+
+            // 🌟 2. 動態更新右側三張數據卡片
+            const valScore = document.getElementById('valScore');
+            const valTime = document.getElementById('valTime');
+            const valBlock = document.getElementById('valBlock');
+
+            if (valScore) valScore.innerHTML = `${stats.totalScore}<small>分</small>`;
+            if (valTime) valTime.innerHTML = `${stats.trainingHours}<small>小時</small>`;
+            if (valBlock) valBlock.innerHTML = `${stats.blocks}<small>次</small>`;
+        }
+    } catch (error) {
+        console.error("讀取後端數據失敗:", error);
+    }
+
+    // 🌟 3. 繪製 Chart.js 雷達圖
+    const ctx = document.getElementById('securityRadarChart');
+    if (!ctx) return;
+
+    // 配合你現有 CSS 的文字顏色設定
+    Chart.defaults.color = '#8892b0'; 
+
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            // 配合你 ISO 27002 手冊的屬性標籤
+            labels: ['實體防護', '社交工程防範', '機房安全', '設備管控', '法規認知'], 
+            datasets: [{
+                label: '資安防禦力',
+                data: scores,
+                backgroundColor: 'rgba(0, 168, 255, 0.2)', // 使用你的 --primary-cyan
+                borderColor: '#00a8ff',
+                borderWidth: 2,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#00a8ff',
+                pointHoverBackgroundColor: '#00a8ff',
+                pointHoverBorderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                    suggestedMin: 0,
+                    suggestedMax: 100,
+                    ticks: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false } // 隱藏多餘的圖例，保持畫面乾淨
+            }
+        }
+    });
+};
+// =========================================
+    // 13. 個人檔案設定邏輯 (頭像上傳與資料儲存)
+    // =========================================
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+    // 頭像預覽功能 (FileReader)
+    if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 檢查檔案大小 (限制 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '檔案過大',
+                    text: '請上傳小於 2MB 的圖片！',
+                    background: '#1c2638',
+                    color: '#fff'
+                });
+                this.value = ""; // 清空輸入
+                return;
+            }
+
+            // 讀取圖片並顯示預覽
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                avatarPreview.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+    }
+
+   // 儲存變更按鈕邏輯
+    if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', async function() {
+            const newName = document.getElementById('profileName').value.trim();
+            const newBio = document.getElementById('profileBio').value.trim();
+            
+            // 🌟 關鍵修復 1：先去 LocalStorage 把目前的登入者抓出來
+            const currentUserStr = localStorage.getItem('currentUser');
+            if (!currentUserStr) {
+                alert("找不到登入資訊，請重新登入！");
+                return;
+            }
+            const user = JSON.parse(currentUserStr); // 轉換成物件
+            
+            // 將按鈕變成處理中
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 儲存中...';
+            this.disabled = true;
+
+            try {
+                const formData = new FormData();
+                
+                // 🌟 關鍵修復 2：把 userId 塞進包裹裡，讓後端知道是誰要更新！
+                formData.append('userId', user.id); 
+                
+                formData.append('username', newName);
+                formData.append('bio', newBio);
+                if(avatarInput.files[0]) formData.append('avatar', avatarInput.files[0]);
+
+                const response = await fetch('http://localhost:3000/api/update-profile', {
+                    method: 'POST',
+                    body: formData // 注意：使用 FormData 時不用設定 Content-Type
+                });
+                
+                const data = await response.json(); 
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '儲存成功！',
+                        text: '您的個人檔案已更新。',
+                        toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
+                        background: '#1c2638', color: '#e2e8f0'
+                    });
+
+                    // 覆蓋 LocalStorage，讓下次重新整理時資料還在
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+
+                    // 更新側邊欄顯示名稱
+                    const userNameDisplay = document.querySelector('.user-info .name');
+                    if (userNameDisplay) userNameDisplay.textContent = data.user.username;
+
+                    // 更新側邊欄大頭貼
+                    if (data.user.avatar_url) {
+                        const sidebarAvatar = document.querySelector('.sidebar .avatar');
+                        if (sidebarAvatar) {
+                            sidebarAvatar.innerHTML = `<img src="${data.user.avatar_url}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                        }
+                    }
+                } else {
+                    alert("更新失敗：" + data.message);
+                }
+} catch (error) {
+                // 🌟 讓瀏覽器印出真正的紅字錯誤
+                console.error("儲存失敗的詳細原因:", error);
+                
+                // 🌟 讓彈跳視窗顯示真正的 JS 錯誤，而不是騙人說伺服器連線失敗
+                alert("網頁執行發生錯誤：" + error.message);
+                
+            } finally {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }
+        });
+    }
+   // =========================================
+    // 14. 雙重認證 (2FA) 開關介面邏輯 (真實連線版)
+    // =========================================
+    const toggle2FA = document.getElementById('toggle2FA');
+    
+    if (toggle2FA) {
+        // 🌟 頁面載入時，先抓取 LocalStorage 裡的登入者資料
+        const currentUserStr = localStorage.getItem('currentUser');
+        let user = null;
+        
+        if (currentUserStr) {
+            user = JSON.parse(currentUserStr);
+            console.log("目前登入者的狀態：", user);
+            // 根據資料庫狀態，決定開關一開始要不要打開
+            if (user.is_2fa_enabled) {
+                toggle2FA.checked = true;
+            }
+        }
+
+        toggle2FA.addEventListener('change', async function(e) {
+            if (!user) {
+                alert("找不到使用者資料，請重新登入！");
+                e.target.checked = !e.target.checked;
+                return;
+            }
+
+            const isChecked = e.target.checked;
+
+            if (isChecked) {
+                // 🔘 狀態：使用者想「開啟」2FA
+                try {
+                    // 1. 顯示載入中動畫
+                    Swal.fire({
+                        title: '產生專屬金鑰中...',
+                        background: '#1c2638', color: '#fff',
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    // 2. 向 Node.js 請求真實的 QR Code
+                    const res = await fetch(`http://localhost:3000/api/2fa/generate?userId=${user.id}&email=${user.email}`);
+                    const data = await res.json();
+
+                    if (!data.success) throw new Error(data.message);
+
+                    // 3. 顯示真實的 QR Code 讓使用者掃描
+                    const { value: verificationCode, isConfirmed } = await Swal.fire({
+                        title: '<i class="fa-solid fa-qrcode"></i> 設定雙重認證',
+                        html: `
+                            <p style="color: #8892b0; font-size: 0.95rem; margin-bottom: 20px;">請打開 <strong>Google Authenticator</strong> 掃描下方條碼</p>
+                            <img src="${data.qrCodeUrl}" style="border: 5px solid white; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 0 15px rgba(0, 168, 255, 0.4);">
+                            <br>
+                            <input type="text" id="swal-input-2fa" class="cyber-input" placeholder="請輸入 6 位數驗證碼" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-weight: bold; width: 80%;">
+                        `,
+                        background: '#1c2638', color: '#fff',
+                        showCancelButton: true,
+                        confirmButtonColor: 'var(--primary-cyan)',
+                        cancelButtonColor: 'transparent',
+                        confirmButtonText: '驗證並啟用',
+                        cancelButtonText: '取消',
+                        customClass: { cancelButton: 'cyber-cancel-btn' },
+                        preConfirm: () => {
+                            const input = document.getElementById('swal-input-2fa').value;
+                            if (!input || input.length !== 6 || isNaN(input)) {
+                                Swal.showValidationMessage('❌ 請輸入有效的 6 位數字驗證碼！');
+                                return false;
+                            }
+                            return input;
+                        }
+                    });
+
+                    if (isConfirmed) {
+                        // 4. 把使用者輸入的 6 位數，丟給 Node.js 進行嚴格比對
+                        const verifyRes = await fetch('http://localhost:3000/api/2fa/verify', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: user.id, token: verificationCode })
+                        });
+                        const verifyData = await verifyRes.json();
+
+                        if (verifyData.success) {
+                            Swal.fire({
+                                icon: 'success', title: '2FA 已成功啟用！', text: '您的帳號防禦等級已提升。',
+                                background: '#1c2638', color: '#fff', timer: 2500, showConfirmButton: false
+                            });
+                            // 更新前端記憶體，讓開關保持打開
+                            user.is_2fa_enabled = true;
+                            localStorage.setItem('currentUser', JSON.stringify(user));
+                        } else {
+                            Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: '#1c2638', color: '#fff' });
+                            e.target.checked = false; // 驗證失敗，開關退回關閉
+                        }
+                    } else {
+                        e.target.checked = false; // 使用者按取消，開關退回關閉
+                    }
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire({ icon: 'error', title: '錯誤', text: '無法連線到伺服器產生 QR Code', background: '#1c2638', color: '#fff' });
+                    e.target.checked = false;
+                }
+            } else {
+                // 🔘 狀態：使用者想「關閉」2FA
+                const { isConfirmed } = await Swal.fire({
+                    title: '確定要停用 2FA 嗎？', text: '停用後，您的帳號容易遭受惡意攻擊！', icon: 'warning',
+                    background: '#1c2638', color: '#fff', showCancelButton: true,
+                    confirmButtonColor: '#ff4757', cancelButtonColor: 'transparent', confirmButtonText: '強制停用', cancelButtonText: '保持啟用'
+                });
+
+                if (isConfirmed) {
+                    // 向 Node.js 發送停用請求
+                    try {
+                        const disableRes = await fetch('http://localhost:3000/api/2fa/disable', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: user.id })
+                        });
+                        const disableData = await disableRes.json();
+
+                        if (disableData.success) {
+                            Swal.fire({ icon: 'info', title: '2FA 已停用', background: '#1c2638', color: '#fff', timer: 2000, showConfirmButton: false });
+                            user.is_2fa_enabled = false;
+                            localStorage.setItem('currentUser', JSON.stringify(user));
+                        } else {
+                            alert("停用失敗：" + disableData.message);
+                            e.target.checked = true;
+                        }
+                    } catch (err) {
+                        alert("連線失敗");
+                        e.target.checked = true;
+                    }
+                } else {
+                    e.target.checked = true; // 反悔，保持開啟
+                }
+            }
+        });
+    }
+    });

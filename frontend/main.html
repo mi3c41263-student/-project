@@ -251,7 +251,7 @@
                                 <i class="fa-solid fa-shield-virus stat-icon"></i>
                                 <div class="stat-info">
                                     <span class="stat-label" data-i18n="stat-score">綜合防禦評分</span>
-                                    <span class="stat-value">65<small>分</small></span>
+                                    <span class="stat-value" id="valScore">--<small>分</small></span>
                                 </div>
                             </div>
                             
@@ -259,7 +259,7 @@
                                 <i class="fa-solid fa-clock-rotate-left stat-icon"></i>
                                 <div class="stat-info">
                                     <span class="stat-label" data-i18n="stat-time">VR 訓練總時數</span>
-                                    <span class="stat-value">2.5<small>小時</small></span>
+                                    <span class="stat-value" id="valTime">--<small>小時</small></span>
                                 </div>
                             </div>
                             
@@ -267,7 +267,7 @@
                                 <i class="fa-solid fa-triangle-exclamation stat-icon"></i>
                                 <div class="stat-info">
                                     <span class="stat-label" data-i18n="stat-block">成功攔截威脅</span>
-                                    <span class="stat-value">12<small>次</small></span>
+                                    <span class="stat-value" id="valBlock">--<small>次</small></span>
                                 </div>
                             </div>
                         </div>
@@ -300,21 +300,55 @@
             </div>
         </div>
     </div>
-
-    <div id="settingsModal" class="note-modal-overlay">
-        <div class="settings-modal-content glass-panel" style="height: 60vh; min-height: 400px;">
+<div id="settingsModal" class="note-modal-overlay">
+        <div class="settings-modal-content glass-panel" style="height: 65vh; min-height: 480px;">
             <button class="close-modal-btn" id="closeSettingsModal"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="modal-title" style="margin-bottom: 20px;" data-i18n="set-title"><i class="fa-solid fa-sliders"></i> 系統設定</h2>
             
             <div class="settings-layout">
                 <div class="settings-sidebar">
-                    <button class="setting-tab active" data-target="tab-account" data-i18n="set-tab-acc"><i class="fa-solid fa-shield-halved"></i> 帳號與安全</button>
+                    <button class="setting-tab active" data-target="tab-profile"><i class="fa-solid fa-user-pen"></i> 個人檔案</button>
+                    <button class="setting-tab" data-target="tab-account" data-i18n="set-tab-acc"><i class="fa-solid fa-shield-halved"></i> 帳號與安全</button>
                     <button class="setting-tab" data-target="tab-pref" data-i18n="set-tab-pref"><i class="fa-solid fa-globe"></i> 系統偏好</button>
                 </div>
 
                 <div class="settings-content">
                     
-                    <div id="tab-account" class="setting-panel active">
+                    <div id="tab-profile" class="setting-panel active">
+                        <h3 style="color: var(--primary-cyan); margin-bottom: 20px; font-size: 1.3rem;">編輯個人檔案</h3>
+                        
+                        <div style="display: flex; gap: 30px; margin-top: 10px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 150px;">
+                                <div class="avatar-wrapper" style="position: relative; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-cyan); box-shadow: 0 0 15px rgba(0, 168, 255, 0.3); cursor: pointer;" onclick="document.getElementById('avatarInput').click()">
+                                    <img src="https://ui-avatars.com/api/?name=User&background=0066cc&color=fff&size=120" id="avatarPreview" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;">
+                                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; opacity: 0; transition: 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                                        <i class="fa-solid fa-camera" style="font-size: 1.5rem; margin-bottom: 5px; color: var(--primary-cyan);"></i>
+                                        <span style="font-size: 0.8rem; font-weight: 600;">更換頭像</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/gif" style="display: none;">
+                                <p style="font-size: 0.8rem; color: #8892b0; text-align: center; line-height: 1.5;">支援 JPG, PNG<br>最大 2MB</p>
+                            </div>
+
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
+                                <div>
+                                    <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">顯示名稱 (Display Name)</label>
+                                    <input type="text" id="profileName" placeholder="請輸入您想顯示的名稱" style="width: 100%; padding: 10px 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary-cyan)'" onblur="this.style.borderColor='rgba(0, 168, 255, 0.3)'">
+                                </div>
+                                <div>
+                                    <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">個人簡介 (Bio)</label>
+                                    <textarea id="profileBio" rows="4" placeholder="向大家介紹一下你自己，或寫下你的資安座右銘..." style="width: 100%; padding: 10px 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; resize: none; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary-cyan)'" onblur="this.style.borderColor='rgba(0, 168, 255, 0.3)'"></textarea>
+                                </div>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <button id="saveProfileBtn" style="padding: 10px 20px; background: var(--primary-cyan); border: none; color: #000; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 168, 255, 0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                        <i class="fa-solid fa-floppy-disk"></i> 儲存變更
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-account" class="setting-panel">
                         <h3 data-i18n="set-acc-title">個人帳號與安全性設定</h3>
                         
                         <div class="setting-item">
@@ -326,12 +360,12 @@
                         </div>
                         
                         <div class="setting-item">
-                            <div class="setting-info">
-                                <h4 data-i18n="set-2fa">雙重認證 (2FA)</h4>
-                                <p>綁定 Google Authenticator 或信箱驗證，提升帳號防護層級。</p>
+                        <div class="setting-info">
+                           <h4 data-i18n="set-2fa">雙重認證 (2FA)</h4>
+                           <p>綁定 Google Authenticator 或信箱驗證，提升帳號防護層級。</p>
                             </div>
-                            <label class="toggle-switch"><input type="checkbox" checked><span class="slider"></span></label>
-                        </div>
+                             <label class="toggle-switch"><input type="checkbox" id="toggle2FA"><span class="slider"></span></label>
+                    </div>
                     </div>
 
                     <div id="tab-pref" class="setting-panel">
@@ -472,7 +506,10 @@
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script src="main.js"></script>
 </body>
 </html>

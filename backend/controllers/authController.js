@@ -1,3 +1,7 @@
+const speakeasy = require('speakeasy');
+const QRCode = require('qrcode');
+const multer = require('multer');
+const path = require('path');
 const bcrypt = require('bcrypt');
 const db = require('../db'); // 引入 MySQL 連線池
 const nodemailer = require('nodemailer');
@@ -136,22 +140,30 @@ const loginUser = async (req, res) => {
         const user = users[0]; 
         const isMatch = await bcrypt.compare(password, user.password_hash);
         
-        if (isMatch) {
-            // 🌟 新增：檢查是否已經完成信箱驗證 (is_verified 是否為 1)
+       if (isMatch) {
             if (!user.is_verified) {
                 return res.status(403).json({ success: false, message: "❌ 您的帳號尚未驗證！請至信箱點擊驗證連結。" });
             }
 
+            // 🌟 新增：如果他有開啟 2FA，就先攔截他！
+            if (user.is_2fa_enabled) {
+                return res.json({ 
+                    success: true, 
+                    require2FA: true, // 告訴前端：帳密對了，但還差 2FA！
+                    message: "請輸入雙重認證碼",
+                    userId: user.id   // 把 ID 傳給前端，等一下驗證 2FA 會用到
+                });
+            }
+
+            // 如果沒開啟 2FA，就照常讓他登入
             console.log(`使用者成功登入：${email}`);
-            res.json({ 
-                success: true, 
-                message: "登入成功！正在載入儀表板...",
-                user: {
-                    id: user.id,
-                    username: user.username,
-                    email: user.email
-                }
-            });
+            const responseData = {
+                id: user.id, username: user.username, email: user.email, 
+                avatar_url: user.avatar_url, bio: user.bio, 
+                is_2fa_enabled: (user.is_2fa_enabled === 1 || user.is_2fa_enabled === true) 
+            };
+
+            res.json({ success: true, message: "登入成功！正在載入儀表板...", user: responseData });
         } else {
             res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
         }
@@ -163,25 +175,54 @@ const loginUser = async (req, res) => {
 
 
 // =========================================
-// 4. 取得使用者學習成果數據 (Get Stats)
+// 4. 取得使用者學習成果數據 (動態從資料庫計算)
 // =========================================
 const getUserStats = async (req, res) => {
     const userId = req.query.userId;
 
-    const userStatsDB = {
-        "1": { radarScores: [85, 60, 90, 75, 80], totalScore: 78, trainingHours: 12.5, blocks: 42 },
-        "2": { radarScores: [95, 90, 85, 88, 92], totalScore: 90, trainingHours: 25.0, blocks: 120 }
-    };
+    if (!userId) {
+        return res.status(400).json({ success: false, message: "缺少使用者 ID" });
+    }
 
-    const stats = userStatsDB[userId] || {
-        radarScores: [0, 0, 0, 0, 0], totalScore: 0, trainingHours: 0, blocks: 0
-    };
+    try {
+        // 🌟 1. 從資料庫加總該用戶的「總時數」與「總攔截次數」
+        const [totals] = await db.query(
+            "SELECT SUM(duration_hours) as totalHours, SUM(blocks_count) as totalBlocks FROM vr_training_records WHERE user_id = ?", 
+            [userId]
+        );
 
-    res.json({ 
-        success: true, 
-        message: "成功獲取專屬學習數據",
-        data: stats 
-    });
+        // 🌟 2. 撈出該用戶「最近一次」的 VR 訓練各項分數作為雷達圖基底
+        const [latestScore] = await db.query(
+            "SELECT score_physical, score_social, score_server, score_device, score_legal, total_score FROM vr_training_records WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+            [userId]
+        );
+
+        const hasData = latestScore.length > 0;
+
+        // 🌟 3. 打包成前端原本就看得懂的格式
+        const stats = {
+            radarScores: hasData ? [
+                latestScore[0].score_physical,
+                latestScore[0].score_social,
+                latestScore[0].score_server,
+                latestScore[0].score_device,
+                latestScore[0].score_legal
+            ] : [0, 0, 0, 0, 0], // 沒玩過就全部 0 分
+            totalScore: hasData ? latestScore[0].total_score : 0,
+            trainingHours: totals[0].totalHours ? parseFloat(totals[0].totalHours) : 0.0,
+            blocks: totals[0].totalBlocks ? parseInt(totals[0].totalBlocks) : 0
+        };
+
+        res.json({ 
+            success: true, 
+            message: "成功獲取真實學習數據",
+            data: stats 
+        });
+
+    } catch (error) {
+        console.error("獲取學習數據錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器發生內部錯誤" });
+    }
 };
 // =========================================
 // 5. 忘記密碼：寄出重置信 (Forgot Password)
@@ -258,12 +299,227 @@ const resetPassword = async (req, res) => {
         res.status(500).json({ success: false, message: "伺服器發生錯誤" });
     }
 };
-// 🌟 關鍵：將 verifyEmail 也匯出
+// =========================================
+// 7. 設定 multer 圖片上傳規則
+// =========================================
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // 存到我們剛剛建立的 uploads 資料夾
+    },
+    filename: function (req, file, cb) {
+        // 幫圖片重新命名：時間戳記 + 原始副檔名 (例如：16892345.jpg)，避免檔名重複被覆蓋
+        cb(null, Date.now() + path.extname(file.originalname)); 
+    }
+});
+const upload = multer({ storage: storage });
+
+// =========================================
+// 8. 更新個人檔案 (Update Profile)
+// =========================================
+const updateProfile = async (req, res) => {
+    // 這裡的 req.body 放的是文字，req.file 放的是圖片
+    const { userId, username, bio } = req.body; 
+    
+    if (!userId) {
+        return res.status(400).json({ success: false, message: "缺少使用者 ID" });
+    }
+
+    try {
+        let sql;
+        let params;
+
+        // 判斷使用者「有沒有」上傳新圖片
+        if (req.file) {
+            // 有上傳圖片：文字跟圖片網址一起更新
+            const avatarUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+            sql = "UPDATE users SET username = ?, bio = ?, avatar_url = ? WHERE id = ?";
+            params = [username, bio, avatarUrl, userId];
+        } else {
+            // 沒上傳圖片：只更新文字
+            sql = "UPDATE users SET username = ?, bio = ? WHERE id = ?";
+            params = [username, bio, userId];
+        }
+
+        await db.query(sql, params);
+
+        // 把更新後的最新資料撈出來回傳給前端
+        const [users] = await db.query("SELECT id, username, email, bio, avatar_url FROM users WHERE id = ?", [userId]);
+
+        // 🌟 新增防呆：如果資料庫裡根本沒這個 ID，直接回報失敗
+        if (users.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "資料庫找不到該使用者的資料，請嘗試登出後再重新登入！" 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: "個人檔案更新成功！",
+            user: users[0] 
+        });
+
+    } catch (error) {
+        console.error("更新個人檔案發生錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器發生內部錯誤" });
+    }
+};
+// =========================================
+// 9. 產生 2FA 密鑰與 QR Code
+// =========================================
+const generate2FA = async (req, res) => {
+    const { userId, email } = req.query; 
+
+    try {
+        // 產生專屬密鑰，名稱會顯示在 Google Authenticator 上
+        const secret = speakeasy.generateSecret({
+            name: `ISO愛搜查 (${email})`
+        });
+
+        // 先把這把鑰匙偷偷存進資料庫 (此時還沒正式啟用)
+        await db.query("UPDATE users SET two_factor_secret = ? WHERE id = ?", [secret.base32, userId]);
+
+        // 把鑰匙的專屬網址轉成 QR Code 圖片
+        QRCode.toDataURL(secret.otpauth_url, (err, data_url) => {
+            if (err) return res.status(500).json({ success: false, message: "QR Code 產生失敗" });
+            
+            res.json({ 
+                success: true, 
+                qrCodeUrl: data_url // 這是 base64 的圖片網址，前端可以直接放進 <img src="...">
+            });
+        });
+    } catch (error) {
+        console.error("產生 2FA 錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器發生錯誤" });
+    }
+};
+
+// =========================================
+// 10. 驗證並正式啟用 2FA
+// =========================================
+const verify2FA = async (req, res) => {
+    const { userId, token } = req.body;
+
+    try {
+        // 從資料庫拿出剛剛存的密鑰
+        const [users] = await db.query("SELECT two_factor_secret FROM users WHERE id = ?", [userId]);
+        if (users.length === 0 || !users[0].two_factor_secret) {
+            return res.status(400).json({ success: false, message: "找不到 2FA 密鑰，請重新整理頁面重試。" });
+        }
+
+        const secret = users[0].two_factor_secret;
+
+        // 核心驗證：比對使用者輸入的 6 位數是否正確
+        const verified = speakeasy.totp.verify({
+            secret: secret,
+            encoding: 'base32',
+            token: token
+        });
+
+        if (verified) {
+            // 驗證成功！正式啟用 2FA
+            await db.query("UPDATE users SET is_2fa_enabled = TRUE WHERE id = ?", [userId]);
+            res.json({ success: true, message: "2FA 啟用成功！" });
+        } else {
+            res.status(400).json({ success: false, message: "驗證碼錯誤，請重試！" });
+        }
+    } catch (error) {
+        console.error("驗證 2FA 錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器發生錯誤" });
+    }
+};
+
+// =========================================
+// 11. 停用 2FA
+// =========================================
+const disable2FA = async (req, res) => {
+    const { userId } = req.body;
+    try {
+        // 把啟用狀態關閉，並清空密鑰
+        await db.query("UPDATE users SET is_2fa_enabled = FALSE, two_factor_secret = NULL WHERE id = ?", [userId]);
+        res.json({ success: true, message: "2FA 已成功停用。" });
+    } catch (error) {
+        console.error("停用 2FA 錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器發生錯誤" });
+    }
+};
+// =========================================
+// 12. 登入時的 2FA 驗證
+// =========================================
+const verifyLogin2FA = async (req, res) => {
+    const { userId, token } = req.body;
+
+    try {
+        const [users] = await db.query("SELECT * FROM users WHERE id = ?", [userId]);
+        if (users.length === 0) return res.status(400).json({ success: false, message: "找不到使用者" });
+
+        const user = users[0];
+        const verified = speakeasy.totp.verify({
+            secret: user.two_factor_secret,
+            encoding: 'base32',
+            token: token
+        });
+
+        if (verified) {
+            // 驗證成功！正式放行，核發完整登入資料
+            console.log(`使用者 2FA 驗證並登入成功：${user.email}`);
+            const responseData = {
+                id: user.id, username: user.username, email: user.email, 
+                avatar_url: user.avatar_url, bio: user.bio, is_2fa_enabled: true
+            };
+            res.json({ success: true, message: "2FA 驗證成功！", user: responseData });
+        } else {
+            res.status(401).json({ success: false, message: "❌ 驗證碼錯誤，請重試！" });
+        }
+    } catch (error) {
+        console.error("登入 2FA 錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器發生錯誤" });
+    }
+};
+// =========================================
+// 13. 接收並儲存 VR 訓練數據 (給 VR 端點呼叫)
+// =========================================
+const saveVRStats = async (req, res) => {
+    const { userId, physical, social, server, device, legal, duration, blocks } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ success: false, message: "缺少使用者 ID" });
+    }
+
+    try {
+        // 自動計算五項平均分作為本次訓練的綜合得分
+        const totalScore = Math.round((physical + social + server + device + legal) / 5);
+
+        const sql = `INSERT INTO vr_training_records 
+                     (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                     
+        await db.query(sql, [userId, physical, social, server, device, legal, totalScore, duration, blocks]);
+
+        res.json({ 
+            success: true, 
+            message: "🎮 VR 訓練數據已成功同步至系統資料庫！" 
+        });
+
+    } catch (error) {
+        console.error("儲存 VR 數據發生錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器發生錯誤，無法儲存數據" });
+    }
+};
+// 🌟 關鍵：將所有功能匯出給路由使用
 module.exports = {
     registerUser,
     verifyEmail,
     loginUser,
     getUserStats,
     forgotPassword, 
-    resetPassword   
+    resetPassword,  
+    upload,         
+    updateProfile,
+    generate2FA, 
+    verify2FA,    
+    disable2FA ,
+    verifyLogin2FA ,
+    getUserStats, 
+    saveVRStats   
 };

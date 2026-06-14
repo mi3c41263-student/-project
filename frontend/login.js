@@ -1,5 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
     // =========================
+    // 0. 全域 SweetAlert2 (Toast) 科技風設定
+    // =========================
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end', // 從右上角滑出
+        showConfirmButton: false,
+        timer: 3000, // 3秒後自動消失
+        timerProgressBar: true, // 底部進度條
+        background: '#1c2638', // 配合你的深色卡片底色
+        color: '#e2e8f0', // 科技白字體
+        customClass: {
+            popup: 'tech-toast' // 預留給未來如果想加發光邊框用的 class
+        },
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+    });
+
+    // =========================
     // 1. 粒子背景
     // =========================
     if (typeof particlesJS !== "undefined") {
@@ -42,22 +62,19 @@ document.addEventListener("DOMContentLoaded", function () {
             this.classList.toggle("fa-eye-slash");
         });
     }
-const toggleRegPassword = document.getElementById("toggleRegPassword");
+    
+    const toggleRegPassword = document.getElementById("toggleRegPassword");
     const regPasswordInput = document.getElementById("regPassword");
 
     if (toggleRegPassword && regPasswordInput) {
         toggleRegPassword.addEventListener("click", function () {
-            // 1. 判斷當前是否為隱藏狀態
             const isHidden = regPasswordInput.type === "password";
-            
-            // 2. 切換 input 的 type：text <-> password
             regPasswordInput.type = isHidden ? "text" : "password";
-            
-            // 3. 切換圖示：fa-eye (顯示) <-> fa-eye-slash (隱藏)
             this.classList.toggle("fa-eye");
             this.classList.toggle("fa-eye-slash");
         });
     }
+
     // =========================
     // 3. Modal 彈窗開關邏輯
     // =========================
@@ -88,23 +105,24 @@ const toggleRegPassword = document.getElementById("toggleRegPassword");
         if (e.target === forgotPwdModal) closeModal(forgotPwdModal);
     });
 
-    // =========================
-    // 4. 登入邏輯 (連接 Node.js 後端)
+// =========================
+    // 4. 登入邏輯 (連接 Node.js 後端，包含 2FA 攔截機制)
     // =========================
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
         loginForm.addEventListener("submit", async function (e) {
-            e.preventDefault(); // 🛑 這是解決 405 錯誤的關鍵！阻止網頁跳轉
+            e.preventDefault(); 
 
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
 
             if (!username || !password) {
-                alert("請完整輸入帳號與密碼！");
+                Toast.fire({ icon: 'warning', title: '請完整輸入帳號與密碼！' });
                 return;
             }
 
             try {
+                // 1. 發送第一階段登入請求 (帳號密碼驗證)
                 const response = await fetch('http://localhost:3000/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -114,15 +132,67 @@ const toggleRegPassword = document.getElementById("toggleRegPassword");
                 const data = await response.json();
 
                 if (data.success) {
-                    alert("✨ " + data.message);
-                    localStorage.setItem('currentUser', JSON.stringify(data.user)); // 記住身分
-                    window.location.href = "main.html"; // 成功後跳轉儀表板
+                    // 🌟 2. 判斷後端有沒有發出「需要 2FA 驗證」的信號
+                    if (data.require2FA) {
+                        // 彈出輸入 6 位數密碼的視窗
+                        const { value: code, isConfirmed } = await Swal.fire({
+                            title: '<i class="fa-solid fa-shield-halved"></i> 雙重認證',
+                            html: `
+                                <p style="color: #8892b0; margin-bottom: 20px;">請輸入 <strong>Google Authenticator</strong> 上的 6 位數驗證碼</p>
+                                <input type="text" id="login-2fa-input" placeholder="000000" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-weight: bold; width: 80%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid #00a8ff; color: #fff; border-radius: 6px; outline: none;">
+                            `,
+                            background: '#1c2638', color: '#fff',
+                            showCancelButton: true, confirmButtonText: '驗證登入', cancelButtonText: '取消',
+                            confirmButtonColor: '#00a8ff', cancelButtonColor: 'transparent',
+                            customClass: { cancelButton: 'cyber-cancel-btn' },
+                            preConfirm: () => {
+                                const input = document.getElementById('login-2fa-input').value;
+                                if (!input || input.length !== 6 || isNaN(input)) {
+                                    Swal.showValidationMessage('❌ 請輸入有效的 6 位數字驗證碼！');
+                                    return false;
+                                }
+                                return input;
+                            }
+                        });
+
+                        // 如果使用者按下了「驗證登入」
+                        if (isConfirmed) {
+                            try {
+                                // 3. 發送第二階段登入請求 (驗證 6 位數字)
+                                const verifyRes = await fetch('http://localhost:3000/api/login/2fa', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ userId: data.userId, token: code })
+                                });
+                                const verifyData = await verifyRes.json();
+
+                                if (verifyData.success) {
+                                    // ✅ 2FA 驗證成功，正式放行！
+                                    Toast.fire({ icon: 'success', title: '驗證成功！正在載入儀表板...' });
+                                    localStorage.setItem('currentUser', JSON.stringify(verifyData.user));
+                                    setTimeout(() => { window.location.href = "main.html"; }, 1500);
+                                } else {
+                                    // ❌ 6 位數字打錯
+                                    Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: '#1c2638', color: '#fff' });
+                                }
+                            } catch (err) {
+                                Swal.fire({ icon: 'error', title: '錯誤', text: '伺服器連線失敗', background: '#1c2638', color: '#fff' });
+                            }
+                        }
+
+                    } else {
+                        // 🌟 3. 沒有開啟 2FA，一般正常登入 (原本的邏輯)
+                        Toast.fire({ icon: 'success', title: data.message });
+                        localStorage.setItem('currentUser', JSON.stringify(data.user)); 
+                        setTimeout(() => { window.location.href = "main.html"; }, 1500);
+                    }
                 } else {
-                    alert("❌ " + data.message);
+                    // 第一階段帳號密碼就打錯了
+                    Toast.fire({ icon: 'error', title: data.message });
                 }
             } catch (error) {
                 console.error(error);
-                alert("無法連線至後端伺服器！請確認 node server.js 已經啟動。");
+                Toast.fire({ icon: 'error', title: '無法連線至後端伺服器！' });
             }
         });
     }
@@ -133,21 +203,26 @@ const toggleRegPassword = document.getElementById("toggleRegPassword");
     const registerForm = document.getElementById("registerForm");
     if (registerForm) {
         registerForm.addEventListener("submit", async function (e) {
-            e.preventDefault(); // 🛑 阻止網頁跳轉
+            e.preventDefault();
 
             const regUsername = document.getElementById("regUsername").value.trim();
             const regPassword = document.getElementById("regPassword").value.trim();
 
-            // 防呆驗證
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
             if (!emailRegex.test(regUsername)) {
-                alert("❌ 格式錯誤：請輸入有效的電子郵件地址。");
+                Toast.fire({
+                    icon: 'error',
+                    title: '格式錯誤：請輸入有效的電子郵件地址。'
+                });
                 return;
             }
             if (!passwordRegex.test(regPassword)) {
-                alert("❌ 密碼太弱：請設定至少 8 碼，包含大小寫英文字母與數字。");
+                Toast.fire({
+                    icon: 'error',
+                    title: '密碼太弱：請設定至少 8 碼，包含大小寫英文字母與數字。'
+                });
                 return;
             }
 
@@ -161,20 +236,34 @@ const toggleRegPassword = document.getElementById("toggleRegPassword");
                 const data = await response.json();
 
                 if (data.success) {
-                    alert("✨ " + data.message);
-                    registerForm.reset();
-                    closeModal(registerModal);
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.message
+                    });
+                    
+                    // 延遲關閉表單，讓使用者看清楚成功通知
+                    setTimeout(() => {
+                        registerForm.reset();
+                        closeModal(registerModal);
+                    }, 1500);
+                    
                 } else {
-                    alert("❌ " + data.message);
+                    Toast.fire({
+                        icon: 'error',
+                        title: data.message
+                    });
                 }
             } catch (error) {
                 console.error(error);
-                alert("無法連線至後端伺服器！");
+                Toast.fire({
+                    icon: 'error',
+                    title: '無法連線至後端伺服器！'
+                });
             }
         });
     }
 
-// =========================
+    // =========================
     // 6. 忘記密碼表單送出 (真實連線)
     // =========================
     const forgotPwdForm = document.getElementById("forgotPwdForm");
@@ -182,13 +271,16 @@ const toggleRegPassword = document.getElementById("toggleRegPassword");
         forgotPwdForm.addEventListener("submit", async function (e) {
             e.preventDefault();
             
-            // 抓取你忘記密碼彈窗裡的信箱輸入框 (請確認你的 input id 是什麼，這裡假設是 forgotEmail)
             const email = document.getElementById("forgotEmail").value.trim();
             
             if (!email) {
-                alert("請輸入您的信箱！");
+                Toast.fire({
+                    icon: 'warning',
+                    title: '請輸入您的信箱！'
+                });
                 return;
             }
+            
             try {
                 const response = await fetch('http://localhost:3000/api/forgot-password', {
                     method: 'POST',
@@ -199,14 +291,28 @@ const toggleRegPassword = document.getElementById("toggleRegPassword");
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert("✨ " + data.message);
-                    closeModal(forgotPwdModal);
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.message
+                    });
+                    
+                    // 延遲關閉視窗
+                    setTimeout(() => {
+                        closeModal(forgotPwdModal);
+                    }, 1500);
+                    
                 } else {
-                    alert("❌ " + data.message);
+                    Toast.fire({
+                        icon: 'error',
+                        title: data.message
+                    });
                 }
             } catch (error) {
                 console.error(error);
-                alert("伺服器連線失敗！");
+                Toast.fire({
+                    icon: 'error',
+                    title: '伺服器連線失敗！'
+                });
             }
         });
     }
