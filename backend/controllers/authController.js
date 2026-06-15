@@ -187,7 +187,7 @@ const loginUser = async (req, res) => {
     }
 };
 // =========================================
-// 4. 取得使用者學習成果數據 (動態從資料庫計算)
+// 4. 取得使用者學習成果數據 (雷達圖 + 趨勢圖雙支援)
 // =========================================
 const getUserStats = async (req, res) => {
     const userId = req.query.userId;
@@ -197,32 +197,41 @@ const getUserStats = async (req, res) => {
     }
 
     try {
-        // 🌟 1. 從資料庫加總該用戶的「總時數」與「總攔截次數」
+        // 1. 取得總時數與總攔截次數
         const [totals] = await db.query(
             "SELECT SUM(duration_hours) as totalHours, SUM(blocks_count) as totalBlocks FROM vr_training_records WHERE user_id = ?", 
             [userId]
         );
 
-        // 🌟 2. 撈出該用戶「最近一次」的 VR 訓練各項分數作為雷達圖基底
-        const [latestScore] = await db.query(
-            "SELECT score_physical, score_social, score_server, score_device, score_legal, total_score FROM vr_training_records WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+        // 🌟 2. 撈取「最新 5 次」的訓練紀錄
+        // 注意：用 DESC 是為了抓最新的 5 筆，但畫趨勢圖需要「從舊到新」，等一下會在 JS 裡反轉
+        const [historyScores] = await db.query(
+            "SELECT score_physical, score_social, score_server, score_device, score_legal, total_score FROM vr_training_records WHERE user_id = ? ORDER BY id DESC LIMIT 5",
             [userId]
         );
 
-        const hasData = latestScore.length > 0;
+        // 第 0 筆就是最新的一筆 (給雷達圖用)
+        const latestScore = historyScores.length > 0 ? historyScores[0] : null;
 
-        // 🌟 3. 打包成前端原本就看得懂的格式
+        // 把陣列反轉成「時間由舊到新」 (給折線圖用)
+        const chronologicalScores = historyScores.reverse();
+
+        // 3. 打包成前端需要的格式
         const stats = {
-            radarScores: hasData ? [
-                latestScore[0].score_physical,
-                latestScore[0].score_social,
-                latestScore[0].score_server,
-                latestScore[0].score_device,
-                latestScore[0].score_legal
-            ] : [0, 0, 0, 0, 0], // 沒玩過就全部 0 分
-            totalScore: hasData ? latestScore[0].total_score : 0,
+            radarScores: latestScore ? [
+                latestScore.score_physical,
+                latestScore.score_social,
+                latestScore.score_server,
+                latestScore.score_device,
+                latestScore.score_legal
+            ] : [0, 0, 0, 0, 0],
+            totalScore: latestScore ? latestScore.total_score : 0,
             trainingHours: totals[0].totalHours ? parseFloat(totals[0].totalHours) : 0.0,
-            blocks: totals[0].totalBlocks ? parseInt(totals[0].totalBlocks) : 0
+            blocks: totals[0].totalBlocks ? parseInt(totals[0].totalBlocks) : 0,
+            
+            // 🌟 新增：專門給趨勢圖的數據
+            trendLabels: chronologicalScores.map((_, index) => `第 ${index + 1} 次`),
+            trendData: chronologicalScores.map(item => item.total_score)
         };
 
         res.json({ 
@@ -563,6 +572,25 @@ const changePassword = async (req, res) => {
         res.status(500).json({ success: false, message: "伺服器發生內部錯誤" });
     }
 };
+// =========================================
+// 15. 刪除帳號 (Delete Account)
+// =========================================
+const deleteAccount = async (req, res) => {
+    const { userId } = req.body;
+
+    try {
+        // 1. 刪除該用戶相關的 VR 訓練紀錄 (避免外鍵關聯錯誤)
+        await db.query("DELETE FROM vr_training_records WHERE user_id = ?", [userId]);
+        
+        // 2. 刪除使用者主資料
+        await db.query("DELETE FROM users WHERE id = ?", [userId]);
+
+        res.json({ success: true, message: "帳號與所有數據已永久刪除。" });
+    } catch (error) {
+        console.error("刪除帳號失敗:", error);
+        res.status(500).json({ success: false, message: "刪除失敗，請稍後再試。" });
+    }
+};
 // 🌟 關鍵：將所有功能匯出給路由使用
 module.exports = {
     registerUser,
@@ -579,5 +607,6 @@ module.exports = {
     verifyLogin2FA ,
     getUserStats, 
     saveVRStats ,
-    changePassword  
+    changePassword,
+    deleteAccount   
 };

@@ -26,4 +26,5 @@ router.post('/login/2fa', authController.verifyLogin2FA);
 router.post('/stats/save', authController.saveVRStats);
 // --- 更改密碼路徑 ---
 router.post('/change-password', authController.changePassword);
+router.post('/delete-account', authController.deleteAccount);
 module.exports = router;
