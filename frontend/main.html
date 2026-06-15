@@ -383,34 +383,45 @@
                         </div>
                     </div>
 
-                    <div id="tab-account" class="setting-panel">
-                        <h3 data-i18n="set-acc-title">個人帳號與安全性設定</h3>
-                        
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h4 data-i18n="set-pwd">更改密碼</h4>
-                                <p>強制要求密碼複雜度（包含大小寫、數字與特殊符號）。</p>
-                            </div>
-                            <button id="openChangePwdBtn" style="padding: 8px 20px; border-radius: 6px; border: 1px solid #00a8ff; background: transparent; color: #00a8ff; font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;" onmouseover="this.style.backgroundColor='#00a8ff'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#00a8ff';">
-                          <i class="fa-solid fa-key"></i> 修改密碼
-                        </button>
-                        </div>
-                        
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h4 data-i18n="set-2fa">雙重認證 (2FA)</h4>
-                                <p>綁定 Google Authenticator 或信箱驗證，提升帳號防護層級。</p>
-                            </div>
-                            <label class="toggle-switch"><input type="checkbox" id="toggle2FA"><span class="slider"></span></label>
-                        </div>
-                        <div class="setting-item" style="margin-top: 40px; border-top: 1px solid #444; padding-top: 20px;">
-                        <div class="setting-info">
-                          <h4 style="color: #ff4757;">刪除帳號</h4>
-                        <p>刪除帳號後，您所有的學習歷程與數據將永久消失，無法復原。</p>
-                            </div>
-                        <button id="deleteAccountBtn" style="background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">永久刪除帳號</button>
-                        </div>
-                    </div>
+                  <div id="tab-account" class="setting-panel">
+    <h3 data-i18n="set-acc-title">個人帳號與安全性設定</h3>
+    
+    <div class="setting-item">
+        <div class="setting-info">
+            <h4 data-i18n="set-pwd">更改密碼</h4>
+            <p>強制要求密碼複雜度（包含大小寫、數字與特殊符號）。</p>
+        </div>
+        <button id="openChangePwdBtn" style="padding: 8px 20px; border-radius: 6px; border: 1px solid #00a8ff; background: transparent; color: #00a8ff; font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;" onmouseover="this.style.backgroundColor='#00a8ff'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#00a8ff';">
+            <i class="fa-solid fa-key"></i> 修改密碼
+        </button>
+    </div>
+    
+    <div class="setting-item">
+        <div class="setting-info">
+            <h4 data-i18n="set-2fa">雙重認證 (2FA)</h4>
+            <p>綁定 Google Authenticator 或信箱驗證，提升帳號防護層級。</p>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="toggle2FA"><span class="slider"></span></label>
+    </div>
+
+    <div class="setting-item" style="border-top: 1px solid rgba(0, 168, 255, 0.2); padding-top: 20px; margin-top: 20px;">
+        <div class="setting-info">
+            <h4 style="color: #00a8ff;"><i class="fa-solid fa-fingerprint"></i> 生物辨識快捷登入</h4>
+            <p>綁定本裝置的指紋或 Windows Hello，未來登入免輸密碼。</p>
+        </div>
+        <button id="bindPasskeyBtn" style="background: rgba(0, 168, 255, 0.1); color: #00a8ff; border: 1px solid #00a8ff; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s;" onmouseover="this.style.background='#00a8ff'; this.style.color='#000';" onmouseout="this.style.background='rgba(0, 168, 255, 0.1)'; this.style.color='#00a8ff';">
+            立即綁定
+        </button>
+    </div>
+    
+    <div class="setting-item" style="margin-top: 30px; border-top: 1px solid #444; padding-top: 20px;">
+        <div class="setting-info">
+            <h4 style="color: #ff4757;">刪除帳號</h4>
+            <p>刪除帳號後，您所有的學習歷程與數據將永久消失，無法復原。</p>
+        </div>
+        <button id="deleteAccountBtn" style="background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">永久刪除帳號</button>
+    </div>
+</div>
 
                     <div id="tab-pref" class="setting-panel">
                         <h3 data-i18n="set-pref-title">系統偏好設定</h3>
@@ -579,6 +590,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
     <script src="main.js"></script>
 
 </body>

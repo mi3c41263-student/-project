@@ -1,5 +1,6 @@
+
+const API_BASE_URL = 'http://localhost:3000';
 document.addEventListener('DOMContentLoaded', () => {
-    
     // =========================================
     // 1. 即時系統時鐘 (SOC Dashboard 風格)
     // =========================================
@@ -20,13 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(updateClock, 1000);
         updateClock();
     }
-
     // =========================================
     // 2. 終端機打字機特效
     // =========================================
     const headerElement = document.getElementById('typingHeader');
     const textElement = document.getElementById('typingText');
-    
     if (headerElement && textElement) {
         const headerText = "歡迎登入 ISO愛搜查 系統 _";
         const bodyText = "系統初始化完成。請從左側導覽列選擇您的任務：您可以啟動全新的 VR 沉浸式訓練，或是檢視您近期的學習筆記與防禦成果分析。";
@@ -53,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         setTimeout(typeHeader, 500);
     }
-
     // =========================================
     // 3. 側邊選單與主頁面平滑切換邏輯
     // =========================================
@@ -129,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === noteModal) noteModal.classList.remove('show');
         });
     }
-
     // =========================================
     // 5. 學習筆記：關鍵字搜尋與標籤過濾功能
     // =========================================
@@ -176,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
     // =========================================
     // 6. 系統設定視窗 (Settings Modal) 邏輯
     // =========================================
@@ -208,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
   // =========================================
-    // 7. 即時翻譯引擎 (僅保留中、英文版)
+    // 7. 即時翻譯引擎 
     // =========================================
     const i18nDictionary = {
         'zh-TW': {
@@ -250,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'm-btn-edit': '<i class="fa-solid fa-pen-to-square"></i> Edit Report', 'm-btn-export': '<i class="fa-solid fa-file-export"></i> Export PDF'
         }
     };
-
     // 監聽下拉選單切換
     document.body.addEventListener('change', function(e) {
         if (e.target.id === 'langSelect') {
@@ -271,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
-
   // =========================================
     // 8. 頁面載入時：更新左下角使用者資訊 & 個人檔案設定
     // =========================================
@@ -296,8 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sidebarAvatar.innerHTML = `<img src="${user.avatar_url}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
             }
         }
-
-        // 3. 🌟 預先填入「系統設定」裡的個人檔案表單
+        // 3. 預先填入「系統設定」裡的個人檔案表單
         const profileNameInput = document.getElementById('profileName');
         const profileBioInput = document.getElementById('profileBio');
         const avatarPreview = document.getElementById('avatarPreview');
@@ -308,13 +301,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (avatarPreview && user.avatar_url) {
             avatarPreview.src = user.avatar_url;
         }
-
     } else {
         // 如果沒有登入紀錄，就把他踢回登入頁面
         // alert("請先登入系統！");
         // window.location.href = "login.html";
     }
-
     // =========================================
     // 9. 登出系統邏輯
     // =========================================
@@ -338,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeNcrModalBtn = document.getElementById('closeNcrModal');
     const cancelNcrBtn = document.getElementById('cancelNcrBtn');
     const ncrForm = document.getElementById('ncrForm');
-
     // 開啟按鈕
     if (addNcrBtn) {
         addNcrBtn.addEventListener('click', () => {
@@ -399,9 +389,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalBtnText = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 PDF...';
                 submitBtn.disabled = true;
-// ✨ 終極修復：把模板拉回畫面，並強制解除隱藏！
+//  終極修復：把模板拉回畫面，並強制解除隱藏！
                 const element = document.getElementById('pdfReportTemplate');
-                element.style.display = 'block'; // 👈 關鍵 1：強制顯示出來
+                element.style.display = 'block'; 
                 element.style.position = 'absolute';
                 element.style.left = '0px';
                 element.style.top = '0px';
@@ -415,22 +405,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
                 };
 
-                // 👈 關鍵 2：給瀏覽器 0.1 秒的時間把畫面渲染出來再拍照
+                //  關鍵 2：給瀏覽器 0.1 秒的時間把畫面渲染出來再拍照
                 setTimeout(async () => {
                     await html2pdf().set(opt).from(element).save();
                     
-                    // ✨ 拍完照後，立刻把它隱藏回去
+                    // 拍完照後，立刻把它隱藏回去
                     element.style.display = 'none'; 
                     element.style.left = '-9999px';
 
-                    alert("✅ 報告已成功匯出 PDF！");
+                    alert(" 報告已成功匯出 PDF！");
                     closeNcr();
 
                     submitBtn.innerHTML = originalBtnText;
                     submitBtn.disabled = false;
                 }, 100);
             } catch (error) {
-                console.error("❌ PDF 生成失敗:", error);
+                console.error(" PDF 生成失敗:", error);
                 alert("生成 PDF 時發生錯誤！");
             }
         });
@@ -478,15 +468,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
                 };
 
-                // 👈 關鍵 2：稍微等一下再拍
+                //  關鍵 2：稍微等一下再拍
                 setTimeout(async () => {
                     await html2pdf().set(opt).from(element).save();
                     
-                    // ✨ 拍完照後推回畫面外並隱藏
+                    //  拍完照後推回畫面外並隱藏
                     element.style.display = 'none';
                     element.style.left = '-9999px';
 
-                    alert("✅ 歷史筆記已成功匯出為 PDF 稽核報告！");
+                    alert(" 歷史筆記已成功匯出為 PDF 稽核報告！");
 
                     this.innerHTML = originalText;
                     this.disabled = false;
@@ -509,7 +499,7 @@ window.initRadarChart = async function() {
 
     try {
         // 🌟 1. 向 Node.js 後端請求該用戶的成績數據
-        const response = await fetch(`http://localhost:3000/api/stats?userId=${user.id}`);
+        const response = await fetch(`${API_BASE_URL}/api/stats?userId=${user.id}`);
         const resData = await response.json();
 
         if (resData.success) {
@@ -647,7 +637,7 @@ window.initRadarChart = async function() {
             radarContainer.style.display = 'block';
             lineContainer.style.display = 'none';
 
-            // 🌟 魔法指令：叫雷達圖重新適應畫面大小
+            //  叫雷達圖重新適應畫面大小
             if (window.myRadarChart) {
                 window.myRadarChart.resize();
             }
@@ -664,7 +654,7 @@ window.initRadarChart = async function() {
             lineContainer.style.display = 'block';
             radarContainer.style.display = 'none';
 
-            // 🌟 魔法指令：叫折線圖重新計算並長出畫面！
+            // 叫折線圖重新計算並長出畫面！
             if (window.myTrendChart) {
                 window.myTrendChart.resize();
             }
@@ -711,7 +701,7 @@ window.initRadarChart = async function() {
             const newName = document.getElementById('profileName').value.trim();
             const newBio = document.getElementById('profileBio').value.trim();
             
-            // 🌟 關鍵修復 1：先去 LocalStorage 把目前的登入者抓出來
+            //  關鍵修復 1：先去 LocalStorage 把目前的登入者抓出來
             const currentUserStr = localStorage.getItem('currentUser');
             if (!currentUserStr) {
                 alert("找不到登入資訊，請重新登入！");
@@ -727,14 +717,14 @@ window.initRadarChart = async function() {
             try {
                 const formData = new FormData();
                 
-                // 🌟 關鍵修復 2：把 userId 塞進包裹裡，讓後端知道是誰要更新！
+                // 關鍵修復 2：把 userId 塞進包裹裡，讓後端知道是誰要更新！
                 formData.append('userId', user.id); 
                 
                 formData.append('username', newName);
                 formData.append('bio', newBio);
                 if(avatarInput.files[0]) formData.append('avatar', avatarInput.files[0]);
 
-                const response = await fetch('http://localhost:3000/api/update-profile', {
+                const response = await fetch(`${API_BASE_URL}/api/update-profile`, {
                     method: 'POST',
                     body: formData // 注意：使用 FormData 時不用設定 Content-Type
                 });
@@ -768,10 +758,10 @@ window.initRadarChart = async function() {
                     alert("更新失敗：" + data.message);
                 }
 } catch (error) {
-                // 🌟 讓瀏覽器印出真正的紅字錯誤
+                //  讓瀏覽器印出真正的紅字錯誤
                 console.error("儲存失敗的詳細原因:", error);
                 
-                // 🌟 讓彈跳視窗顯示真正的 JS 錯誤，而不是騙人說伺服器連線失敗
+                //  讓彈跳視窗顯示真正的 JS 錯誤，而不是騙人說伺服器連線失敗
                 alert("網頁執行發生錯誤：" + error.message);
                 
             } finally {
@@ -781,7 +771,7 @@ window.initRadarChart = async function() {
         });
     }
    // =========================================
-    // 14. 雙重認證 (2FA) 開關介面邏輯 (真實連線版)
+    // 14. 雙重認證 (2FA) 開關介面邏輯 
     // =========================================
     const toggle2FA = document.getElementById('toggle2FA');
     
@@ -809,7 +799,7 @@ window.initRadarChart = async function() {
             const isChecked = e.target.checked;
 
             if (isChecked) {
-                // 🔘 狀態：使用者想「開啟」2FA
+                // 狀態：使用者想「開啟」2FA
                 try {
                     // 1. 顯示載入中動畫
                     Swal.fire({
@@ -819,7 +809,7 @@ window.initRadarChart = async function() {
                     });
 
                     // 2. 向 Node.js 請求真實的 QR Code
-                    const res = await fetch(`http://localhost:3000/api/2fa/generate?userId=${user.id}&email=${user.email}`);
+                    const res = await fetch(`${API_BASE_URL}/api/2fa/generate?userId=${user.id}&email=${user.email}`);
                     const data = await res.json();
 
                     if (!data.success) throw new Error(data.message);
@@ -843,7 +833,7 @@ window.initRadarChart = async function() {
                         preConfirm: () => {
                             const input = document.getElementById('swal-input-2fa').value;
                             if (!input || input.length !== 6 || isNaN(input)) {
-                                Swal.showValidationMessage('❌ 請輸入有效的 6 位數字驗證碼！');
+                                Swal.showValidationMessage(' 請輸入有效的 6 位數字驗證碼！');
                                 return false;
                             }
                             return input;
@@ -852,7 +842,7 @@ window.initRadarChart = async function() {
 
                     if (isConfirmed) {
                         // 4. 把使用者輸入的 6 位數，丟給 Node.js 進行嚴格比對
-                        const verifyRes = await fetch('http://localhost:3000/api/2fa/verify', {
+                        const verifyRes = await fetch(`${API_BASE_URL}/api/2fa/verify`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ userId: user.id, token: verificationCode })
@@ -890,7 +880,7 @@ window.initRadarChart = async function() {
                 if (isConfirmed) {
                     // 向 Node.js 發送停用請求
                     try {
-                        const disableRes = await fetch('http://localhost:3000/api/2fa/disable', {
+                        const disableRes = await fetch(`${API_BASE_URL}/api/2fa/disable`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ userId: user.id })
@@ -910,7 +900,7 @@ window.initRadarChart = async function() {
                         e.target.checked = true;
                     }
                 } else {
-                    e.target.checked = true; // 反悔，保持開啟
+                    e.target.checked = true; 
                 }
             }
         });
@@ -987,16 +977,16 @@ window.initRadarChart = async function() {
                     const conf = document.getElementById('swal-conf-pwd').value;
 
                     if (!curr || !newPwd || !conf) {
-                        Swal.showValidationMessage('❌ 請填寫所有密碼欄位！');
+                        Swal.showValidationMessage(' 請填寫所有密碼欄位！');
                         return false;
                     }
                     if (newPwd !== conf) {
-                        Swal.showValidationMessage('❌ 兩次新密碼輸入不一致！');
+                        Swal.showValidationMessage(' 兩次新密碼輸入不一致！');
                         return false;
                     }
                     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
                     if (!passwordRegex.test(newPwd)) {
-                        Swal.showValidationMessage('❌ 密碼強度不足 (需8碼，含大小寫英文字母與數字)！');
+                        Swal.showValidationMessage(' 密碼強度不足 (需8碼，含大小寫英文字母與數字)！');
                         return false;
                     }
                     return { currentPassword: curr, newPassword: newPwd };
@@ -1011,7 +1001,7 @@ window.initRadarChart = async function() {
                         didOpen: () => Swal.showLoading()
                     });
 
-                    const response = await fetch('http://localhost:3000/api/change-password', {
+                    const response = await fetch(`${API_BASE_URL}/api/change-password`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -1123,7 +1113,7 @@ window.initRadarChart = async function() {
 
 // 用來存放「這一回合被抽中」的 10 道題目與測驗狀態
     let currentRoundQuestions = [];
-    let isReviewMode = false; // 🌟 新增：用來判斷現在是不是「錯題回顧」模式
+    let isReviewMode = false; //  用來判斷現在是不是「錯題回顧」模式
 
     // 🎯 2. 核心演算法：隨機抽題 (Fisher-Yates Shuffle)
     function generateQuiz(quizCount = 10) {
@@ -1180,13 +1170,13 @@ window.initRadarChart = async function() {
         });
     }
 
-    // 🎯 4. 動態計分、錯題回顧與對答案邏輯
+    //  4. 動態計分、錯題回顧與對答案邏輯
     const quizForm = document.getElementById('quizForm');
     if (quizForm) {
         quizForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // 🌟 如果已經在「錯題回顧」模式，按下按鈕代表要重新測驗
+            //  如果已經在「錯題回顧」模式，按下按鈕代表要重新測驗
             if (isReviewMode) {
                 generateQuiz(10);
                 window.scrollTo({ top: 0, behavior: 'smooth' }); // 自動滾回最上面
@@ -1213,7 +1203,7 @@ window.initRadarChart = async function() {
                 return;
             }
 
-            // 🌟 開始結算並標示錯題
+            //  開始結算並標示錯題
             currentRoundQuestions.forEach(item => {
                 const userAnswer = formData.get(`dynamic_q_${item.id}`);
                 // 找出這題對應的 UI 區塊
@@ -1270,8 +1260,8 @@ window.initRadarChart = async function() {
             if (score === 100) {
                 Swal.fire({
                     icon: 'success', 
-                    title: '滿分通過！🏆',
-                    text: '太厲害了！您已經完全掌握了防護核心精髓。恭喜您解鎖專屬的培訓合格證書！',
+                    title: '滿分通過！',
+                    text: '太厲害了！您完全掌握了防護核心精髓。恭喜您解鎖專屬的合格證書！',
                     background: '#1c2638', color: '#fff', 
                     showCancelButton: true,
                     confirmButtonColor: '#00a8ff',
@@ -1337,7 +1327,7 @@ window.initRadarChart = async function() {
                     });
 
                     // 呼叫後端 API
-                    const res = await fetch('http://localhost:3000/api/delete-account', {
+                    const res = await fetch(`${API_BASE_URL}/api/delete-account`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ userId: user.id })
@@ -1368,7 +1358,7 @@ window.initRadarChart = async function() {
         });
     }
 // =========================================
-    // 🌟 隱藏絕技：產生數位資安培訓證書 (相片版 - 強化防呆)
+    //  產生數位資安培訓證書 
     // =========================================
     function generateCertificateImage() {
         // 1. 抓取目前登入者的名稱與今天的日期
@@ -1441,5 +1431,72 @@ window.initRadarChart = async function() {
                 });
             }
         }, 500);
+    }
+    // =========================================
+    // 🌟 隱藏絕技：綁定指紋快捷登入 (WebAuthn Registration)
+    // =========================================
+    const bindPasskeyBtn = document.getElementById('bindPasskeyBtn');
+    
+    if (bindPasskeyBtn) {
+        bindPasskeyBtn.addEventListener('click', async () => {
+            // 確認套件有載入
+            if (typeof SimpleWebAuthnBrowser === 'undefined') {
+                Swal.fire({ icon: 'error', title: '載入失敗', text: '請確認網路連線。', background: '#1c2638', color: '#fff' });
+                return;
+            }
+
+            const { startRegistration } = SimpleWebAuthnBrowser;
+            const userStr = localStorage.getItem('currentUser');
+            
+            if (!userStr) {
+                Swal.fire({ icon: 'warning', title: '請先登入', background: '#1c2638', color: '#fff' });
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            const email = user.email; // 確保你的 localStorage 裡面有存 email 喔！
+
+            try {
+                // 1. 向後端要註冊規格
+                const optionsRes = await fetch(`${API_BASE_URL}/api/passkey/register-options?email=${email}`);
+                const options = await optionsRes.json();
+
+                if (!options.success) throw new Error(options.message);
+
+                // 2. 喚起作業系統原生指紋掃描
+                Swal.fire({ 
+                    title: '準備綁定...', 
+                    html: '請根據系統提示，輕觸指紋感應器。',
+                    background: '#1c2638', color: '#fff', 
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading() 
+                });
+
+                const attResp = await startRegistration(options.data);
+
+                // 3. 把採集到的公鑰傳回後端
+                const verifyRes = await fetch(`${API_BASE_URL}/api/passkey/register-verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, attResp })
+                });
+
+                const verifyData = await verifyRes.json();
+
+                if (verifyData.success) {
+                    Swal.fire({ icon: 'success', title: '指紋綁定成功！', text: '下次登入時即可使用快捷登入。', background: '#1c2638', color: '#fff', confirmButtonColor: '#00a8ff' });
+                } else {
+                    throw new Error(verifyData.message);
+                }
+
+            } catch (error) {
+                console.error(error);
+                let errorMsg = error.message === "The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client." 
+                    ? "未成功感應指紋或操作已取消。" 
+                    : error.message;
+
+                Swal.fire({ icon: 'error', title: '綁定失敗', text: errorMsg, background: '#1c2638', color: '#fff', confirmButtonColor: '#00a8ff' });
+            }
+        });
     }
 });

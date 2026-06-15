@@ -13,7 +13,6 @@
 body {
     height: 100vh;
     display: flex;
-    /* 拿掉干擾的藍色，換成極致的曜石黑、炭灰與深邃的午夜色 */
     background: linear-gradient(-45deg, #050505, #13151a, #1c1e26, #08090a);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
@@ -102,7 +101,6 @@ body {
     max-width: 280px;
     display: block;
     margin-bottom: 20px;
-    /* 魔法在這裡：增加 1.5 倍飽和度、1.1 倍對比，並加上雙層立體光暈 */
     filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 15px rgba(0, 168, 255, 0.8)) drop-shadow(0 0 30px rgba(0, 102, 204, 0.5));
     animation: logoPulse 4s infinite alternate;
 }
@@ -112,7 +110,7 @@ body {
     }
     100% { 
         /* 呼吸到最亮時，光暈擴散範圍變大 */
-        filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 25px rgba(0, 168, 255, 1)) drop-shadow(0 0 45px rgba(0, 102, 204, 0.7)); 
+        filter: saturate(1.5) contrast(1.1) drop-shadow(0 0 30px rgba(0, 168, 255, 1)) drop-shadow(0 0 45px rgba(0, 102, 204, 0.7)); 
     }
 }
 

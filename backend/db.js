@@ -5,7 +5,7 @@ const mysql = require('mysql2');
 // =========================================
 // 注意：請確認以下的 host, user, password 符合你的 MySQL 本地端設定
 const pool = mysql.createPool({
-    host: 'localhost',       // 資料庫伺服器位址 (通常本地開發是 localhost)
+    host: '127.0.0.1',       // 資料庫伺服器位址 
     user: 'root',            // MySQL 登入帳號 (XAMPP 或預設通常是 root)
     password: '123456',            // MySQL 登入密碼 (XAMPP 預設為空字串，如果有設定請填入)
     database: 'my_app',      // 你建立的資料庫名稱 (根據你提供的 SQL 檔，名稱是 my_app)
