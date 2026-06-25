@@ -31,3 +31,5 @@ secrets.json
 config.json
 *.slnx
 
+
+_ScriptDuplicateBackup/
