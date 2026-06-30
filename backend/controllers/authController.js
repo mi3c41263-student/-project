@@ -100,7 +100,7 @@ const verifyEmail = async (req, res) => {
         const [users] = await db.query(sql, [token]);
 
         if (users.length === 0) {
-            return res.status(400).send("<h2>❌ 驗證碼無效或已過期。</h2>");
+            return res.status(400).send("<h2>驗證碼無效或已過期。</h2>");
         }
 
         // 把 is_verified 改成 1，並清空 token
@@ -110,7 +110,7 @@ const verifyEmail = async (req, res) => {
         // 🌟 這裡修改：把按鈕的 <a> 連結改成你前端 Live Server 的完整網址
         res.send(`
             <div style="text-align: center; margin-top: 50px; font-family: sans-serif;">
-                <h2 style="color: green;">✅ 帳號驗證成功！</h2>
+                <h2 style="color: green;"> 帳號驗證成功！</h2>
                 <p>您的信箱已成功開通，現在可以回到首頁登入了。</p>
                 <a href="http://127.0.0.1:5500/frontend/login.html" style="padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">前往登入頁面</a>
             </div>
@@ -144,7 +144,7 @@ const loginUser = async (req, res) => {
 
             // 🛡️ 新增防呆：如果資料庫裡這個人根本沒密碼，直接擋下！
             if (!dbPassword) {
-                return res.status(401).json({ success: false, message: "❌ 您的帳號資料異常（無密碼紀錄），請重新註冊一組新帳號！" });
+                return res.status(401).json({ success: false, message: " 您的帳號資料異常（無密碼紀錄），請重新註冊一組新帳號！" });
             }
 
             // 2. 比對「登入密碼」(絕對要確保這裡是 dbPassword)
@@ -153,7 +153,7 @@ const loginUser = async (req, res) => {
             if (isMatch) {
                 // 3. 檢查信箱驗證
                 if (!user.is_verified) {
-                    return res.status(403).json({ success: false, message: "❌ 您的帳號尚未驗證！請至信箱點擊驗證連結。" });
+                    return res.status(403).json({ success: false, message: " 您的帳號尚未驗證！請至信箱點擊驗證連結。" });
                 }
 
                 // 4. 檢查是否有開啟 2FA 攔截
@@ -174,12 +174,12 @@ const loginUser = async (req, res) => {
                     is_2fa_enabled: (user.is_2fa_enabled === 1 || user.is_2fa_enabled === true) 
                 };
 
-                res.json({ success: true, message: "登入成功！正在載入儀表板...", user: responseData });
+                res.json({ success: true, message: "登入成功！正在載入頁面...", user: responseData });
             } else {
-                res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
+                res.status(401).json({ success: false, message: " 帳號或密碼錯誤" });
             }
         } else {
-            res.status(401).json({ success: false, message: "❌ 帳號或密碼錯誤" });
+            res.status(401).json({ success: false, message: " 帳號或密碼錯誤" });
         }
     } catch (error) {
         console.error("登入伺服器錯誤:", error);
@@ -490,7 +490,7 @@ const verifyLogin2FA = async (req, res) => {
             };
             res.json({ success: true, message: "2FA 驗證成功！", user: responseData });
         } else {
-            res.status(401).json({ success: false, message: "❌ 驗證碼錯誤，請重試！" });
+            res.status(401).json({ success: false, message: " 驗證碼錯誤，請重試！" });
         }
     } catch (error) {
         console.error("登入 2FA 錯誤:", error);
@@ -551,13 +551,13 @@ const changePassword = async (req, res) => {
         console.log("👉 [修改密碼測試] 資料庫撈出的舊密碼:", dbPassword);
 
         if (!dbPassword) {
-            return res.status(400).json({ success: false, message: "❌ 您的帳號沒有設定密碼，無法修改！" });
+            return res.status(400).json({ success: false, message: " 您的帳號沒有設定密碼，無法修改！" });
         }
 
         // 比對舊密碼
         const isMatch = await bcrypt.compare(currentPassword, dbPassword);
         if (!isMatch) {
-            return res.status(401).json({ success: false, message: "❌ 目前密碼輸入錯誤，請確認！" });
+            return res.status(401).json({ success: false, message: " 目前密碼輸入錯誤，請確認！" });
         }
 
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
@@ -565,7 +565,7 @@ const changePassword = async (req, res) => {
         // 🌟 終極修復 3：確保更新時寫入正確的欄位名稱 (password_hash)
         await db.query("UPDATE users SET password_hash = ? WHERE id = ?", [hashedNewPassword, userId]);
 
-        res.json({ success: true, message: "✅ 密碼修改成功！下次請使用新密碼登入。" });
+        res.json({ success: true, message: "密碼修改成功！下次請使用新密碼登入。" });
 
     } catch (error) {
         console.error("修改密碼錯誤:", error);

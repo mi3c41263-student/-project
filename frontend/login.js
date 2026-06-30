@@ -1,8 +1,7 @@
-
 const API_BASE_URL = 'http://localhost:3000';
 document.addEventListener("DOMContentLoaded", function () {
     // =========================
-    // 0. 全域 SweetAlert2 (Toast) 科技風設定
+    // 0. 全域 SweetAlert2 (Toast) 
     // =========================
     const Toast = Swal.mixin({
         toast: true,
@@ -150,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             preConfirm: () => {
                                 const input = document.getElementById('login-2fa-input').value;
                                 if (!input || input.length !== 6 || isNaN(input)) {
-                                    Swal.showValidationMessage('❌ 請輸入有效的 6 位數字驗證碼！');
+                                    Swal.showValidationMessage('請輸入有效的 6 位數字驗證碼！');
                                     return false;
                                 }
                                 return input;
@@ -170,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                 if (verifyData.success) {
                                     // ✅ 2FA 驗證成功，正式放行！
-                                    Toast.fire({ icon: 'success', title: '驗證成功！正在載入儀表板...' });
+                                    Toast.fire({ icon: 'success', title: '驗證成功！正在載入頁面...' });
                                     localStorage.setItem('currentUser', JSON.stringify(verifyData.user));
                                     setTimeout(() => { window.location.href = "main.html"; }, 1500);
                                 } else {
@@ -318,100 +317,4 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
-    // =========================
-    // 🌟 7. 指紋快捷登入邏輯 (WebAuthn)
-    // =========================
-    const passkeyLoginBtn = document.getElementById('passkeyLoginBtn');
-    if (passkeyLoginBtn) {
-        passkeyLoginBtn.addEventListener('click', async () => {
-            // 確保有正確載入 SimpleWebAuthnBrowser 套件
-            if (typeof SimpleWebAuthnBrowser === 'undefined') {
-                Swal.fire({ icon: 'error', title: '載入失敗', text: '找不到 WebAuthn 套件，請確認網路連線。', background: '#1c2638', color: '#fff' });
-                return;
-            }
-
-            const { startAuthentication } = SimpleWebAuthnBrowser;
-
-            try {
-                // 1. 彈窗詢問使用者帳號
-                const { value: email } = await Swal.fire({
-                    title: '請輸入您的電子信箱',
-                    input: 'email',
-                    inputPlaceholder: 'example@mail.com',
-                    background: '#1c2638', 
-                    color: '#fff', 
-                    confirmButtonColor: '#00a8ff',
-                    cancelButtonColor: 'transparent',
-                    showCancelButton: true,
-                    cancelButtonText: '取消',
-                    customClass: { cancelButton: 'cyber-cancel-btn' }
-                });
-
-                if (!email) return;
-
-                // 2. 向後端索取驗證密鑰規格
-                const optionsRes = await fetch(`${API_BASE_URL}/api/passkey/login-options?email=${email}`);
-                const options = await optionsRes.json();
-
-                if (!options.success) {
-                    throw new Error(options.message);
-                }
-
-                // 3. 提示文字：明確要求使用者感應指紋
-                Swal.fire({ 
-                    title: '請感應指紋...', 
-                    html: '請將手指輕觸裝置的指紋感應器進行安全驗證',
-                    background: '#1c2638', 
-                    color: '#fff', 
-                    allowOutsideClick: false,
-                    didOpen: () => Swal.showLoading() 
-                });
-                
-                // 喚起作業系統原生辨識 (Windows Hello / Mac Touch ID)
-                const asseResp = await startAuthentication(options.data);
-
-                // 4. 將生成的加密憑證傳回後端驗證
-                const verifyRes = await fetch(`${API_BASE_URL}/api/passkey/login-verify`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, asseResp })
-                });
-
-                const verifyResult = await verifyRes.json();
-
-                if (verifyResult.success) {
-                    // 登入成功！
-                    localStorage.setItem('currentUser', JSON.stringify(verifyResult.user));
-                    Swal.fire({ 
-                        icon: 'success', 
-                        title: '指紋辨識成功！', 
-                        background: '#1c2638', 
-                        color: '#fff', 
-                        timer: 1500, 
-                        showConfirmButton: false 
-                    });
-                    setTimeout(() => { window.location.href = "main.html"; }, 1500);
-                } else {
-                    Swal.fire({ icon: 'error', title: '登入失敗', text: verifyResult.message, background: '#1c2638', color: '#fff' });
-                }
-} catch (error) {
-                console.error(error);
-                // 🌟 修改這裡：讓系統顯示真正的錯誤原因，而不是寫死的字串
-                let errorMsg = error.message === "The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client." 
-                    ? "未成功感應指紋或操作已取消。" 
-                    : error.message;
-
-                Swal.fire({ 
-                    icon: 'warning', 
-                    title: '驗證中斷', 
-                    text: errorMsg, // 👈 顯示真實錯誤
-                    background: '#1c2638', 
-                    color: '#fff',
-                    confirmButtonColor: '#00a8ff'
-                });
-            }
-        });
-    }
-
 });

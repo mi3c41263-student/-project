@@ -16,10 +16,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const authRoutes = require('./routes/authRoutes');
 app.use('/api', authRoutes); 
 
-// 🌟 2. 新增：指紋快捷登入 (WebAuthn) 專屬 Router
-const passkeyRoutes = require('./routes/passkeyRoutes');
-app.use('/api/passkey', passkeyRoutes); 
-
 // --- 啟動伺服器 ---
 const PORT = 3000;
 app.listen(PORT, () => {

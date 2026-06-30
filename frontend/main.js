@@ -906,7 +906,7 @@ window.initRadarChart = async function() {
         });
     }
   // =========================================
-    // 15. 登入後更改密碼 (彈窗升級版)
+    // 15. 登入後更改密碼 
     // =========================================
     const openChangePwdBtn = document.getElementById('openChangePwdBtn');
     
@@ -1272,7 +1272,7 @@ window.initRadarChart = async function() {
                 }).then((result) => {
                     if (result.dismiss === Swal.DismissReason.cancel) {
                         // 使用者點擊了「下載榮譽證書相片」
-                        generateCertificateImage(); // 👈 換成新的圖片函數
+                        generateCertificateImage(); 
                     } else {
                         generateQuiz(10); 
                     }
@@ -1431,72 +1431,5 @@ window.initRadarChart = async function() {
                 });
             }
         }, 500);
-    }
-    // =========================================
-    // 🌟 隱藏絕技：綁定指紋快捷登入 (WebAuthn Registration)
-    // =========================================
-    const bindPasskeyBtn = document.getElementById('bindPasskeyBtn');
-    
-    if (bindPasskeyBtn) {
-        bindPasskeyBtn.addEventListener('click', async () => {
-            // 確認套件有載入
-            if (typeof SimpleWebAuthnBrowser === 'undefined') {
-                Swal.fire({ icon: 'error', title: '載入失敗', text: '請確認網路連線。', background: '#1c2638', color: '#fff' });
-                return;
-            }
-
-            const { startRegistration } = SimpleWebAuthnBrowser;
-            const userStr = localStorage.getItem('currentUser');
-            
-            if (!userStr) {
-                Swal.fire({ icon: 'warning', title: '請先登入', background: '#1c2638', color: '#fff' });
-                return;
-            }
-
-            const user = JSON.parse(userStr);
-            const email = user.email; // 確保你的 localStorage 裡面有存 email 喔！
-
-            try {
-                // 1. 向後端要註冊規格
-                const optionsRes = await fetch(`${API_BASE_URL}/api/passkey/register-options?email=${email}`);
-                const options = await optionsRes.json();
-
-                if (!options.success) throw new Error(options.message);
-
-                // 2. 喚起作業系統原生指紋掃描
-                Swal.fire({ 
-                    title: '準備綁定...', 
-                    html: '請根據系統提示，輕觸指紋感應器。',
-                    background: '#1c2638', color: '#fff', 
-                    allowOutsideClick: false,
-                    didOpen: () => Swal.showLoading() 
-                });
-
-                const attResp = await startRegistration(options.data);
-
-                // 3. 把採集到的公鑰傳回後端
-                const verifyRes = await fetch(`${API_BASE_URL}/api/passkey/register-verify`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, attResp })
-                });
-
-                const verifyData = await verifyRes.json();
-
-                if (verifyData.success) {
-                    Swal.fire({ icon: 'success', title: '指紋綁定成功！', text: '下次登入時即可使用快捷登入。', background: '#1c2638', color: '#fff', confirmButtonColor: '#00a8ff' });
-                } else {
-                    throw new Error(verifyData.message);
-                }
-
-            } catch (error) {
-                console.error(error);
-                let errorMsg = error.message === "The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client." 
-                    ? "未成功感應指紋或操作已取消。" 
-                    : error.message;
-
-                Swal.fire({ icon: 'error', title: '綁定失敗', text: errorMsg, background: '#1c2638', color: '#fff', confirmButtonColor: '#00a8ff' });
-            }
-        });
     }
 });
