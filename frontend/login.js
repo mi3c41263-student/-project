@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (data.success) {
-                    // 🌟 2. 判斷後端有沒有發出「需要 2FA 驗證」的信號
+                    //  2. 判斷後端有沒有發出「需要 2FA 驗證」的信號
                     if (data.require2FA) {
                         // 彈出輸入 6 位數密碼的視窗
                         const { value: code, isConfirmed } = await Swal.fire({
@@ -201,6 +201,54 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================
     // 5. 註冊邏輯 (連接 Node.js 後端)
     // =========================
+    
+    // =========================
+    // 密碼強度即時驗證
+    // =========================
+    const regPwdInputNode = document.getElementById("regPassword");
+    const pwdCriteria = document.getElementById("pwdCriteria");
+    
+    if (regPwdInputNode && pwdCriteria) {
+        const ruleLength = document.getElementById("rule-length");
+        const ruleCase = document.getElementById("rule-case");
+        const ruleNumber = document.getElementById("rule-number");
+
+        regPwdInputNode.addEventListener("focus", () => {
+            pwdCriteria.style.display = "block";
+        });
+
+        regPwdInputNode.addEventListener("input", (e) => {
+            const val = e.target.value;
+
+            // 1. 長度 >= 8
+            if (val.length >= 8) {
+                ruleLength.className = "valid";
+                ruleLength.innerHTML = '<i class="fa-solid fa-circle"></i> 至少 8 個字元';
+            } else {
+                ruleLength.className = "invalid";
+                ruleLength.innerHTML = '<i class="fa-solid fa-circle"></i> 至少 8 個字元';
+            }
+
+            // 2. 包含大小寫英文字母
+            if (/[A-Z]/.test(val) && /[a-z]/.test(val)) {
+                ruleCase.className = "valid";
+                ruleCase.innerHTML = '<i class="fa-solid fa-circle"></i> 包含大小寫英文字母';
+            } else {
+                ruleCase.className = "invalid";
+                ruleCase.innerHTML = '<i class="fa-solid fa-circle"></i> 包含大小寫英文字母';
+            }
+
+            // 4. 包含數字
+            if (/\d/.test(val)) {
+                ruleNumber.className = "valid";
+                ruleNumber.innerHTML = '<i class="fa-solid fa-circle"></i> 包含數字';
+            } else {
+                ruleNumber.className = "invalid";
+                ruleNumber.innerHTML = '<i class="fa-solid fa-circle"></i> 包含數字';
+            }
+        });
+    }
+
     const registerForm = document.getElementById("registerForm");
     if (registerForm) {
         registerForm.addEventListener("submit", async function (e) {

@@ -76,6 +76,11 @@
                         <input type="password" id="regPassword" placeholder="至少 8 碼，包含大小寫英文字母與數字" required>
                         <i class="fa-solid fa-eye-slash" id="toggleRegPassword"></i>
                     </div>
+                    <ul id="pwdCriteria" class="pwd-criteria" style="display: none;">
+                        <li id="rule-length" class="invalid"><i class="fa-solid fa-circle"></i> 至少 8 個字元</li>
+                        <li id="rule-case" class="invalid"><i class="fa-solid fa-circle"></i> 包含大小寫英文字母</li>
+                        <li id="rule-number" class="invalid"><i class="fa-solid fa-circle"></i> 包含數字</li>
+                    </ul>
                 </div>
                 <button type="submit" class="btn-login">確認註冊</button>
             </form>

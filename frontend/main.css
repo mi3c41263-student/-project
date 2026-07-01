@@ -865,14 +865,14 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 
 .rule-text h4 {
     color: #e2e8f0;
-    font-size: 1.1rem;
-    margin-bottom: 10px;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
 }
 
 .rule-text p {
     color: var(--text-muted);
-    line-height: 1.6;
-    font-size: 0.95rem;
+    line-height: 1.7;
+    font-size: 1.15rem;
 }
 /* =========================================
    學習成果分析專屬樣式
@@ -1007,12 +1007,7 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
     flex: 1.5;
 }
 
-/* 針對小螢幕的響應式設計 */
-@media (max-width: 768px) {
-    .ncr-layout {
-        flex-direction: column;
-    }
-}
+
 /* =========================================
    個人檔案設定專屬樣式
 ========================================= */
@@ -1140,8 +1135,144 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
     transform: translateY(-2px);
 }
 /* ========================================= */
-/* 🌟 強制提升 SweetAlert2 彈窗與 Toast 的圖層層級 */
+/* 強制提升 SweetAlert2 彈窗與 Toast 的圖層層級 */
 /* ========================================= */
 div.swal2-container {
     z-index: 99999 !important;
+}
+/* ========================================= */
+/* 資安小測驗 翻牌特效 (Quizizz 風格) */
+/* ========================================= */
+.flip-card {
+    background-color: transparent;
+    width: 100%;
+    min-height: 320px;
+    perspective: 3000px;
+    margin-bottom: 25px;
+}
+
+.flip-card-inner {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    transition: transform 0.35s ease-out;
+    transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    grid-area: 1 / 1;
+    width: 100%;
+    min-height: 320px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    padding: 35px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.flip-card-front {
+    background: rgba(26, 38, 57, 0.8);
+    border: 1px solid rgba(0, 168, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.flip-card-back {
+    background: rgba(26, 38, 57, 0.95);
+    border: 1px solid rgba(0, 168, 255, 0.5);
+    transform: rotateY(180deg);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.flip-card-back.correct {
+    border-color: #2ed573;
+    background: rgba(46, 213, 115, 0.15);
+}
+
+.flip-card-back.incorrect {
+    border-color: #ff4757;
+    background: rgba(255, 71, 87, 0.15);
+}
+
+.flip-card-back-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.flip-card-back.correct .flip-card-back-icon {
+    color: #2ed573;
+}
+
+.flip-card-back.incorrect .flip-card-back-icon {
+    color: #ff4757;
+}
+
+.flip-card-back-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.flip-card-back-answer {
+    font-size: 1rem;
+    color: #cbd5e1;
+}
+
+/* ========================================= */
+/* 資安小測驗 選項優化 (Duolingo Style) */
+/* ========================================= */
+.quiz-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 25px;
+}
+
+
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.03);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.2rem;
+    position: relative;
+    text-align: center;
+    font-weight: 500;
+}
+
+.quiz-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 168, 255, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.quiz-radio {
+    display: none; /* 隱藏原本的圓形單選按鈕 */
+}
+
+.quiz-option-text {
+    pointer-events: none; /* 確保點擊可以正確觸發 input */
+    color: var(--text-light);
+}
+
+/* 被點擊瞬間的按壓效果 (雖然馬上翻牌可能看不到，但增添細節) */
+.quiz-option:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }

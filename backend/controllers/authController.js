@@ -62,7 +62,10 @@ const registerUser = async (req, res) => {
         await db.query(insertSql, [displayName, email, hashedPassword, verificationToken]);
 
         // 🌟 新增：準備並寄出驗證信
-        const verificationUrl = `http://localhost:3000/api/verify?token=${verificationToken}`; 
+        const origin = req.headers.origin || 'http://localhost:3000';
+        const host = req.get('host') || 'localhost:3000';
+        const protocol = req.protocol || 'http';
+        const verificationUrl = `${protocol}://${host}/api/verify?token=${verificationToken}`;
         
         const mailOptions = {
             from: 'mi3c41263@gmail.com',
@@ -170,7 +173,7 @@ const loginUser = async (req, res) => {
                 console.log(`使用者成功登入：${email}`);
                 const responseData = {
                     id: user.id, username: user.username, email: user.email, 
-                    avatar_url: user.avatar_url, bio: user.bio, 
+                    avatar_url: user.avatar_url, 
                     is_2fa_enabled: (user.is_2fa_enabled === 1 || user.is_2fa_enabled === true) 
                 };
 
@@ -267,7 +270,8 @@ const forgotPassword = async (req, res) => {
         await db.query(updateSql, [resetToken, expireTime, email]);
 
         // 4. 準備寄信 (這裡要連到你未來準備寫的 reset-password.html 網頁)
-        const resetUrl = `http://127.0.0.1:5500/frontend/reset-password.html?token=${resetToken}`;
+        const origin = req.headers.origin || 'http://127.0.0.1:5500';
+        const resetUrl = `${origin}/frontend/reset-password.html?token=${resetToken}`;
         
         const mailOptions = {
             from: 'mi3c41263@gmail.com',
@@ -339,7 +343,7 @@ const upload = multer({ storage: storage });
 // =========================================
 const updateProfile = async (req, res) => {
     // 這裡的 req.body 放的是文字，req.file 放的是圖片
-    const { userId, username, bio } = req.body; 
+    const { userId, username } = req.body; 
     
     if (!userId) {
         return res.status(400).json({ success: false, message: "缺少使用者 ID" });
@@ -353,18 +357,18 @@ const updateProfile = async (req, res) => {
         if (req.file) {
             // 有上傳圖片：文字跟圖片網址一起更新
             const avatarUrl = `http://localhost:3000/uploads/${req.file.filename}`;
-            sql = "UPDATE users SET username = ?, bio = ?, avatar_url = ? WHERE id = ?";
-            params = [username, bio, avatarUrl, userId];
+            sql = "UPDATE users SET username = ?, avatar_url = ? WHERE id = ?";
+            params = [username, avatarUrl, userId];
         } else {
             // 沒上傳圖片：只更新文字
-            sql = "UPDATE users SET username = ?, bio = ? WHERE id = ?";
-            params = [username, bio, userId];
+            sql = "UPDATE users SET username = ? WHERE id = ?";
+            params = [username, userId];
         }
 
         await db.query(sql, params);
 
         // 把更新後的最新資料撈出來回傳給前端
-        const [users] = await db.query("SELECT id, username, email, bio, avatar_url FROM users WHERE id = ?", [userId]);
+        const [users] = await db.query("SELECT id, username, email, avatar_url FROM users WHERE id = ?", [userId]);
 
         // 🌟 新增防呆：如果資料庫裡根本沒這個 ID，直接回報失敗
         if (users.length === 0) {
@@ -486,7 +490,7 @@ const verifyLogin2FA = async (req, res) => {
             console.log(`使用者 2FA 驗證並登入成功：${user.email}`);
             const responseData = {
                 id: user.id, username: user.username, email: user.email, 
-                avatar_url: user.avatar_url, bio: user.bio, is_2fa_enabled: true
+                avatar_url: user.avatar_url, is_2fa_enabled: true
             };
             res.json({ success: true, message: "2FA 驗證成功！", user: responseData });
         } else {

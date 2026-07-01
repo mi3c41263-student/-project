@@ -45,13 +45,13 @@
         <main class="main-content">
             
             <header class="topbar">
+                
                 <div class="breadcrumb">
                     <h2 id="pageTitle" data-i18n="top-title">學習筆記</h2>
                     <span id="pageSubtitle" class="subtitle" data-i18n="top-subtitle">複習您的資安防禦實務</span>
                 </div>
                 
                 <div class="topbar-actions">
-                    <div id="systemClock" class="system-clock"></div>
                     <button class="action-btn"><i class="fa-regular fa-bell"></i></button>
                     <button class="action-btn" id="settingsBtn"><i class="fa-solid fa-gear"></i></button>
                 </div>
@@ -244,11 +244,7 @@
                         <form id="quizForm" class="quiz-container">
                             <div id="dynamicQuestionsContainer"></div>
 
-                            <div style="text-align: right; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                                <button type="submit" style="padding: 12px 30px; background: var(--primary-cyan); border: none; color: #000; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 0 15px rgba(0, 168, 255, 0.4); transition: transform 0.2s;">
-                                    <i class="fa-solid fa-check-double"></i> 提交答案並結算成績
-                                </button>
-                            </div>
+                            <div style="display:none;"></div>
                         </form>
                     </div>
                 </div>
@@ -330,7 +326,7 @@
             
             <div class="modal-footer-actions">
                 <button class="btn-edit" data-i18n="m-btn-edit"><i class="fa-solid fa-pen-to-square"></i> 編輯報告</button>
-                <button class="btn-delete" data-i18n="m-btn-export"><i class="fa-solid fa-file-export"></i> 匯出 PDF</button>
+                
             </div>
         </div>
     </div>
@@ -370,10 +366,7 @@
                                     <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">顯示名稱 (Display Name)</label>
                                     <input type="text" id="profileName" placeholder="請輸入您想顯示的名稱" style="width: 100%; padding: 10px 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary-cyan)'" onblur="this.style.borderColor='rgba(0, 168, 255, 0.3)'">
                                 </div>
-                                <div>
-                                    <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">個人簡介 (Bio)</label>
-                                    <textarea id="profileBio" rows="4" placeholder="向大家介紹一下你自己，或寫下你的資安座右銘..." style="width: 100%; padding: 10px 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; resize: none; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary-cyan)'" onblur="this.style.borderColor='rgba(0, 168, 255, 0.3)'"></textarea>
-                                </div>
+                                
                                 <div style="text-align: right; margin-top: 10px;">
                                     <button id="saveProfileBtn" style="padding: 10px 20px; background: var(--primary-cyan); border: none; color: #000; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 168, 255, 0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
                                         <i class="fa-solid fa-floppy-disk"></i> 儲存變更
@@ -504,51 +497,7 @@
         </div>
     </div>
 
-    <div id="pdfReportTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; padding: 50px; background-color: white; color: black; font-family: 'Noto Sans TC', sans-serif;">
-        
-        <div style="text-align: center; border-bottom: 2px solid #004080; padding-bottom: 20px; margin-bottom: 30px;">
-            <h1 style="color: #004080; margin: 0; font-size: 28px;">ISO/IEC 27002 資訊安全稽核發現報告</h1>
-            <p style="margin: 5px 0 0 0; color: #555; font-size: 14px;">Non-conformity Report (NCR)</p>
-        </div>
-
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 15px;">
-            <tr>
-                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold; width: 20%;">稽核日期</td>
-                <td style="border: 1px solid #ccc; padding: 10px; width: 30%;" id="pdfDate">2026/03/25</td>
-                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold; width: 20%;">稽核員</td>
-                <td style="border: 1px solid #ccc; padding: 10px; width: 30%;" id="pdfAuditor">測試員 01</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold;">缺失分類</td>
-                <td style="border: 1px solid #ccc; padding: 10px;" id="pdfCategory">-</td>
-                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold;">風險嚴重度</td>
-                <td style="border: 1px solid #ccc; padding: 10px; font-weight: bold;" id="pdfSeverity">-</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #ccc; padding: 10px; background: #f8f9fa; font-weight: bold;">違反條文</td>
-                <td style="border: 1px solid #ccc; padding: 10px;" colspan="3" id="pdfClause">-</td>
-            </tr>
-        </table>
-
-        <h3 style="color: #004080; border-left: 4px solid #00a8ff; padding-left: 10px; margin-bottom: 15px;">一、 客觀事實描述 (Observation)</h3>
-        <div style="border: 1px solid #ccc; padding: 15px; min-height: 100px; margin-bottom: 30px; background: #fafafa; line-height: 1.6;" id="pdfObservation">
-            </div>
-
-        <h3 style="color: #004080; border-left: 4px solid #00a8ff; padding-left: 10px; margin-bottom: 15px;">二、 改善建議 (Corrective Action)</h3>
-        <div style="border: 1px solid #ccc; padding: 15px; min-height: 100px; margin-bottom: 40px; background: #fafafa; line-height: 1.6;" id="pdfAction">
-            </div>
-
-        <div style="display: flex; justify-content: space-between; margin-top: 60px;">
-            <div style="width: 45%; text-align: center;">
-                <div style="border-bottom: 1px solid #000; height: 40px; margin-bottom: 10px;"></div>
-                <p style="margin: 0; color: #333;">稽核員簽名 (Auditor)</p>
-            </div>
-            <div style="width: 45%; text-align: center;">
-                <div style="border-bottom: 1px solid #000; height: 40px; margin-bottom: 10px;"></div>
-                <p style="margin: 0; color: #333;">單位主管簽核 (Manager)</p>
-            </div>
-        </div>
-    </div>
+    
 <div id="certificateTemplate" style="position: absolute; left: -9999px; top: 0; width: 1000px; padding: 60px; background-color: #fff; color: #000; font-family: 'Noto Sans TC', sans-serif; background-image: radial-gradient(circle at center, #ffffff 0%, #f0f4f8 100%); border: 15px solid #004080; outline: 5px solid #00a8ff; outline-offset: -25px;">
         <div style="text-align: center; margin-top: 20px;">
             <i class="fa-solid fa-shield-halved" style="font-size: 50px; color: #00a8ff; margin-bottom: 15px;"></i>
@@ -577,7 +526,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="main.js"></script>

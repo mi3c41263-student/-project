@@ -267,7 +267,7 @@ body {
     padding-right: 40px; 
 }
 
-#togglePassword {
+#togglePassword, #toggleRegPassword {
     position: absolute;
     right: 15px;
     top: 50%;
@@ -278,7 +278,7 @@ body {
     font-size: 1.1rem;
 }
 
-#togglePassword:hover {
+#togglePassword:hover, #toggleRegPassword:hover {
     color: var(--logo-cyan);
 }
 
@@ -418,4 +418,34 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   密碼強度驗證提示
+========================================= */
+.pwd-criteria {
+    list-style: none;
+    margin-top: 10px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.pwd-criteria li {
+    margin-bottom: 6px;
+    color: #ff4757; /* 預設不合格紅燈 */
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pwd-criteria li:last-child {
+    margin-bottom: 0;
+}
+
+.pwd-criteria li.valid {
+    color: #2ed573; /* 合格綠燈 */
 }

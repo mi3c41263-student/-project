@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'm-li2': '<strong>保密協議 (6.6) 漏洞：</strong> 檢查人資部資料發現，部分外包人員的 NDA 還在跑流程，未簽署即接觸內網資源。',
             'm-li3': '<strong>缺乏報告資安事件意識 (6.8)：</strong> 員工點擊釣魚文件附件後，卻因為「忙著趕報告」而未進行通報。',
             'm-p2': '資安主管表示這些發現非常有價值，將針對 these 佐證照片重新檢討訓練計畫。',
-            'm-btn-edit': '<i class="fa-solid fa-pen-to-square"></i> 編輯報告', 'm-btn-export': '<i class="fa-solid fa-file-export"></i> 匯出 PDF'
+            'm-btn-edit': '<i class="fa-solid fa-pen-to-square"></i> 編輯報告'
         },
         'en': {
             'nav-core': 'Core Training', 'nav-vr': '<i class="fa-solid fa-vr-cardboard"></i> VR Simulation', 'nav-manual': '<i class="fa-solid fa-shield-halved"></i> Security Manual', 'nav-history': 'History', 'nav-notes': '<i class="fa-solid fa-book-open"></i> Learning Notes', 'nav-analysis': '<i class="fa-solid fa-chart-pie"></i> Analysis', 'nav-logout': '<i class="fa-solid fa-right-from-bracket"></i> Logout',
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'm-li2': '<strong>NDA Loophole (6.6):</strong> Outsourced personnel accessed internal resources before their NDAs were fully processed.',
             'm-li3': '<strong>Lack of Incident Reporting (6.8):</strong> Employees clicked phishing links but failed to report them due to "being busy with reports".',
             'm-p2': 'The Security Manager stated these findings are valuable and will review the training plan based on these photographic evidence.',
-            'm-btn-edit': '<i class="fa-solid fa-pen-to-square"></i> Edit Report', 'm-btn-export': '<i class="fa-solid fa-file-export"></i> Export PDF'
+            'm-btn-edit': '<i class="fa-solid fa-pen-to-square"></i> Edit Report'
         }
     };
     // 監聽下拉選單切換
@@ -292,12 +292,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // 3. 預先填入「系統設定」裡的個人檔案表單
         const profileNameInput = document.getElementById('profileName');
-        const profileBioInput = document.getElementById('profileBio');
-        const avatarPreview = document.getElementById('avatarPreview');
+                const avatarPreview = document.getElementById('avatarPreview');
 
         if (profileNameInput) profileNameInput.value = user.username || '';
-        if (profileBioInput) profileBioInput.value = user.bio || '';
-        // 讓設定視窗裡的大頭貼預覽也變成使用者的圖片
+                // 讓設定視窗裡的大頭貼預覽也變成使用者的圖片
         if (avatarPreview && user.avatar_url) {
             avatarPreview.src = user.avatar_url;
         }
@@ -377,13 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (severityRadio.value === 'low') { severityText = '低風險 (Low)'; severityColor = '#27ae60'; }
                 }
 
-                document.getElementById('pdfDate').innerText = new Date().toLocaleDateString();
-                document.getElementById('pdfCategory').innerText = categoryText;
-                document.getElementById('pdfClause').innerText = clauseText;
-                document.getElementById('pdfSeverity').innerText = severityText;
-                document.getElementById('pdfSeverity').style.color = severityColor;
-                document.getElementById('pdfObservation').innerHTML = observationText.replace(/\n/g, '<br>');
-                document.getElementById('pdfAction').innerHTML = actionText.replace(/\n/g, '<br>');
+                
 
                 const submitBtn = ncrForm.querySelector('button[type="submit"]');
                 const originalBtnText = submitBtn.innerHTML;
@@ -391,96 +383,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
 //  終極修復：把模板拉回畫面，並強制解除隱藏！
                 const element = document.getElementById('pdfReportTemplate');
+                
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.background = 'rgba(28, 38, 56, 0.95)';
+                overlay.style.zIndex = '99999';
+                overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.color = 'white';
+                overlay.style.fontSize = '24px';
+                overlay.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 15px;"></i> 正在生成 PDF，請稍候...';
+                document.body.appendChild(overlay);
+
                 element.style.display = 'block'; 
                 element.style.position = 'absolute';
                 element.style.left = '0px';
                 element.style.top = '0px';
-                element.style.zIndex = '-9999'; // 藏在最下層不讓使用者看到
-
-                const opt = {
-                    margin: 0,
-                    filename: `ISO稽核報告_${new Date().getTime()}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, scrollY: 0, backgroundColor: '#1c2638' }, // 保持深色底色
-                    jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
-                };
-
-                //  關鍵 2：給瀏覽器 0.1 秒的時間把畫面渲染出來再拍照
-                setTimeout(async () => {
-                    await html2pdf().set(opt).from(element).save();
-                    
-                    // 拍完照後，立刻把它隱藏回去
-                    element.style.display = 'none'; 
-                    element.style.left = '-9999px';
-
-                    alert(" 報告已成功匯出 PDF！");
-                    closeNcr();
-
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                }, 100);
-            } catch (error) {
-                console.error(" PDF 生成失敗:", error);
-                alert("生成 PDF 時發生錯誤！");
-            }
-        });
-    }
-
-    // =========================================
-    // 11. 現有「學習筆記」的匯出 PDF 功能
-    // =========================================
-    const exportOldPdfBtn = document.querySelector('.modal-footer-actions .btn-delete');
-    
-    if (exportOldPdfBtn) {
-        exportOldPdfBtn.addEventListener('click', async function() {
-            try {
-                const modalTitle = document.getElementById('modalTitle').innerText;
-                const modalDate = document.getElementById('modalDate').innerText;
-                const modalCategory = document.getElementById('modalCategory').innerText;
-                const modalBodyHTML = document.querySelector('.note-modal-content .modal-body').innerHTML;
-
-                document.getElementById('pdfDate').innerText = modalDate;
-                document.getElementById('pdfCategory').innerText = modalCategory;
-                document.getElementById('pdfClause').innerText = "多項綜合條文 (6.6, 6.8, 7.2)"; 
-                document.getElementById('pdfSeverity').innerText = "高風險 (High)";
-                document.getElementById('pdfSeverity').style.color = "#e74c3c";
-                
-                document.getElementById('pdfObservation').innerHTML = `<strong>${modalTitle}</strong><br><br>${modalBodyHTML}`;
-                document.getElementById('pdfAction').innerHTML = "建議依據 ISO 27002 規範，重新檢視門禁權限與人員保密協議簽署流程，並加強相關人員的資安認知訓練。";
-
-                const originalText = this.innerHTML;
-                this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 匯出中...';
-                this.disabled = true;
-
-             // ✨ 終極修復：把模板拉回畫面，並強制解除隱藏！
-                const element = document.getElementById('pdfReportTemplate');
-                element.style.display = 'block'; // 👈 關鍵 1：強制顯示
-                element.style.position = 'absolute';
-                element.style.left = '0px';
-                element.style.top = '0px';
-                element.style.zIndex = '-9999';
+                element.style.zIndex = '99998';
 
                 const opt = {
                     margin: 0,
                     filename: `ISO學習筆記_${new Date().getTime()}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, scrollY: 0, backgroundColor: '#1c2638' },
+                    html2canvas: { scale: 2, scrollY: 0, backgroundColor: '#ffffff', useCORS: true },
                     jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
                 };
 
-                //  關鍵 2：稍微等一下再拍
                 setTimeout(async () => {
-                    await html2pdf().set(opt).from(element).save();
+                    try {
+                        await html2pdf().set(opt).from(element).save();
+                    } catch(e) {
+                        console.error(e);
+                    }
                     
-                    //  拍完照後推回畫面外並隱藏
                     element.style.display = 'none';
                     element.style.left = '-9999px';
+                    if (document.body.contains(overlay)) document.body.removeChild(overlay);
 
                     alert(" 歷史筆記已成功匯出為 PDF 稽核報告！");
 
                     this.innerHTML = originalText;
                     this.disabled = false;
-                }, 100);
+                }, 500);
             } catch (error) {
                 console.error("PDF 匯出失敗:", error);
                 alert("匯出失敗，請重試！");
@@ -699,8 +648,7 @@ window.initRadarChart = async function() {
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', async function() {
             const newName = document.getElementById('profileName').value.trim();
-            const newBio = document.getElementById('profileBio').value.trim();
-            
+                        
             //  關鍵修復 1：先去 LocalStorage 把目前的登入者抓出來
             const currentUserStr = localStorage.getItem('currentUser');
             if (!currentUserStr) {
@@ -721,8 +669,7 @@ window.initRadarChart = async function() {
                 formData.append('userId', user.id); 
                 
                 formData.append('username', newName);
-                formData.append('bio', newBio);
-                if(avatarInput.files[0]) formData.append('avatar', avatarInput.files[0]);
+                                if(avatarInput.files[0]) formData.append('avatar', avatarInput.files[0]);
 
                 const response = await fetch(`${API_BASE_URL}/api/update-profile`, {
                     method: 'POST',
@@ -1113,7 +1060,8 @@ window.initRadarChart = async function() {
 
 // 用來存放「這一回合被抽中」的 10 道題目與測驗狀態
     let currentRoundQuestions = [];
-    let isReviewMode = false; //  用來判斷現在是不是「錯題回顧」模式
+    let currentQuestionIndex = 0;
+    let currentScore = 0;
 
     // 🎯 2. 核心演算法：隨機抽題 (Fisher-Yates Shuffle)
     function generateQuiz(quizCount = 10) {
@@ -1123,13 +1071,13 @@ window.initRadarChart = async function() {
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; 
         }
         currentRoundQuestions = shuffled.slice(0, quizCount);
+        currentQuestionIndex = 0;
+        currentScore = 0;
         
-        // 🌟 每次抽新題目時，重置為「考試模式」與按鈕文字
-        isReviewMode = false;
         const quizForm = document.getElementById('quizForm');
         if (quizForm) {
             const submitBtn = quizForm.querySelector('button[type="submit"]');
-            if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-check-double"></i> 提交解答並結算成績';
+            if (submitBtn) submitBtn.style.display = 'none'; // 隱藏原本的提交按鈕
         }
 
         renderQuestions();
@@ -1141,155 +1089,166 @@ window.initRadarChart = async function() {
         if (!container) return;
         
         container.innerHTML = ""; 
+        
+        if (currentQuestionIndex >= currentRoundQuestions.length) {
+            showFinalScore();
+            return;
+        }
 
-        currentRoundQuestions.forEach((item, index) => {
-            const questionIndex = index + 1;
-            let htmlContent = "";
+        const item = currentRoundQuestions[currentQuestionIndex];
+        const questionIndex = currentQuestionIndex + 1;
+        let htmlContent = "";
 
-            if (item.type === 'TF') {
-                htmlContent = `
-                    <div class="rule-card" style="margin-bottom: 15px; transition: 0.3s; padding-left: 15px; border-left: 5px solid transparent;">
-                        <h4 style="color: #00a8ff; margin-bottom: 10px;">Q${questionIndex}. 【是非題】${item.q}</h4>
-                        <label style="margin-right: 15px; cursor: pointer;"><input type="radio" name="dynamic_q_${item.id}" value="true"> ⭕ 是 (True)</label>
-                        <label style="cursor: pointer;"><input type="radio" name="dynamic_q_${item.id}" value="false"> ❌ 否 (False)</label>
-                    </div>
-                `;
-            } else if (item.type === 'MC') {
-                htmlContent = `
-                    <div class="rule-card" style="margin-bottom: 15px; transition: 0.3s; padding-left: 15px; border-left: 5px solid transparent;">
-                        <h4 style="color: #00a8ff; margin-bottom: 10px;">Q${questionIndex}. 【選擇題】${item.q}</h4>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <label style="cursor: pointer;"><input type="radio" name="dynamic_q_${item.id}" value="A"> ${item.options.A}</label>
-                            <label style="cursor: pointer;"><input type="radio" name="dynamic_q_${item.id}" value="B"> ${item.options.B}</label>
-                            <label style="cursor: pointer;"><input type="radio" name="dynamic_q_${item.id}" value="C"> ${item.options.C}</label>
+        const progressHtml = `<div style="color: #8892b0; margin-bottom: 15px; font-weight: bold;">第 ${questionIndex} 題 / 共 ${currentRoundQuestions.length} 題</div>`;
+
+        if (item.type === 'TF') {
+            htmlContent = `
+                ${progressHtml}
+                <div class="flip-card" id="flip-card-${item.id}">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front rule-card" style="transition: 0.3s; padding-left: 15px; border-left: 5px solid transparent; height: 100%;">
+                            <h4 style="color: #00a8ff; margin-bottom: 20px; font-size: 1.5rem; line-height: 1.4;">Q${questionIndex}. 【是非題】${item.q}</h4>
+                            <div class="quiz-options-grid" style="grid-template-columns: 1fr;">
+                                <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="true" class="quiz-radio"> <span class="quiz-option-text">是 (True)</span></label>
+                                <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="false" class="quiz-radio"> <span class="quiz-option-text">否 (False)</span></label>
+                            </div>
+                        </div>
+                        <div class="flip-card-back" id="flip-card-back-${item.id}">
                         </div>
                     </div>
-                `;
-            }
-            container.innerHTML += htmlContent;
+                </div>
+            `;
+        } else if (item.type === 'MC') {
+            htmlContent = `
+                ${progressHtml}
+                <div class="flip-card" id="flip-card-${item.id}">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front rule-card" style="transition: 0.3s; padding-left: 15px; border-left: 5px solid transparent; height: 100%;">
+                            <h4 style="color: #00a8ff; margin-bottom: 20px; font-size: 1.5rem; line-height: 1.4;">Q${questionIndex}. 【選擇題】${item.q}</h4>
+                            <div class="quiz-options-grid">
+                                <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="A" class="quiz-radio"> <span class="quiz-option-text">${item.options.A}</span></label>
+                                <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="B" class="quiz-radio"> <span class="quiz-option-text">${item.options.B}</span></label>
+                                <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="C" class="quiz-radio"> <span class="quiz-option-text">${item.options.C}</span></label>
+                            </div>
+                        </div>
+                        <div class="flip-card-back" id="flip-card-back-${item.id}">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = htmlContent;
+
+        const inputs = container.querySelectorAll(`input[name="dynamic_q_${item.id}"]`);
+        inputs.forEach(input => {
+            input.addEventListener('change', function() {
+                handleAnswerSelect(item, this.value);
+            });
         });
     }
 
-    //  4. 動態計分、錯題回顧與對答案邏輯
+    //  4. 處理答題與翻牌、計分
+    function handleAnswerSelect(item, selectedValue) {
+        const flipCard = document.getElementById(`flip-card-${item.id}`);
+        const questionDiv = flipCard.querySelector('.flip-card-front');
+        const backDiv = document.getElementById(`flip-card-back-${item.id}`);
+        
+        const inputs = questionDiv.querySelectorAll('input');
+        inputs.forEach(input => input.disabled = true);
+
+        let correctAnswerText = item.ans;
+        if(item.type === 'TF') {
+            correctAnswerText = item.ans === 'true' ? '⭕ 是 (True)' : '❌ 否 (False)';
+        } else {
+            correctAnswerText = item.options[item.ans];
+        }
+
+        const explanationText = item.exp || `依據資安實務與 ISO 27001 規範，此情境下選擇「${correctAnswerText}」才是能有效降低風險的最佳作法。其他選項可能帶來資料外洩或權限管控不當的隱患。`;
+
+        const isLastQuestion = currentQuestionIndex === currentRoundQuestions.length - 1;
+        const btnText = isLastQuestion ? "看成績" : "下一題";
+        const btnHtml = `<button type="button" class="btn-save" style="margin-top: 15px; font-size: 1rem; padding: 10px 25px;" onclick="nextQuestion()">${btnText} <i class="fa-solid fa-arrow-right"></i></button>`;
+
+        if (selectedValue === item.ans) {
+            currentScore += 10;
+            backDiv.className = 'flip-card-back correct';
+            backDiv.innerHTML = `
+                <div class="flip-card-back-icon"><i class="fa-solid fa-check-circle"></i></div>
+                <div class="flip-card-back-text">答對了！</div>
+                ${btnHtml}
+            `;
+        } else {
+            backDiv.className = 'flip-card-back incorrect';
+            backDiv.innerHTML = `
+                <div class="flip-card-back-icon"><i class="fa-solid fa-times-circle"></i></div>
+                <div class="flip-card-back-text">答錯了。</div>
+                <div class="flip-card-back-answer">正確解答為：<br><span style="color: #fff; margin-top: 5px; display: inline-block; font-size: 1.2rem;">${correctAnswerText}</span></div>
+                <div style="margin-top: 15px; font-size: 1.2rem; color: #ffb8b8; max-width: 90%; line-height: 1.6; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;"><strong>詳解：</strong><br>${explanationText}</div>
+                ${btnHtml}
+            `;
+        }
+        
+        setTimeout(() => {
+            flipCard.classList.add('flipped');
+        }, 100);
+    }
+
+    window.nextQuestion = function() {
+        currentQuestionIndex++;
+        renderQuestions();
+    };
+
+    function showFinalScore() {
+        const container = document.getElementById('dynamicQuestionsContainer');
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; background: rgba(0, 0, 0, 0.3); border-radius: 12px; border: 1px solid rgba(0, 168, 255, 0.2);">
+                <h3 style="color: #00a8ff; margin-bottom: 20px; font-size: 2rem;">測驗結束！</h3>
+                <div style="font-size: 4rem; font-weight: bold; color: ${currentScore >= 60 ? '#2ed573' : '#ff4757'};"><i class="fa-solid ${currentScore >= 60 ? 'fa-trophy' : 'fa-face-frown'}" style="margin-right: 15px;"></i>${currentScore} 分</div>
+                <p style="color: #8892b0; margin-top: 20px; font-size: 1.1rem;">${currentScore >= 60 ? '表現不錯，您具備良好的資安防禦觀念！' : '還有進步空間，請多加複習資安規範！'}</p>
+                <button type="button" class="btn-save" style="margin-top: 30px; font-size: 1.1rem; padding: 12px 30px;" onclick="restartQuiz()"><i class="fa-solid fa-rotate-right"></i> 重新測驗</button>
+            </div>
+        `;
+        
+        if (currentScore === 100) {
+            Swal.fire({
+                icon: 'success', 
+                title: '滿分通過！',
+                text: '太厲害了！您完全掌握了防護核心精髓。恭喜您解鎖專屬的合格證書！',
+                background: '#1c2638', color: '#fff', 
+                showCancelButton: true,
+                confirmButtonColor: '#00a8ff',
+                cancelButtonColor: '#f39c12',
+                confirmButtonText: '確定',
+                cancelButtonText: '<i class="fa-solid fa-image"></i> 下載榮譽證書相片',
+                customClass: { cancelButton: 'cyber-cancel-btn' }
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.cancel) {
+                    generateCertificateImage(); 
+                }
+            }); 
+        } else if (currentScore >= 60) {
+            Swal.fire({
+                icon: 'info', title: `測驗結果：${currentScore} 分`,
+                text: '及格了！繼續保持！',
+                background: '#1c2638', color: '#fff', confirmButtonColor: '#00a8ff'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error', title: `測驗結果：${currentScore} 分`,
+                text: '不及格喔！請多加複習！',
+                background: '#1c2638', color: '#fff', confirmButtonColor: '#ff4757'
+            });
+        }
+    }
+
+    window.restartQuiz = function() {
+        generateQuiz(10);
+    };
+
     const quizForm = document.getElementById('quizForm');
     if (quizForm) {
         quizForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            //  如果已經在「錯題回顧」模式，按下按鈕代表要重新測驗
-            if (isReviewMode) {
-                generateQuiz(10);
-                window.scrollTo({ top: 0, behavior: 'smooth' }); // 自動滾回最上面
-                return;
-            }
-
-            let score = 0;
-            let answeredCount = 0;
-            const formData = new FormData(quizForm);
-
-            // 檢查是否全寫完
-            currentRoundQuestions.forEach(item => {
-                const userAnswer = formData.get(`dynamic_q_${item.id}`);
-                if (userAnswer) answeredCount++;
-            });
-
-            if (answeredCount < currentRoundQuestions.length) {
-                Swal.fire({ 
-                    icon: 'warning', 
-                    title: '請完成所有題目！', 
-                    text: `您還有 ${currentRoundQuestions.length - answeredCount} 題未作答喔。`,
-                    background: '#1c2638', color: '#fff', confirmButtonColor: '#00a8ff'
-                });
-                return;
-            }
-
-            //  開始結算並標示錯題
-            currentRoundQuestions.forEach(item => {
-                const userAnswer = formData.get(`dynamic_q_${item.id}`);
-                // 找出這題對應的 UI 區塊
-                const questionDiv = document.querySelector(`input[name="dynamic_q_${item.id}"]`).closest('.rule-card');
-                
-                // 鎖死所有選項，不讓學員偷改答案
-                const inputs = questionDiv.querySelectorAll('input');
-                inputs.forEach(input => input.disabled = true);
-
-                // 建立一個提示訊息區塊
-                const resultMsg = document.createElement('div');
-                resultMsg.style.marginTop = '15px';
-                resultMsg.style.padding = '10px 15px';
-                resultMsg.style.borderRadius = '5px';
-                resultMsg.style.fontWeight = 'bold';
-
-                if (userAnswer === item.ans) {
-                    // 答對的邏輯
-                    score += 10;
-                    questionDiv.style.borderLeftColor = '#2ed573'; // 左側邊框變綠色
-                    resultMsg.style.backgroundColor = 'rgba(46, 213, 115, 0.1)';
-                    resultMsg.style.color = '#2ed573';
-                    resultMsg.innerHTML = '<i class="fa-solid fa-check"></i> 答對了！';
-                } else {
-                    // 答錯的邏輯
-                    questionDiv.style.borderLeftColor = '#ff4757'; // 左側邊框變紅色
-                    resultMsg.style.backgroundColor = 'rgba(255, 71, 87, 0.1)';
-                    resultMsg.style.color = '#ff4757';
-                    
-                    // 抓取正確答案的文字
-                    let correctAnswerText = item.ans;
-                    if(item.type === 'TF') {
-                        correctAnswerText = item.ans === 'true' ? '⭕ 是 (True)' : '❌ 否 (False)';
-                    } else {
-                        correctAnswerText = item.options[item.ans];
-                    }
-                    
-                    resultMsg.innerHTML = `<i class="fa-solid fa-xmark"></i> 答錯了。正確解答為：<span style="color: #fff; margin-left: 5px;">${correctAnswerText}</span>`;
-                }
-                
-                // 將提示訊息加到題目的最下面
-                questionDiv.appendChild(resultMsg);
-            });
-
-            // 🌟 狀態切換：進入「錯題回顧」模式，並更改按鈕外觀
-            isReviewMode = true;
-            const submitBtn = quizForm.querySelector('button[type="submit"]');
-            submitBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> 重新測驗 (抽取新題)';
-            submitBtn.style.backgroundColor = 'transparent';
-            submitBtn.style.border = '2px solid var(--primary-cyan)';
-            submitBtn.style.color = 'var(--primary-cyan)';
-
-           // 🌟 顯示成績結果
-            if (score === 100) {
-                Swal.fire({
-                    icon: 'success', 
-                    title: '滿分通過！',
-                    text: '太厲害了！您完全掌握了防護核心精髓。恭喜您解鎖專屬的合格證書！',
-                    background: '#1c2638', color: '#fff', 
-                    showCancelButton: true,
-                    confirmButtonColor: '#00a8ff',
-                    cancelButtonColor: '#f39c12',
-                    confirmButtonText: '重新測驗',
-                    cancelButtonText: '<i class="fa-solid fa-image"></i> 下載榮譽證書相片', // 👈 改成相片圖示與文字
-                    customClass: { cancelButton: 'cyber-cancel-btn' }
-                }).then((result) => {
-                    if (result.dismiss === Swal.DismissReason.cancel) {
-                        // 使用者點擊了「下載榮譽證書相片」
-                        generateCertificateImage(); 
-                    } else {
-                        generateQuiz(10); 
-                    }
-                }); 
-            } else if (score >= 60) {
-                Swal.fire({
-                    icon: 'info', title: `測驗結果：${score} 分`,
-                    text: '表現不錯！請往下滾動查看「錯題回顧」，確認被標紅色的題目！',
-                    background: '#1c2638', color: '#fff', confirmButtonColor: '#00a8ff'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error', title: `測驗結果：${score} 分`,
-                    text: '不及格喔！請查看「錯題回顧」來訂正觀念！',
-                    background: '#1c2638', color: '#fff', confirmButtonColor: '#ff4757'
-                });
-            }
         });
     }
     // =========================================
