@@ -62,10 +62,13 @@ const registerUser = async (req, res) => {
         await db.query(insertSql, [displayName, email, hashedPassword, verificationToken]);
 
         // 🌟 新增：準備並寄出驗證信
-        const origin = req.headers.origin || 'http://localhost:3000';
-        const host = req.get('host') || 'localhost:3000';
-        const protocol = req.protocol || 'http';
-        const verificationUrl = `${protocol}://${host}/api/verify?token=${verificationToken}`;
+        let origin = req.headers.origin;
+        if (!origin || origin === 'null') {
+            const host = req.get('host') || 'localhost:3000';
+            const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+            origin = `${protocol}://${host}`;
+        }
+        const verificationUrl = `${origin}/api/verify?token=${verificationToken}`;
         
         const mailOptions = {
             from: 'mi3c41263@gmail.com',
@@ -115,7 +118,7 @@ const verifyEmail = async (req, res) => {
             <div style="text-align: center; margin-top: 50px; font-family: sans-serif;">
                 <h2 style="color: green;"> 帳號驗證成功！</h2>
                 <p>您的信箱已成功開通，現在可以回到首頁登入了。</p>
-                <a href="http://127.0.0.1:5500/frontend/login.html" style="padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">前往登入頁面</a>
+                <a href="/login.html" style="padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">前往登入頁面</a>
             </div>
         `);
 
@@ -272,9 +275,11 @@ const forgotPassword = async (req, res) => {
         // 4. 準備寄信 (這裡要連到你未來準備寫的 reset-password.html 網頁)
         let origin = req.headers.origin;
         if (!origin || origin === 'null') {
-            origin = 'http://127.0.0.1:5500';
+            const host = req.get('host') || 'localhost:3000';
+            const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+            origin = `${protocol}://${host}`;
         }
-        const resetUrl = `${origin}/frontend/reset-password.html?token=${resetToken}`;
+        const resetUrl = `${origin}/reset-password.html?token=${resetToken}`;
         
         const mailOptions = {
             from: 'mi3c41263@gmail.com',
@@ -359,7 +364,7 @@ const updateProfile = async (req, res) => {
         // 判斷使用者「有沒有」上傳新圖片
         if (req.file) {
             // 有上傳圖片：文字跟圖片網址一起更新
-            const avatarUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+            const avatarUrl = `http://192.168.0.147:3000/uploads/${req.file.filename}`;
             sql = "UPDATE users SET username = ?, avatar_url = ? WHERE id = ?";
             params = [username, avatarUrl, userId];
         } else {

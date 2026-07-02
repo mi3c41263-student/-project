@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = window.location.origin;
 document.addEventListener('DOMContentLoaded', () => {
     // =========================================
     // 1. 即時系統時鐘 (SOC Dashboard 風格)
@@ -1072,10 +1072,7 @@ window.initRadarChart = async function() {
     // =========================================
         const bigQuestionBank = [
         // === 【進階是非題 1 ~ 25 題】 ===
-        { id: 1, type: 'TF', 
-          q: '為了加速系統上線，外包開發人員可先以「訪客身分」換發臨時證進入研發機房，待專案結束前補齊背景查核與保密協議(NDA)即可。', 
-          en_q: 'To accelerate system deployment, outsourced developers can initially enter the R&D server room using a "visitor" temporary badge, and complete background checks and NDAs before the project ends.', 
-          ans: 'false' },
+        
         { id: 2, type: 'TF', 
           q: '依據實體環境控制原則，交貨與裝卸貨區域（Delivery and loading areas）應與資訊處理設施嚴格隔離，以避免外部送貨員直接看見或進入安全區域。', 
           en_q: 'According to physical environment control principles, delivery and loading areas should be strictly isolated from information processing facilities to prevent external delivery personnel from viewing or entering secure areas.', 
@@ -1088,10 +1085,7 @@ window.initRadarChart = async function() {
           q: '在規劃實體周界時，即便機房已設置刷卡門禁，仍應考量防尾隨（Anti-tailgating）機制，避免未授權者緊跟授權者進入。', 
           en_q: 'When planning physical perimeters, even if the server room has card access control, anti-tailgating mechanisms should still be considered to prevent unauthorized persons from following authorized personnel inside.', 
           ans: 'true' },
-        { id: 5, type: 'TF', 
-          q: '「桌面淨空」規範要求：即使員工只是短暫離開座位 1 分鐘去裝水，也必須將桌面上所有一般日常文件鎖入抽屜，無任何例外豁免。', 
-          en_q: 'The "Clear Desk" policy requires that even if an employee briefly leaves their seat for 1 minute to get water, all general daily documents on the desk must be locked in a drawer without any exceptions.', 
-          ans: 'false' },
+        
         { id: 6, type: 'TF', 
           q: '存取權限的定期審查（Access review）不僅包含應用程式的帳號密碼，也必須包含「實體機房門禁卡」的核准名單清查。', 
           en_q: 'Periodic access reviews must include not only application accounts and passwords but also the approved list for physical server room access cards.', 
@@ -1104,10 +1098,7 @@ window.initRadarChart = async function() {
           q: '針對高度機密的安全區域（如核心資料中心），即使是編制內的清潔人員，也必須在授權技術人員的監督下才能進入打鎖。', 
           en_q: 'For highly confidential secure areas (like core data centers), even internal cleaning staff must be supervised by authorized technical personnel when entering to perform duties.', 
           ans: 'true' },
-        { id: 9, type: 'TF', 
-          q: '員工若不小心點擊釣魚信件連結，只要自行使用防毒軟體掃描未發現中毒，即不構成資安事件，無須向 IT 部門通報。', 
-          en_q: 'If an employee accidentally clicks a phishing email link, as long as they run an antivirus scan and find no infection, it does not constitute a security incident and requires no reporting to the IT department.', 
-          ans: 'false' },
+        
         { id: 10, type: 'TF', 
           q: '資訊安全認知教育訓練的內容，應明確包含員工若違反公司資安政策時，公司將依法或依規採取的懲處程序（Disciplinary process）。', 
           en_q: 'Information security awareness training should explicitly cover the disciplinary process the company will take according to laws or regulations if an employee violates security policies.', 
@@ -1144,10 +1135,7 @@ window.initRadarChart = async function() {
           q: '在建置機房時，電源線與通訊纜線應盡可能分開鋪設或採取實體隔離，以避免電磁干擾（EMI）與潛在的實體線路竊聽風險。', 
           en_q: 'When building a server room, power cables and communication cables should be laid separately or physically isolated to avoid electromagnetic interference (EMI) and potential physical wiretapping risks.', 
           ans: 'true' },
-        { id: 19, type: 'TF', 
-          q: '只要是下班時間且無人使用，外部訪客就可以自由使用會議室牆壁上的內部網路孔（LAN port）連接個人筆電上網。', 
-          en_q: 'As long as it is after hours and unoccupied, external visitors can freely use the internal LAN ports on conference room walls to connect their personal laptops to the internet.', 
-          ans: 'false' },
+        
         { id: 20, type: 'TF', 
           q: '實體與環境安全防護不僅在防範人為惡意入侵，同時也應包含對火災、水災、地震等自然災害的防護與監測措施。', 
           en_q: 'Physical and environmental security protection is not only about preventing malicious human intrusions but should also include protection and monitoring measures against natural disasters like fires, floods, and earthquakes.', 
@@ -1168,18 +1156,10 @@ window.initRadarChart = async function() {
           q: '稽核時若發現門禁讀卡機外殼有被撬開或異常接線的痕跡，不論是否真的遭入侵，都應立即視為重大實體資安事件進行通報與調查。', 
           en_q: 'During an audit, if a card reader enclosure shows signs of prying or abnormal wiring, it should immediately be treated as a major physical security incident for reporting and investigation, regardless of whether a breach actually occurred.', 
           ans: 'true' },
-        { id: 25, type: 'TF', 
-          q: '為了避免手機遺失導致無法登入系統，將雙重認證（2FA）的備用救援碼與帳號密碼寫在同一本筆記本上放在抽屜是符合安全邏輯的。', 
-          en_q: 'To prevent being locked out due to a lost phone, writing the 2FA backup recovery codes and account passwords in the same notebook stored in a drawer is logically secure.', 
-          ans: 'false' },
+        
 
         // === 【進階選擇題 26 ~ 50 題】 ===
-        { id: 26, type: 'MC', 
-          q: '當機房空調設備發生突發性故障，需緊急呼叫外部冷氣維修技師進入核心機房處理時，下列哪一項作法最符合 ISO 27002 的實體安全控制精神？', 
-          en_q: 'When an AC failure requires an external technician to enter the core server room for emergency repairs, which approach best aligns with ISO 27002 physical security controls?',
-          options: { A: 'A. 由於是影響營運的緊急搶修，直接開放門禁特權讓技師進出以爭取時間。', B: 'B. 技師需於大廳換證，並由內部授權人員全程陪同與實體監督其在機房內的作業。', C: 'C. 讓大樓外包保全代為陪同進入即可，並允許技師接上機房內的網路線上網查修。' }, 
-          en_options: { A: 'A. Grant direct access privileges to save time due to the operational emergency.', B: 'B. The technician must exchange IDs at the lobby and be escorted and physically supervised by authorized internal staff throughout the operation.', C: 'C. Have outsourced building security escort them and allow the technician to connect to the internal network for troubleshooting.' },
-          ans: 'B' },
+        
         { id: 27, type: 'MC', 
           q: '在規劃「辦公室實體安全周界」時，下列哪一種補償性控制措施（Compensating Control）最適合用來彌補「全透明玻璃會議室」的機密外洩風險？', 
           en_q: 'When planning "office physical perimeters," which compensating control best mitigates the confidentiality leakage risk of a "fully transparent glass conference room"?',
@@ -1192,12 +1172,7 @@ window.initRadarChart = async function() {
           options: { A: 'A. 同步撤銷其邏輯存取權限（系統帳號）與實體存取權限（門禁卡）。', B: 'B. 確保該員工完成所有未結案的工作交接報告。', C: 'C. 結算該員工當月的特休假與績效獎金。' }, 
           en_options: { A: 'A. Simultaneously revoke their logical access (system accounts) and physical access (access cards).', B: 'B. Ensure the employee completes all pending handover reports.', C: 'C. Settle the employee\'s PTO and performance bonuses for the month.' },
           ans: 'A' },
-        { id: 29, type: 'MC', 
-          q: '你在辦公室無意間發現某位即將離職的同事，正頻繁使用外接硬碟拷貝大量未經授權的專案資料，最符合 ISO 精神的作法是？', 
-          en_q: 'You accidentally notice a resigning colleague frequently using an external hard drive to copy large amounts of unauthorized project data. What is the most ISO-compliant response?',
-          options: { A: 'A. 基於同事情誼假裝沒看到，避免破壞辦公室氣氛。', B: 'B. 依據公司安全事件通報程序，立即私下向直屬主管或資安部門反應異常。', C: 'C. 在辦公室大聲斥責該名同事，並強制拔除他的隨身碟。' }, 
-          en_options: { A: 'A. Pretend not to see it out of camaraderie to avoid ruining the office atmosphere.', B: 'B. Immediately report the anomaly privately to a direct supervisor or security department per incident reporting procedures.', C: 'C. Loudly reprimand the colleague in the office and forcibly unplug their drive.' },
-          ans: 'B' },
+        
         { id: 30, type: 'MC', 
           q: '關於「設備安置與保護」，稽核員巡視辦公室時發現下列何種情況，應立即開立缺失單（NCR）？', 
           en_q: 'Regarding "Equipment Siting and Protection," which scenario found during an office tour should prompt an immediate Non-Conformance Report (NCR)?',
@@ -1210,12 +1185,7 @@ window.initRadarChart = async function() {
           options: { A: 'A. 將伺服器機櫃全面改用防火塗料。', B: 'B. 在機房建置雙備援的空調系統與不斷電系統 (UPS)。', C: 'C. 機房底層安裝高架地板，並於地板下配置漏水偵測感知線纜。' }, 
           en_options: { A: 'A. Applying fireproof coatings entirely to server racks.', B: 'B. Deploying dual-redundant HVAC and UPS systems in the server room.', C: 'C. Installing raised floors in the server room with water leakage detection cables placed underneath.' },
           ans: 'C' },
-        { id: 32, type: 'MC', 
-          q: '因應遠距辦公，員工將公司筆電帶回家中作業。下列何項作法最符合「場外設備安全（Off-site equipment）」規範？', 
-          en_q: 'Due to remote work, employees take company laptops home. Which practice best complies with "Off-site equipment security" guidelines?',
-          options: { A: 'A. 因為在家裡很安全，所以關閉筆電的登入密碼以節省開機時間。', B: 'B. 筆電硬碟啟用全磁碟加密（FDE），閒置時鎖定，且嚴禁家屬共用該設備。', C: 'C. 為了網路順暢，將筆電連接至家中未設密碼的開放式 Wi-Fi 路由器。' }, 
-          en_options: { A: 'A. Disabling the login password to save boot time since it is safe at home.', B: 'B. Enabling Full Disk Encryption (FDE), locking the laptop when idle, and strictly prohibiting family members from sharing the device.', C: 'C. Connecting the laptop to an open, unpassworded home Wi-Fi router for better connectivity.' },
-          ans: 'B' },
+        
         { id: 33, type: 'MC', 
           q: '稽核員發現公司櫃台抽屜放有 3 張無記名的「公用門禁卡」，專供忘記帶卡的員工自行簽名借用。此作法最大的資安風險為何？', 
           en_q: 'An auditor finds 3 anonymous "public access cards" in the reception desk for employees who forget their badges to sign out. What is the biggest security risk here?',
@@ -1228,12 +1198,7 @@ window.initRadarChart = async function() {
           options: { A: 'A. 在作業系統內將檔案丟入資源回收桶並清空即可。', B: 'B. 實施實體破壞（如物理鑽孔、消磁）或使用合規軟體進行多次覆寫抹除（Wiping）。', C: 'C. 將硬碟重新格式化（Quick Format）後，以二手價賣給回收廠商。' }, 
           en_options: { A: 'A. Just moving the files to the recycle bin within the OS and emptying it.', B: 'B. Implementing physical destruction (e.g., drilling, degaussing) or using compliant software for multiple wipe passes.', C: 'C. Performing a Quick Format and selling it secondhand to recyclers.' },
           ans: 'B' },
-        { id: 35, type: 'MC', 
-          q: '針對「桌面與螢幕淨空」，若員工處理機密財報到一半，需暫時離開座位參加 1 小時的跨部門會議，應如何處置桌上的財報紙本？', 
-          en_q: 'Regarding "Clear desk and clear screen," if an employee processing confidential financials leaves for a 1-hour cross-department meeting, how should the hard copies on their desk be handled?',
-          options: { A: 'A. 將財報反面朝下蓋在桌上即可。', B: 'B. 貼上「機密請勿翻閱」的便利貼，然後直接去開會。', C: 'C. 將財報收進辦公桌抽屜並上鎖，同時按下 Windows + L 鎖定電腦螢幕。' }, 
-          en_options: { A: 'A. Simply placing the reports face down on the desk.', B: 'B. Sticking a "Confidential: Do Not Read" post-it note and heading straight to the meeting.', C: 'C. Locking the reports inside a desk drawer and pressing Windows + L to lock the screen.' },
-          ans: 'C' },
+        
         { id: 36, type: 'MC', 
           q: '關於資安「保密協議(NDA)」的法律與稽核實務，下列敘述何者最為準確？', 
           en_q: 'Regarding the legal and audit practices of "Non-Disclosure Agreements (NDA)", which statement is most accurate?',
@@ -1246,12 +1211,7 @@ window.initRadarChart = async function() {
           options: { A: 'A. 駭客利用系統漏洞，從外部網路植入勒索軟體加密伺服器。', B: 'B. 發送大量偽造的銀行中獎信件誘騙使用者點擊網址。', C: 'C. 攻擊者穿著知名快遞公司的制服，抱著大箱子要求櫃台人員代為刷卡開門進入辦公區。' }, 
           en_options: { A: 'A. Hackers exploiting a system vulnerability to inject ransomware via the external network.', B: 'B. Sending massive fake bank lottery emails to trick users into clicking URLs.', C: 'C. An attacker wearing a famous courier uniform holding a large box, asking the receptionist to badge them in.' },
           ans: 'C' },
-        { id: 38, type: 'MC', 
-          q: '核心機房門口安裝了「防尾隨閘門（Mantraps / Turnstiles）」，這項昂貴的硬體投資主要目的是為了解決哪種安全風險？', 
-          en_q: 'Installing expensive "Mantraps/Turnstiles" at the core server room entrance is primarily aimed at solving which security risk?',
-          options: { A: 'A. 未授權人員趁授權人員刷卡開門的瞬間，緊跟著潛入安全區域。', B: 'B. 防止機房內的冷氣冷房效果流失到外部走道。', C: 'C. 阻擋攜帶大型爆裂物或危險物品的人員進入。' }, 
-          en_options: { A: 'A. Unauthorized personnel sneaking into the secure area by tailgating an authorized person during badge swiping.', B: 'B. Preventing the server room cooling effect from escaping into the hallway.', C: 'C. Blocking personnel carrying large explosives or dangerous items from entering.' },
-          ans: 'A' },
+        
         { id: 39, type: 'MC', 
           q: '稽核員發現某部門的「機密文件專用碎紙機」被放置在大樓外側的公共電梯口旁，這會帶來什麼重大的管理風險？', 
           en_q: 'An auditor finds a department\'s "Confidential Document Shredder" placed near the public elevator lobby. What major management risk does this pose?',
@@ -1324,6 +1284,362 @@ window.initRadarChart = async function() {
           options: { A: 'A. 只要是正職員工，24 小時隨時都可以自由刷卡進出公司。', B: 'B. 聯絡熟識的大樓保全幫忙直接開門，不留刷卡紀錄以免被查勤。', C: 'C. 需依制度事先提出加班申請，經權責主管核准後，門禁系統才於該特定時段自動開放其刷卡權限。' }, 
           en_options: { A: 'A. As long as they are full-time employees, they can freely swipe in and out 24/7.', B: 'B. Call a familiar building guard to let them in, leaving no swipe records to avoid attendance checks.', C: 'C. Submit an overtime request per policy beforehand; upon manager approval, the access system automatically grants swipe rights for that specific timeframe.' },
           ans: 'C' }
+    ,
+// 一、單選題 (1-5)
+    { id: 51, type: 'SC', 
+      q: '關於人員篩選(背景調查)，哪一項最符合資訊安全管理的要求？', 
+      en_q: 'Regarding personnel screening (background checks), which of the following best meets information security management requirements?',
+      options: { A: 'A. 徵才時必須記錄並保存背景調查結果以符合資安要求', B: 'B. 背景調查為選擇性程序，僅對關鍵職務執行', C: 'C. 公司不得保存任何求職者背景資料以保護隱私', D: 'D. 只需在員工離職時補做背景調查即可' },
+      en_options: { A: 'A. Background check results must be recorded and retained during hiring to meet security requirements', B: 'B. Background checks are optional procedures performed only for key roles', C: 'C. The company must not retain any applicant background data to protect privacy', D: 'D. Background checks only need to be done retroactively upon resignation' },
+      ans: 'A',
+      exp: '公司準則應明確記載並保存求職者的相關背景調查記錄，以確保符合資安要求，因此選A。',
+      en_exp: 'Company guidelines should explicitly record and retain relevant background check records of applicants to ensure compliance with security requirements, thus A.'
+    },
+    { id: 52, type: 'SC', 
+      q: '關於聘用條款與條件，下列敘述何者正確？', 
+      en_q: 'Regarding terms and conditions of employment, which of the following statements is correct?',
+      options: { A: 'A. 聘用合約僅需記載薪資與職稱，不需涉及資安責任', B: 'B. 聘用合約應包含違反資安的懲處與離職後的保密條款', C: 'C. 所有資安責任可口頭約定而不必寫入合約', D: 'D. 離職後不得有任何保密義務' },
+      en_options: { A: 'A. Employment contracts only need to list salary and title, without involving security responsibilities', B: 'B. Employment contracts should include disciplinary actions for security violations and post-employment confidentiality clauses', C: 'C. All security responsibilities can be verbally agreed upon without written contracts', D: 'D. There must not be any confidentiality obligations after resignation' },
+      ans: 'B',
+      exp: '聘用合約應包含員工違反資安規定的懲處機制與離職後的保密條款，故選B。',
+      en_exp: 'Employment contracts should include disciplinary mechanisms for security violations and post-employment confidentiality clauses, thus B.'
+    },
+    { id: 53, type: 'SC', 
+      q: '關於保密協議(NDA)的實務要求，何者為正確做法？', 
+      en_q: 'Regarding the practical requirements of Non-Disclosure Agreements (NDA), what is the correct practice?',
+      options: { A: 'A. 只有正職員工需簽署保密協議，外包人員除外', B: 'B. 僅在離職時要求簽署保密協議即可', C: 'C. 正職與外包人員在接觸內網前均須已簽署保密協議', D: 'D. 由直屬主管口頭承諾即可取代書面保密協議' },
+      en_options: { A: 'A. Only full-time employees need to sign NDAs, excluding outsourced personnel', B: 'B. NDAs are only required to be signed upon resignation', C: 'C. Both full-time and outsourced personnel must sign an NDA before accessing the intranet', D: 'D. A verbal promise from a direct supervisor can replace a written NDA' },
+      ans: 'C',
+      exp: '在接觸內網或敏感資源前，正職人員與外包人員皆應完成保密協議簽署，因此選C。',
+      en_exp: 'Before accessing the intranet or sensitive resources, both full-time and outsourced personnel must complete the signing of an NDA, thus C.'
+    },
+    { id: 54, type: 'SC', 
+      q: '關於在高度安全區域的行為規範，下列何者為正確？', 
+      en_q: 'Regarding behavior norms in highly secure areas, which of the following is correct?',
+      options: { A: 'A. 可以在安全區域拍照以供後續比對，只要不外傳', B: 'B. 在無監督時拍照只要經主管事後補簽即可', C: 'C. 只要是公司員工就可自由在機房拍攝作業過程記錄', D: 'D. 未經授權且無監督人員在場時，禁止拍照或錄影' },
+      en_options: { A: 'A. Photography is allowed in secure areas for future reference as long as it is not leaked', B: 'B. Unsupervised photography only needs retroactive approval from a supervisor', C: 'C. Any company employee can freely record operational processes in the server room', D: 'D. Unauthorized photography or video recording is prohibited when unsupervised' },
+      ans: 'D',
+      exp: '在高度安全區域未經授權且無監督人員在場時，拍照錄影應被明確禁止，故選D。',
+      en_exp: 'In highly secure areas without authorization or supervision, photography and video recording should be explicitly prohibited, thus D.'
+    },
+    { id: 55, type: 'SC', 
+      q: '關於桌面與螢幕淨空，下列何者為公司資訊安全的正確規範？', 
+      en_q: 'Regarding clear desk and clear screen policies, which of the following is the correct information security standard?',
+      options: { A: 'A. 應保持桌面與螢幕淨空，避免將帳密貼在螢幕上並及時取走列印資料', B: 'B. 在辦公桌放置訪客名片與未取列印資料是可接受的日常習慣', C: 'C. 可在桌面隨意放置含機密資訊的USB以便備援使用', D: 'D. 列印機資料無需即時取走，放置一段時間是允許的' },
+      en_options: { A: 'A. Desks and screens must be kept clear, passwords should not be stuck on screens, and printed materials should be collected promptly', B: 'B. Leaving visitor business cards and uncollected prints on desks is an acceptable daily habit', C: 'C. Confidential USBs can be casually left on the desk for backup convenience', D: 'D. Printed materials do not need to be collected immediately; leaving them for a while is allowed' },
+      ans: 'A',
+      exp: '桌面及螢幕淨空要求機密文件及帳密不得隨意放置或貼於螢幕上，且列印資料應及時取走，故選A。',
+      en_exp: 'The clear desk and screen policy requires that confidential documents and passwords must not be casually placed or stuck on screens, and printed materials must be collected promptly, thus A.'
+    },
+
+    // 二、多選題 (6-35)
+    { id: 56, type: 'MA', 
+      q: '關於資訊安全認知、教育訓練與獎懲，下列何者為適當措施？(多選)', 
+      en_q: 'Regarding info security awareness, education training, and disciplinary measures, which of the following are appropriate? (Multiple Choice)',
+      options: { A: 'A. 應定期舉辦資安認知與教育訓練以提升員工警覺', B: 'B. 資安教育僅需新進時一次性宣導即可', C: 'C. 重大違規應影響績效獎金並視情節給予行政警告等懲處', D: 'D. 資安違規只需口頭提醒，不應納入獎懲制度' },
+      en_options: { A: 'A. Security awareness and training should be held regularly to raise vigilance', B: 'B. Security education is only needed as a one-time orientation for new hires', C: 'C. Major violations should impact performance bonuses and lead to administrative warnings', D: 'D. Security violations only need verbal reminders and should not be part of the disciplinary system' },
+      ans: ['A', 'C'],
+      exp: '定期資安教育訓練與明確獎懲措施能提升認知並處置重大違規，選A與C；B與D不正確。',
+      en_exp: 'Regular security training and clear disciplinary measures raise awareness and handle major violations, thus A and C; B and D are incorrect.'
+    },
+    { id: 57, type: 'MA', 
+      q: '關於實體安全周界與進入控制，下列哪些做法是正確的？(多選)', 
+      en_q: 'Regarding physical security perimeters and entry controls, which practices are correct? (Multiple Choice)',
+      options: { A: 'A. 會議室視訊鏡頭未使用時應關閉以避免拍到敏感文件', B: 'B. 門禁系統應嚴格管控進出並管理訪客', C: 'C. 過期或停用的門禁卡必須失效以防止未授權進入', D: 'D. 門禁可任由員工自主管理過期卡片' },
+      en_options: { A: 'A. Conference room cameras should be turned off when not in use to avoid recording sensitive documents', B: 'B. Access systems should strictly control entry and manage visitors', C: 'C. Expired or deactivated access cards must be invalidated to prevent unauthorized entry', D: 'D. Employees can autonomously manage expired cards for access control' },
+      ans: ['A', 'B', 'C'],
+      exp: '會議室鏡頭閒置時應關閉且避免對敏感文件；門禁應嚴格管控並使過期卡失效，故選A、B、C。',
+      en_exp: 'Idle cameras should be closed and avoid pointing at sensitive docs; access should be strictly controlled with expired cards invalidated, thus A, B, C.'
+    },
+    { id: 58, type: 'MA', 
+      q: '關於報告資安事件的流程，下列哪些敘述正確？(多選)', 
+      en_q: 'Regarding the procedure for reporting security incidents, which statements are correct? (Multiple Choice)',
+      options: { A: 'A. 員工收到可疑郵件時必須依標準程序向IT部門報告', B: 'B. 可疑郵件可先在個人電腦上開啟以確認是否含惡意程式', C: 'C. 發現異常文件若非自己負責就無須回報', D: 'D. 員工發現異常情況應立即報告，不得延遲' },
+      en_options: { A: 'A. Employees must report suspicious emails to the IT department per standard procedures', B: 'B. Suspicious emails can be opened on personal PCs first to confirm malware presence', C: 'C. Abnormal documents do not need to be reported if you are not responsible for them', D: 'D. Employees must immediately report anomalies without delay' },
+      ans: ['A', 'D'],
+      exp: '收到可疑郵件或發現異常文件應立即依標準程序向IT報告，且員工有義務通報，因此選A與D。',
+      en_exp: 'Suspicious emails or abnormal documents should be immediately reported to IT per standard procedures, and employees are obligated to report, thus A and D.'
+    },
+    { id: 59, type: 'MA', 
+      q: '關於保密協議(NDA)的要求，下列哪些為正確？(多選)', 
+      en_q: 'Regarding Non-Disclosure Agreement (NDA) requirements, which of the following are correct? (Multiple Choice)',
+      options: { A: 'A. 非必要情況下可不要求外包人員簽署保密協議', B: 'B. 正職與外包人員在接觸內網前都應完成保密協議簽署', C: 'C. 保密協議應以書面形式記載雙方義務與範圍', D: 'D. 只需口頭承諾即可視為保密義務成立' },
+      en_options: { A: 'A. NDAs are not required for outsourced personnel unless absolutely necessary', B: 'B. Both full-time and outsourced staff must sign an NDA before accessing the intranet', C: 'C. NDAs must be in written form documenting obligations and scope', D: 'D. A verbal promise is sufficient to establish confidentiality obligations' },
+      ans: ['B', 'C'],
+      exp: '包含正職及外包人員皆應在接觸內網資源前完成NDA簽署，且NDA是書面保密協議，故選B、C。',
+      en_exp: 'Full-time and outsourced personnel must complete NDAs before intranet access, and NDAs are written agreements, thus B and C.'
+    },
+    { id: 60, type: 'MA', 
+      q: '關於在機房等安全區域的管理，下列哪些措施是必要的？(多選)', 
+      en_q: 'Regarding management in secure areas like server rooms, which measures are necessary? (Multiple Choice)',
+      options: { A: 'A. 在機房等高度安全區域未經授權且無監督人員在場時，應禁止拍照或錄影', B: 'B. 機房應禁止放置飲料食物以避免濺灑或造成設備損壞', C: 'C. 在安全區域內可以自由拍照以便記錄設備狀態', D: 'D. 允許於機房飲食只要注意不靠近設備即可' },
+      en_options: { A: 'A. Unauthorized photography/video without supervision is prohibited in highly secure areas', B: 'B. Food and drinks are prohibited in server rooms to prevent spills and equipment damage', C: 'C. Photography is freely allowed in secure areas to record equipment status', D: 'D. Eating is allowed in server rooms as long as it is kept away from equipment' },
+      ans: ['A', 'B'],
+      exp: '機房等安全區域禁止未授權拍攝且禁止放置食物飲料以免危害設備，選A與B。',
+      en_exp: 'Secure areas prohibit unauthorized filming and food/drinks to avoid damaging equipment, thus A and B.'
+    },
+    { id: 61, type: 'MA', 
+      q: '關於桌面與螢幕淨空，下列哪些為正確的控制項？(多選)', 
+      en_q: 'Regarding clear desk and screen policies, which of the following are correct controls? (Multiple Choice)',
+      options: { A: 'A. 機密文件、訪客名片、USB不應隨意放置桌面', B: 'B. 可將帳密貼於螢幕下方以便登入使用', C: 'C. 印表機資料應及時取走以防外流', D: 'D. 不得將帳密貼在螢幕上以免資訊外洩' },
+      en_options: { A: 'A. Confidential documents, visitor cards, and USBs should not be casually left on desks', B: 'B. Passwords can be stuck below the screen for login convenience', C: 'C. Printed materials should be collected promptly to prevent leakage', D: 'D. Passwords must not be stuck on screens to prevent information leaks' },
+      ans: ['A', 'C', 'D'],
+      exp: '桌面淨空禁放機密文件與USB、列印資料應及時取走並不得將帳密貼螢幕，故選A、C、D。',
+      en_exp: 'Desks should be clear of confidential files and USBs, prints collected promptly, and passwords never stuck to screens, thus A, C, D.'
+    },
+    { id: 62, type: 'MA', 
+      q: '關於儲存媒體（如USB）的實體存放安全，下列哪些敘述正確？(多選)', 
+      en_q: 'Regarding the physical storage security of media (e.g., USBs), which statements are correct? (Multiple Choice)',
+      options: { A: 'A. 含機密資訊或測試用的USB必須妥善保管', B: 'B. 含機密資訊的USB可隨手放置於靠近門口以便帶走', C: 'C. 公司可允許員工將含機密資訊的USB丟棄在公共垃圾桶', D: 'D. 不得將含機密資訊的外部存儲媒體隨意丟棄於公共區域' },
+      en_options: { A: 'A. USBs with confidential data or testing files must be properly secured', B: 'B. Confidential USBs can be left near doors for quick grab-and-go', C: 'C. Employees are allowed to toss confidential USBs in public trash bins', D: 'D. External media with confidential data must not be casually discarded in public areas' },
+      ans: ['A', 'D'],
+      exp: '含機密資訊的USB應妥善保管且不得隨意丟棄於公共區域，選A與D。',
+      en_exp: 'Confidential USBs must be secured and not casually discarded in public areas, thus A and D.'
+    },
+    { id: 63, type: 'MA', 
+      q: '關於設備維護與汰除保全，下列哪些為公司應採取的措施？(多選)', 
+      en_q: 'Regarding equipment maintenance and disposal security, what measures should the company take? (Multiple Choice)',
+      options: { A: 'A. 報廢設備可直接丟棄於一般垃圾桶以節省成本', B: 'B. 報廢設備及碎紙機中的機密文件必須妥善銷毀', C: 'C. 機房內可放置開啟式食物以供值班人員使用', D: 'D. 設備維護時應防範鼠害以保護線路與接點' },
+      en_options: { A: 'A. Scrapped equipment can be thrown into normal trash to save costs', B: 'B. Scrapped equipment and confidential files in shredders must be properly destroyed', C: 'C. Open food can be placed in the server room for duty personnel', D: 'D. Equipment maintenance should prevent rodent damage to protect wiring and contacts' },
+      ans: ['B', 'D'],
+      exp: '報廢設備內含機密資料需妥善銷毀並使用碎紙機處理，且禁止放置食物以避免汙損設備，故選B與D。',
+      en_exp: 'Scrapped equipment with sensitive data needs proper destruction, and food is banned to avoid damage; thus B and D.'
+    },
+    { id: 64, type: 'MA', 
+      q: '關於門禁及周界安全管理，下列何者為適當做法？(多選)', 
+      en_q: 'Regarding access control and perimeter security management, which are appropriate practices? (Multiple Choice)',
+      options: { A: 'A. 過期卡片應立即停用以防止未授權進出', B: 'B. 門禁系統應記錄出入以利追蹤與稽核', C: 'C. 訪客進出應由負責人陪同並受限於允許區域', D: 'D. 門禁管理可完全依賴員工自律無需紀錄' },
+      en_options: { A: 'A. Expired cards should be deactivated immediately to prevent unauthorized access', B: 'B. Access systems must record entry/exit for tracking and auditing', C: 'C. Visitors should be escorted by sponsors and restricted to allowed areas', D: 'D. Access control can fully rely on employee self-discipline without logging' },
+      ans: ['A', 'B', 'C'],
+      exp: '過期卡必須失效、門禁應嚴格管控且訪客管理為常見正確控制措施，故選A、B、C。',
+      en_exp: 'Expired cards must be disabled, access strictly logged, and visitors escorted, thus A, B, C.'
+    },
+    { id: 65, type: 'MA', 
+      q: '針對會議室視訊設備的管理，下列哪些做法正確？(多選)', 
+      en_q: 'Regarding the management of conference room video equipment, which practices are correct? (Multiple Choice)',
+      options: { A: 'A. 會議室視訊鏡頭未使用時應關閉以避免拍攝敏感資料', B: 'B. 鏡頭應避免正對含敏感文件或白板內容', C: 'C. 會議室鏡頭即使閒置也可持續開啟以利監控', D: 'D. 會議室鏡頭對敏感文件無需特別注意' },
+      en_options: { A: 'A. Cameras should be turned off when idle to avoid filming sensitive data', B: 'B. Cameras should avoid pointing directly at sensitive documents or whiteboards', C: 'C. Cameras can remain active while idle for surveillance purposes', D: 'D. No special attention is needed regarding cameras pointing at sensitive documents' },
+      ans: ['A', 'B'],
+      exp: '會議室鏡頭不使用時應關閉，且應避免鏡頭正對敏感文件，故選A與B。',
+      en_exp: 'Cameras should be closed when idle and avoided pointing at sensitive files, thus A and B.'
+    },
+    { id: 66, type: 'MA', 
+      q: '在資安事件通報與處理流程中，下列哪些敘述正確？(多選)', 
+      en_q: 'In the security incident reporting and handling process, which statements are correct? (Multiple Choice)',
+      options: { A: 'A. 員工收受可疑郵件應依標準程序通報IT部門', B: 'B. 員工可先下載附件以便自行判斷是否惡意', C: 'C. IT在接獲通報後應依標準流程進行後續處理', D: 'D. 員工收到可疑郵件宜直接刪除並不需通報' },
+      en_options: { A: 'A. Employees should report suspicious emails to IT per standard procedures', B: 'B. Employees can download attachments first to judge if they are malicious themselves', C: 'C. IT should proceed with standard handling processes upon receiving reports', D: 'D. Suspicious emails should just be deleted without reporting' },
+      ans: ['A', 'C'],
+      exp: '員工應主動報告可疑郵件與異常文件，IT則依標準程序受理並處置，故選A與C。',
+      en_exp: 'Employees must actively report suspicious emails, and IT handles them per standard procedures, thus A and C.'
+    },
+    { id: 67, type: 'MA', 
+      q: '關於保密協議的適用與時效，下列哪些為正確？(多選)', 
+      en_q: 'Regarding the applicability and validity of NDAs, which are correct? (Multiple Choice)',
+      options: { A: 'A. 保密協議可只限定在職期間有效，離職後自動失效', B: 'B. 保密協議通常含離職後的保密義務與適用範圍', C: 'C. 保密協議僅適用於全職員工，不適用外包或承攬人員', D: 'D. 外包人員在接觸內網前亦應簽署保密協議' },
+      en_options: { A: 'A. NDAs are only valid during employment and automatically expire after resignation', B: 'B. NDAs typically include post-resignation confidentiality obligations and scope', C: 'C. NDAs apply only to full-time employees, not outsourced contractors', D: 'D. Outsourced personnel must also sign NDAs before accessing the intranet' },
+      ans: ['B', 'D'],
+      exp: '保密協議應涵蓋離職後義務並適用於外包人員，故選B與D。',
+      en_exp: 'NDAs should cover post-resignation obligations and apply to outsourced personnel, thus B and D.'
+    },
+    { id: 68, type: 'MA', 
+      q: '為維護桌面與列印資料的資訊安全，下列哪些為正確措施？(多選)', 
+      en_q: 'To maintain information security for desks and printed data, which are correct measures? (Multiple Choice)',
+      options: { A: 'A. 應保持桌面整潔，不讓機密文件裸露於工作區域', B: 'B. 印表機列印資料應及時取走避免被他人取得', C: 'C. 將帳密貼在螢幕側邊以供他人使用是允許的做法', D: 'D. 不得將帳密、密碼等資訊貼於螢幕上以防落入他人之手' },
+      en_options: { A: 'A. Desks should be kept tidy, avoiding exposure of confidential files in work areas', B: 'B. Printed materials should be promptly retrieved from printers', C: 'C. Sticking passwords on the side of the monitor for others to use is allowed', D: 'D. Passwords must not be stuck on screens to prevent them from falling into others\' hands' },
+      ans: ['A', 'B', 'D'],
+      exp: '桌面淨空、列印文件即時取走與不得將帳密貼於螢幕是正確控制，故選A、B、D。',
+      en_exp: 'Clear desks, prompt retrieval of prints, and banning screen-stuck passwords are correct controls, thus A, B, D.'
+    },
+    { id: 69, type: 'MA', 
+      q: '關於含機密資訊的儲存媒體實體安全，下列哪些敘述正確？(多選)', 
+      en_q: 'Regarding the physical security of media containing confidential data, which statements are correct? (Multiple Choice)',
+      options: { A: 'A. 可以在公共區域短暫放置含機密資訊的USB以便共享', B: 'B. 含機密資訊的USB不得隨意放置於桌緣或公共區域', C: 'C. 對含機密資訊的儲存媒體應采取適當實體保護與登記管理', D: 'D. 所有USB皆可不經登記即可帶離辦公場所' },
+      en_options: { A: 'A. Confidential USBs can be briefly placed in public areas for sharing', B: 'B. Confidential USBs must not be casually left on desk edges or public areas', C: 'C. Storage media with sensitive info should have physical protection and registry management', D: 'D. All USBs can be taken off-site without registration' },
+      ans: ['B', 'C'],
+      exp: '含敏感或機密資訊的外部儲存媒體不得隨意放置或丟棄，且應有妥善保管措施，故選B與C。',
+      en_exp: 'External media with sensitive data must not be casually placed or discarded and needs proper storage, thus B and C.'
+    },
+    { id: 70, type: 'MA', 
+      q: '關於設備汰除與維護，下列哪些做法是應採取的？(多選)', 
+      en_q: 'Regarding equipment disposal and maintenance, which practices should be adopted? (Multiple Choice)',
+      options: { A: 'A. 報廢設備必須清除或銷毀內含資料以防資料外洩', B: 'B. 碎紙機應用於處理機密文件的銷毀', C: 'C. 設備應防範鼠害以避免線路與接點被破壞', D: 'D. 報廢設備可直接捐贈而不處理內部資料即可' },
+      en_options: { A: 'A. Scrapped equipment must be wiped or destroyed to prevent data leaks', B: 'B. Shredders should be used for destroying confidential paper documents', C: 'C. Equipment should be protected from rodents to avoid wiring damage', D: 'D. Scrapped equipment can be directly donated without handling internal data' },
+      ans: ['A', 'B', 'C'],
+      exp: '報廢設備應妥為清除資料或銷毀，碎紙機應用於機密文件，而防鼠為設備維護考量，故選A、B、C。',
+      en_exp: 'Scrapped equipment needs data wiping, shredders for sensitive paper, and rodent protection for maintenance, thus A, B, C.'
+    },
+    { id: 71, type: 'MA', 
+      q: '關於門禁卡管理，下列何者為正確？(多選)', 
+      en_q: 'Regarding access card management, which of the following are correct? (Multiple Choice)',
+      options: { A: 'A. 過期或失效的門禁卡須立即停用', B: 'B. 員工可憑過去的印象自行更新卡片有效性', C: 'C. 門禁系統應嚴格管控以限制未授權人員進入', D: 'D. 允許過期卡在非上班時段仍可使用進出辦公室' },
+      en_options: { A: 'A. Expired or invalid access cards must be deactivated immediately', B: 'B. Employees can self-renew card validity based on memory', C: 'C. Access systems should strictly limit unauthorized entry', D: 'D. Expired cards can still be allowed during off-hours' },
+      ans: ['A', 'C'],
+      exp: '過期門禁卡必須失效並且門禁系統應嚴格控管進出，故選A與C。',
+      en_exp: 'Expired cards must be deactivated and systems strictly managed, thus A and C.'
+    },
+    { id: 72, type: 'MA', 
+      q: '下列哪些項目均屬於實體與環境控制的範疇？(多選)', 
+      en_q: 'Which of the following belong to the scope of Physical and Environmental Controls? (Multiple Choice)',
+      options: { A: 'A. 會議室視訊鏡頭應在閒置時關閉以免拍攝敏感資料', B: 'B. 門禁系統需使過期卡失效並記錄出入以便稽核', C: 'C. 報廢設備與碎紙機中的機密文件必須妥善銷毀', D: 'D. 應維持桌面與螢幕淨空以防止資訊外洩' },
+      en_options: { A: 'A. Conference cameras should be turned off when idle to avoid filming sensitive data', B: 'B. Access systems must deactivate expired cards and log entries for audits', C: 'C. Scrapped equipment and shredder documents must be properly destroyed', D: 'D. Desks and screens must be kept clear to prevent info leaks' },
+      ans: ['A', 'B', 'C', 'D'],
+      exp: '會議室鏡頭管理、門禁管控、報廢設備銷毀以及桌面淨空皆為完整的實體安全管理措施，故全選。',
+      en_exp: 'Camera management, access controls, equipment disposal, and clear desks are all comprehensive physical security measures, thus all options.'
+    },
+    { id: 73, type: 'MA', 
+      q: '員工在日常工作中遇到下列何種情況應立即向IT或資安單位報告？(多選)', 
+      en_q: 'In daily work, which of the following situations require employees to immediately report to IT or Security units? (Multiple Choice)',
+      options: { A: 'A. 員工若收到可疑郵件應立即依公司程序向IT回報', B: 'B. 發現異常文件或設備狀態應立即通報以便處置', C: 'C. 只有當明顯造成損害時才需要通報資安事件', D: 'D. 可疑郵件宜由個人先行處理再決定是否通報' },
+      en_options: { A: 'A. Receiving suspicious emails should be reported immediately per company procedures', B: 'B. Finding abnormal documents or equipment states should be reported immediately', C: 'C. Security incidents only need reporting if explicit damage is caused', D: 'D. Suspicious emails should be handled personally before deciding to report' },
+      ans: ['A', 'B'],
+      exp: '收到可疑郵件或發現異常文件均應立即報告IT或相關單位並依流程處理，故選A與B。',
+      en_exp: 'Suspicious emails and abnormal files must be reported to IT for processing per protocols, thus A and B.'
+    },
+    { id: 74, type: 'MA', 
+      q: '關於外部儲存媒體與外包人員的管控，下列何者正確？(多選)', 
+      en_q: 'Regarding external storage media and outsourced personnel controls, which are correct? (Multiple Choice)',
+      options: { A: 'A. 含機密資訊的USB應妥善保管以防止遺失或外洩', B: 'B. 不得將含機密資訊的儲存媒體隨意丟棄於公共區域', C: 'C. 任何情況下可允許外包人員在未簽NDA前接觸內網資源', D: 'D. 外包人員在接觸敏感系統前應完成必要的保密與授權手續' },
+      en_options: { A: 'A. Confidential USBs should be securely stored to prevent loss or leaks', B: 'B. Confidential media must not be casually discarded in public areas', C: 'C. Outsourced staff are allowed to access intranet without NDAs in any situation', D: 'D. Outsourced staff must complete necessary NDAs and authorizations before accessing sensitive systems' },
+      ans: ['A', 'B', 'D'],
+      exp: '儲存媒體須妥善保管、不得隨意丟棄，且外包人員在接觸內網前也應簽署保密協議，故選A、B、D。',
+      en_exp: 'Media must be secured and not discarded, and outsourced personnel must sign NDAs before access, thus A, B, D.'
+    },
+    { id: 75, type: 'MA', 
+      q: '關於列印資料與帳密管理，下列哪些為正確做法？(多選)', 
+      en_q: 'Regarding printed data and password management, which are correct practices? (Multiple Choice)',
+      options: { A: 'A. 列印機列印出的文件可放在取件區待他人領取無需關注', B: 'B. 列印資料應及時取走以免他人取得', C: 'C. 可將帳號密碼貼於螢幕以方便同事共用', D: 'D. 不得將帳密貼在螢幕上以避免被他人讀取' },
+      en_options: { A: 'A. Printed documents can sit in the pickup tray for others without concern', B: 'B. Printed materials should be promptly retrieved to prevent others from taking them', C: 'C. Passwords can be stuck to the screen for colleagues to share easily', D: 'D. Passwords must not be stuck on screens to prevent others from reading them' },
+      ans: ['B', 'D'],
+      exp: '印表機列印資料應即時取走避免暴露機密；帳密不得貼於螢幕。選B、D。',
+      en_exp: 'Prints should be retrieved instantly, and passwords must never be stuck to screens, thus B and D.'
+    },
+    { id: 76, type: 'MA', 
+      q: '關於機房或設備區域的維護，下列哪些措施是必要的？(多選)', 
+      en_q: 'Regarding server room or equipment area maintenance, which measures are necessary? (Multiple Choice)',
+      options: { A: 'A. 機房與設備機櫃內應禁止放置飲料或食物', B: 'B. 機房內可放置密封飲料供值班人員飲用', C: 'C. 應防範老鼠等造成線路破壞的風險', D: 'D. 機房環境衛生無須特別防護即可確保設備安全' },
+      en_options: { A: 'A. Drinks and food are strictly prohibited inside server rooms and racks', B: 'B. Sealed drinks can be kept in server rooms for duty staff', C: 'C. Rodent risks causing wire damage should be prevented', D: 'D. Environmental hygiene requires no special protection for equipment safety' },
+      ans: ['A', 'C'],
+      exp: '機房禁止食物飲料及需防範老鼠造成線路損害，故選A與C。',
+      en_exp: 'Food/drinks are banned and rodents must be prevented to avoid wire damage, thus A and C.'
+    },
+    { id: 77, type: 'MA', 
+      q: '下列哪些措施屬於人員控制的範疇？(多選)', 
+      en_q: 'Which of the following measures belong to the scope of Personnel Controls? (Multiple Choice)',
+      options: { A: 'A. 篩選求職者背景以確認符合資安要求', B: 'B. 簽署保密協議以約定資訊保護義務', C: 'C. 定期資訊安全教育訓練以提升員工認知', D: 'D. 只需技術控管即可，不需要人員教育與合約約束' },
+      en_options: { A: 'A. Screening applicants\' backgrounds to ensure compliance with security requirements', B: 'B. Signing NDAs to stipulate information protection obligations', C: 'C. Regular InfoSec training to boost employee awareness', D: 'D. Only technical controls are needed; education and contracts are unnecessary' },
+      ans: ['A', 'B', 'C'],
+      exp: '人員篩選、保密協議及教育訓練皆為人員控制的重要項目，故全選A,B,C。',
+      en_exp: 'Screening, NDAs, and training are key parts of personnel controls, thus A, B, C.'
+    },
+    { id: 78, type: 'MA', 
+      q: '在門禁管理方面，下列哪些作法可提升安全性？(多選)', 
+      en_q: 'In access control management, which practices improve security? (Multiple Choice)',
+      options: { A: 'A. 過期門禁卡必須停用以防止未授權使用', B: 'B. 門禁系統應限制與紀錄進出以強化安全', C: 'C. 過期卡只要交由使用者保管即可無需停用', D: 'D. 允許員工自行延長門禁卡有效期以方便使用' },
+      en_options: { A: 'A. Expired access cards must be disabled to prevent unauthorized use', B: 'B. Access systems should restrict and log entries to strengthen security', C: 'C. Expired cards can be kept by users without needing deactivation', D: 'D. Employees can extend their own card validity for convenience' },
+      ans: ['A', 'B'],
+      exp: '過期卡應失效以防未授權，且門禁系統須嚴格管控，故選A與B。',
+      en_exp: 'Expired cards must be invalidated and access systems strictly managed, thus A and B.'
+    },
+    { id: 79, type: 'MA', 
+      q: '關於會議視訊設備與錄影管理，下列哪些為正確做法？(多選)', 
+      en_q: 'Regarding conference video equipment and recording management, which are correct practices? (Multiple Choice)',
+      options: { A: 'A. 會議室視訊鏡頭閒置時應關閉以避免拍攝敏感內容', B: 'B. 鏡頭與錄影設備不應直接對準含機密資訊的區域', C: 'C. 只要貼告示就可任由鏡頭對準敏感資料而不關閉', D: 'D. 應對錄影與儲存設定進行管理與存取控管' },
+      en_options: { A: 'A. Conference cameras should be turned off when idle to avoid filming sensitive content', B: 'B. Cameras and recorders should not directly point at areas with confidential data', C: 'C. Posting a notice is enough to allow cameras to point at sensitive data without closing', D: 'D. Recording and storage settings must have access controls and management' },
+      ans: ['A', 'B', 'D'],
+      exp: '會議室鏡頭閒置時應關閉，鏡頭應避免對敏感文件，並應管理錄影設定，故選A、B、D。',
+      en_exp: 'Idle cameras should close, avoid sensitive files, and recording settings must be managed, thus A, B, D.'
+    },
+    { id: 80, type: 'MA', 
+      q: '關於資安事件的通報，下列哪些敘述正確？(多選)', 
+      en_q: 'Regarding security incident reporting, which statements are correct? (Multiple Choice)',
+      options: { A: 'A. 員工如收到可疑郵件應立即報告IT部門', B: 'B. 可疑郵件可先在個人裝置上打開以確認內容', C: 'C. 發現異常文件或可疑設備應立即通報相關單位以處理', D: 'D. 只有在造成影響時才需通報資安事件' },
+      en_options: { A: 'A. Employees must immediately report suspicious emails to IT', B: 'B. Suspicious emails can be opened on personal devices first to verify content', C: 'C. Abnormal documents or suspicious devices must be immediately reported to relevant units', D: 'D. Security incidents only need reporting if they cause impact' },
+      ans: ['A', 'C'],
+      exp: '員工發現可疑郵件或異常文件都應按照標準流程通報IT或資安單位，故選A與C。',
+      en_exp: 'Employees finding suspicious emails or files should report to IT per standard flow, thus A and C.'
+    },
+    { id: 81, type: 'MA', 
+      q: '關於機密資料與報廢設備的處理，下列哪些為公司應採取的行為？(多選)', 
+      en_q: 'Regarding sensitive data and scrapped equipment, which actions should the company take? (Multiple Choice)',
+      options: { A: 'A. 報廢設備可直接轉賣給第三方而不需處理內部資料', B: 'B. 報廢設備內的機密資料應被徹底清除或銷毀', C: 'C. 碎紙機是處理紙本機密文件的常見工具', D: 'D. 應建立報廢與銷毀流程以確保資料不被回收利用' },
+      en_options: { A: 'A. Scrapped equipment can be resold directly to third parties without data wiping', B: 'B. Confidential data inside scrapped equipment must be thoroughly wiped or destroyed', C: 'C. Shredders are common tools for destroying confidential paper documents', D: 'D. Disposal and destruction processes must be established to ensure data isn\'t recovered' },
+      ans: ['B', 'C', 'D'],
+      exp: '碎紙機應用於機密文件銷毀，報廢設備應妥善處理且避免將機密資料遺留，故選B、C、D。',
+      en_exp: 'Shredders destroy sensitive paper; scrapped equipment must be properly wiped to avoid leaving data behind, thus B, C, D.'
+    },
+    { id: 82, type: 'MA', 
+      q: '收到可疑電子郵件時，員工應採取下列哪些行動？(多選)', 
+      en_q: 'When receiving a suspicious email, what actions should an employee take? (Multiple Choice)',
+      options: { A: 'A. 員工應將可疑郵件或附件通報IT而非直接開啟檔案', B: 'B. 可疑郵件可先下載附件於個人電腦測試以判定是否安全', C: 'C. 若可疑郵件看似來自內部就不需要回報', D: 'D. 遇到可疑郵件可直接回覆原發件人要求說明' },
+      en_options: { A: 'A. Employees should report suspicious emails/attachments to IT instead of opening them', B: 'B. Attachments can be tested on personal PCs first to judge safety', C: 'C. No need to report if the email looks like it\'s from an internal sender', D: 'D. Directly reply to the sender of the suspicious email demanding an explanation' },
+      ans: ['A', 'D'], // As provided in user prompt
+      exp: '員工負有向IT回報可疑郵件的義務，且不可隨意打開不明附件，故選A與D。 (註: 原題意回覆發件人可能存在風險，但依據您的答案此處提供 A, D)',
+      en_exp: 'Employees are obligated to report to IT and must not open unknown attachments, thus A and D. (Note: Replying can be risky but follows the provided answer key).'
+    },
+    { id: 83, type: 'MA', 
+      q: '關於外部儲存媒體（USB等）的管理，下列哪些措施是適當的？(多選)', 
+      en_q: 'Regarding external storage media (USBs, etc.) management, which measures are appropriate? (Multiple Choice)',
+      options: { A: 'A. 含機密資訊的外部儲存媒體應有登記與保管機制', B: 'B. 不得將含機密資訊的USB放置於桌緣或靠近門口的公共處', C: 'C. 對重要儲存媒體應限定授權人員存取並做好盤點', D: 'D. 含機密資訊的USB可隨意插拔於任意工作站以方便存取' },
+      en_options: { A: 'A. External media with confidential data should have registry and custody mechanisms', B: 'B. Confidential USBs must not be placed on desk edges or near doors', C: 'C. Important storage media should be restricted to authorized access and inventoried', D: 'D. Confidential USBs can be freely plugged into any workstation for convenience' },
+      ans: ['A', 'B', 'C'],
+      exp: '含機密資訊的USB須妥善保管與登記管理，且不得放置於公共區域或桌緣，故選A、B、C。',
+      en_exp: 'Confidential USBs need secure storage, registry, and should not be left in public spots, thus A, B, C.'
+    },
+    { id: 84, type: 'MA', 
+      q: '為保護機房設備安全，下列哪些管理是必要的？(多選)', 
+      en_q: 'To protect server room equipment security, which management controls are necessary? (Multiple Choice)',
+      options: { A: 'A. 機房及機櫃內應禁止放置飲料或食物以避免損害設備', B: 'B. 機房可放置食物只要遠離關鍵設備即可', C: 'C. 應採取防鼠與害蟲措施以保護線路與接點', D: 'D. 設備維護時無須考量鼠害與環境因素' },
+      en_options: { A: 'A. Food and drinks must be prohibited inside server rooms and racks to prevent damage', B: 'B. Food can be placed in server rooms as long as it\'s far from key equipment', C: 'C. Rodent and pest control measures must be taken to protect wires and contacts', D: 'D. Environmental factors and rodents can be ignored during equipment maintenance' },
+      ans: ['A', 'C'], // As requested by prompt parsing corrections
+      exp: '機房禁止食物飲料及需防範老鼠造成線路損害，故選A與C。',
+      en_exp: 'Food/drinks are prohibited and rodent prevention is required to protect wiring, thus A and C.'
+    },
+    { id: 85, type: 'MA', 
+      q: '下列哪些措施有助於降低因人員行為導致的資訊安全風險？(多選)', 
+      en_q: 'Which measures help reduce info security risks caused by personnel behavior? (Multiple Choice)',
+      options: { A: 'A. 透過定期資安訓練提升員工警覺可降低人為風險', B: 'B. 只需依賴技術控管而不需訂定違規懲處即可達成資安', C: 'C. 聘用合約中納入違規懲處與保密條款可作為行政與法律依據', D: 'D. 教育訓練可完全取代保密協議與合約規範' },
+      en_options: { A: 'A. Regular security training raises vigilance and lowers human risks', B: 'B. InfoSec can be achieved purely with technical controls without disciplinary rules', C: 'C. Including disciplinary actions and confidentiality clauses in contracts provides administrative and legal basis', D: 'D. Training can completely replace NDAs and contractual rules' },
+      ans: ['A', 'C'],
+      exp: '定期教育與嚴格合約義務（如懲處與保密）是防範內部風險的有效手段，故選A與C。',
+      en_exp: 'Regular training and strict contractual obligations are effective against internal risks, thus A and C.'
+    },
+
+    // 三、是非題 (36-40)
+    { id: 86, type: 'TF', 
+      q: '員工如收到可疑郵件或發現異常文件，應依公司標準程序立即向IT部門報告；此說法是否正確？', 
+      en_q: 'If an employee receives a suspicious email or discovers abnormal documents, they should immediately report to IT per standard procedures; is this statement correct?',
+      ans: 'true',
+      exp: '員工報告可疑郵件與發現異常文件可讓IT即時處置，維持總體安全；此說法為真。',
+      en_exp: 'Reporting suspicious emails and abnormal documents allows IT to act instantly, maintaining overall security; this statement is true.'
+    },
+    { id: 87, type: 'TF', 
+      q: '在機房等高度安全區域，未經授權且無監督人員在場時允許拍照或錄影；此說法是否正確？', 
+      en_q: 'In highly secure areas like server rooms, unauthorized photography/video is allowed when unsupervised; is this statement correct?',
+      ans: 'false',
+      exp: '在機房等高度安全區域，未經授權且無監督人員在場時，拍照或錄影應被禁止，因此原敘述為假。',
+      en_exp: 'In highly secure areas, unauthorized and unsupervised photography or recording should be prohibited, thus this statement is false.'
+    },
+    { id: 88, type: 'TF', 
+      q: '公司應要求正職與外包人員在接觸內網資源前完成保密協議簽署；此敘述是否正確？', 
+      en_q: 'The company should require both full-time and outsourced personnel to complete NDA signing before accessing intranet resources; is this statement correct?',
+      ans: 'true',
+      exp: '保密協議應包含正職與外包人員，並在接觸內網資源前完成簽署，此說法為真。',
+      en_exp: 'NDAs should cover both full-time and outsourced staff, signed prior to intranet access, thus true.'
+    },
+    { id: 89, type: 'TF', 
+      q: '維持桌面淨空與螢幕淨空可以降低機密資料外洩風險；此說法是否正確？', 
+      en_q: 'Maintaining a clear desk and clear screen policy lowers the risk of confidential data leakage; is this statement correct?',
+      ans: 'true',
+      exp: '桌面與螢幕淨空政策能防止機密資料被旁人窺見或取用，該敘述為真。',
+      en_exp: 'Clear desk and screen policies prevent data from being snooped on or taken by bystanders, thus true.'
+    },
+    { id: 90, type: 'TF', 
+      q: '列印出的機密文件可長時間放置於公用取件區，等同仁有空再來取；此說法是否正確？', 
+      en_q: 'Printed confidential documents can be left in the public pickup area for a long time until colleagues are free to grab them; is this statement correct?',
+      ans: 'false',
+      exp: '印表機列印資料應及時取走以避免被他人取得，故允許長時間放置於取件區的說法為假。',
+      en_exp: 'Printed materials must be retrieved promptly to prevent others from taking them, so leaving them for a long time is false.'
+    }
     ];
 
 
@@ -1332,14 +1648,27 @@ window.initRadarChart = async function() {
     let currentQuestionIndex = 0;
     let currentScore = 0;
 
-    // 🎯 2. 核心演算法：隨機抽題 (Fisher-Yates Shuffle)
     function generateQuiz(quizCount = 10) {
-        const shuffled = [...bigQuestionBank];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; 
-        }
-        currentRoundQuestions = shuffled.slice(0, quizCount);
+        let tfQuestions = bigQuestionBank.filter(q => q.type === 'TF');
+        let scQuestions = bigQuestionBank.filter(q => q.type === 'MC' || q.type === 'SC');
+        let maQuestions = bigQuestionBank.filter(q => q.type === 'MA');
+        
+        const shuffleArray = (arr) => {
+            let res = [...arr];
+            for (let i = res.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [res[i], res[j]] = [res[j], res[i]]; 
+            }
+            return res;
+        };
+
+        let selected = [
+            ...shuffleArray(tfQuestions).slice(0, 2),
+            ...shuffleArray(scQuestions).slice(0, 3),
+            ...shuffleArray(maQuestions).slice(0, 5)
+        ];
+        
+        currentRoundQuestions = shuffleArray(selected);
         currentQuestionIndex = 0;
         currentScore = 0;
         
@@ -1381,6 +1710,8 @@ window.initRadarChart = async function() {
             const trueText = isEn ? 'True' : '是 (True)';
             const falseText = isEn ? 'False' : '否 (False)';
             const typeText = isEn ? 'True/False' : '是非題';
+            const submitBtnText = isEn ? 'Submit Answer' : '確認答案';
+            const submitBtnHtml = `<button type="button" class="btn-save" id="submit-btn-${item.id}" style="margin-top: 15px; font-size: 1.1rem; padding: 10px 20px; width: 100%; border: 1px solid #00a8ff;">${submitBtnText}</button>`;
             htmlContent = `
                 ${progressHtml}
                 <div class="flip-card" id="flip-card-${item.id}">
@@ -1391,17 +1722,37 @@ window.initRadarChart = async function() {
                                 <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="true" class="quiz-radio"> <span class="quiz-option-text">${trueText}</span></label>
                                 <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="false" class="quiz-radio"> <span class="quiz-option-text">${falseText}</span></label>
                             </div>
+                            ${submitBtnHtml}
                         </div>
                         <div class="flip-card-back" id="flip-card-back-${item.id}">
                         </div>
                     </div>
                 </div>
             `;
-        } else if (item.type === 'MC') {
-            const optA = isEn && item.en_options ? item.en_options.A : item.options.A;
-            const optB = isEn && item.en_options ? item.en_options.B : item.options.B;
-            const optC = isEn && item.en_options ? item.en_options.C : item.options.C;
-            const typeText = isEn ? 'Multiple Choice' : '選擇題';
+        } else if (item.type === 'MC' || item.type === 'SC' || item.type === 'MA') {
+            const typeTextMap = {
+                'MC': isEn ? 'Multiple Choice' : '選擇題',
+                'SC': isEn ? 'Single Choice' : '單選題',
+                'MA': isEn ? 'Multiple Answer' : '多選題'
+            };
+            const typeText = typeTextMap[item.type];
+            const isMultiple = item.type === 'MA';
+            const inputType = isMultiple ? 'checkbox' : 'radio';
+            
+            let optionsHtml = '';
+            for (const key in item.options) {
+                const optText = isEn && item.en_options ? item.en_options[key] : item.options[key];
+                optionsHtml += `
+                    <label class="quiz-option">
+                        <input type="${inputType}" name="dynamic_q_${item.id}" value="${key}" class="quiz-${inputType}">
+                        <span class="quiz-option-text">${optText}</span>
+                    </label>
+                `;
+            }
+
+            const submitBtnText = isEn ? 'Submit Answer' : '確認答案';
+            const submitBtnHtml = `<button type="button" class="btn-save" id="submit-btn-${item.id}" style="margin-top: 15px; font-size: 1.1rem; padding: 10px 20px; width: 100%; border: 1px solid #00a8ff;">${submitBtnText}</button>`;
+
             htmlContent = `
                 ${progressHtml}
                 <div class="flip-card" id="flip-card-${item.id}">
@@ -1409,10 +1760,9 @@ window.initRadarChart = async function() {
                         <div class="flip-card-front rule-card" style="transition: 0.3s; padding-left: 15px; border-left: 5px solid transparent; height: 100%;">
                             <h4 style="color: #00a8ff; margin-bottom: 20px; font-size: 1.5rem; line-height: 1.4;">Q${questionIndex}. 【${typeText}】${qText}</h4>
                             <div class="quiz-options-grid">
-                                <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="A" class="quiz-radio"> <span class="quiz-option-text">${optA}</span></label>
-                                <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="B" class="quiz-radio"> <span class="quiz-option-text">${optB}</span></label>
-                                <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="C" class="quiz-radio"> <span class="quiz-option-text">${optC}</span></label>
+                                ${optionsHtml}
                             </div>
+                            ${submitBtnHtml}
                         </div>
                         <div class="flip-card-back" id="flip-card-back-${item.id}">
                         </div>
@@ -1422,12 +1772,29 @@ window.initRadarChart = async function() {
         }
         container.innerHTML = htmlContent;
 
-        const inputs = container.querySelectorAll(`input[name="dynamic_q_${item.id}"]`);
-        inputs.forEach(input => {
-            input.addEventListener('change', function() {
-                handleAnswerSelect(item, this.value);
+        const submitBtn = document.getElementById(`submit-btn-${item.id}`);
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function() {
+                const checkedInputs = container.querySelectorAll(`input[name="dynamic_q_${item.id}"]:checked`);
+                const isMultiple = item.type === 'MA';
+                
+                if (checkedInputs.length === 0) {
+                    const alertTitle = isEn ? 'Warning' : '提示';
+                    const alertText = isEn ? 'Please select at least one option.' : '請至少選擇一個選項。';
+                    Swal.fire({ icon: 'warning', title: alertTitle, text: alertText, background: '#1c2638', color: '#fff' });
+                    return;
+                }
+                
+                let selectedValues;
+                if (isMultiple) {
+                    selectedValues = Array.from(checkedInputs).map(i => i.value).sort();
+                } else {
+                    selectedValues = checkedInputs[0].value;
+                }
+                
+                handleAnswerSelect(item, selectedValues);
             });
-        });
+        }
     }
 
     window.updateQuizLanguage = function() {
@@ -1458,24 +1825,35 @@ window.initRadarChart = async function() {
         const inputs = questionDiv.querySelectorAll('input');
         inputs.forEach(input => input.disabled = true);
 
-        let correctAnswerText = item.ans;
-        if(item.type === 'TF') {
+        let correctAnswerText = "";
+        let explanationText = "";
+        
+        if (item.type === 'TF') {
             const trueText = isEn ? 'True' : '是 (True)';
             const falseText = isEn ? 'False' : '否 (False)';
             correctAnswerText = item.ans === 'true' ? `⭕ ${trueText}` : `❌ ${falseText}`;
+        } else if (item.type === 'MA') {
+            correctAnswerText = item.ans.map(k => (isEn && item.en_options ? item.en_options[k] : item.options[k])).join('<br>');
         } else {
             correctAnswerText = isEn && item.en_options ? item.en_options[item.ans] : item.options[item.ans];
         }
 
-        const expDefaultZh = `依據資安實務與 ISO 27001 規範，此情境下選擇「${correctAnswerText}」才是能有效降低風險的最佳作法。其他選項可能帶來資料外洩或權限管控不當的隱患。`;
-        const expDefaultEn = `According to security practices and ISO 27001 standards, choosing "${correctAnswerText}" in this scenario is the best practice to mitigate risks. Other options may lead to data leakage or improper access control.`;
-        const explanationText = isEn ? expDefaultEn : expDefaultZh;
+        const expDefaultZh = item.exp || `依據資安實務與 ISO 27001 規範，此情境下選擇「${correctAnswerText}」才是能有效降低風險的最佳作法。其他選項可能帶來資料外洩或權限管控不當的隱患。`;
+        const expDefaultEn = item.en_exp || `According to security practices and ISO 27001 standards, choosing "${correctAnswerText}" in this scenario is the best practice to mitigate risks. Other options may lead to data leakage or improper access control.`;
+        explanationText = isEn ? expDefaultEn : expDefaultZh;
+        
+        let isCorrect = false;
+        if (item.type === 'MA') {
+            isCorrect = JSON.stringify(selectedValue) === JSON.stringify([...item.ans].sort());
+        } else {
+            isCorrect = selectedValue === item.ans;
+        }
 
         const isLastQuestion = currentQuestionIndex === currentRoundQuestions.length - 1;
         const btnText = isLastQuestion ? (isEn ? "See Score" : "看成績") : (isEn ? "Next" : "下一題");
         const btnHtml = `<button type="button" class="btn-save" style="margin-top: 15px; font-size: 1rem; padding: 10px 25px;" onclick="nextQuestion()">${btnText} <i class="fa-solid fa-arrow-right"></i></button>`;
 
-        if (selectedValue === item.ans) {
+        if (isCorrect) {
             currentScore += 10;
             backDiv.className = 'flip-card-back correct';
             backDiv.innerHTML = `

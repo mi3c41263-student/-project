@@ -9,6 +9,9 @@ app.use(express.json());
 // 開放 uploads 資料夾對外作為靜態資源
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// 開放 frontend 資料夾作為靜態資源，讓前端跟後端在同一個 Port 運作
+app.use(express.static(path.join(__dirname, '../frontend')));
+
 // =========================================
 // 路由 (Routes) 設定區
 // =========================================

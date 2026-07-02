@@ -1262,8 +1262,21 @@ div.swal2-container {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.quiz-radio {
-    display: none; /* 隱藏原本的圓形單選按鈕 */
+.quiz-radio, .quiz-checkbox {
+    display: none; /* 隱藏原本的單選與多選按鈕 */
+}
+
+/* 點擊選中時的高亮動畫與樣式 */
+.quiz-option:has(input:checked) {
+    background: rgba(0, 168, 255, 0.15);
+    border-color: #00a8ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 168, 255, 0.3);
+}
+
+.quiz-option:has(input:checked) .quiz-option-text {
+    color: #00d2ff;
+    font-weight: bold;
 }
 
 .quiz-option-text {
@@ -1275,4 +1288,29 @@ div.swal2-container {
 .quiz-option:active {
     transform: translateY(1px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* =========================================
+   Mobile Responsive Rules
+========================================= */
+@media (max-width: 768px) {
+    body { overflow-y: auto; overflow-x: hidden; }
+    .dashboard-container { flex-direction: column; height: auto; min-height: 100vh; }
+    .sidebar { width: 100vw; flex-direction: row; height: 70px; padding: 10px; overflow-x: auto; overflow-y: hidden; z-index: 100; border-right: none; border-bottom: 1px solid var(--border-color); }
+    .sidebar-brand { display: none; }
+    .sidebar-menu { display: flex; flex-direction: row; padding: 0; gap: 10px; align-items: center; }
+    .menu-label { display: none; }
+    .menu-item { padding: 8px 12px; margin: 0; white-space: nowrap; font-size: 0.9rem; }
+    .sidebar-footer { display: none; }
+    
+    .main-content { padding: 15px !important; width: 100vw; height: auto; min-height: calc(100vh - 70px); }
+    
+    .grid, .quiz-options-grid { grid-template-columns: 1fr !important; gap: 10px; }
+    .topbar { flex-direction: column; gap: 15px; align-items: flex-start; height: auto; padding-bottom: 15px; }
+    
+    /* 筆記與小測驗卡片在手機上滿版 */
+    .note-card, .rule-card { width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; }
+    .flip-card { width: 100% !important; height: auto !important; min-height: 400px; }
+    
+    h1, h2, h3 { font-size: 1.5rem !important; }
 }
