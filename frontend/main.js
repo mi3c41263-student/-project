@@ -1,5 +1,5 @@
 
-const API_BASE_URL = window.location.origin;
+const API_BASE_URL = window.location.port === '5500' ? 'http://localhost:3000' : window.location.origin;
 document.addEventListener('DOMContentLoaded', () => {
     // =========================================
     // 1. 即時系統時鐘 (SOC Dashboard 風格)
@@ -1717,7 +1717,7 @@ window.initRadarChart = async function() {
                 <div class="flip-card" id="flip-card-${item.id}">
                     <div class="flip-card-inner">
                         <div class="flip-card-front rule-card" style="transition: 0.3s; padding-left: 15px; border-left: 5px solid transparent; height: 100%;">
-                            <h4 style="color: #00a8ff; margin-bottom: 20px; font-size: 1.5rem; line-height: 1.4;">Q${questionIndex}. 【${typeText}】${qText}</h4>
+                            <h4 style="color: #00a8ff; margin-bottom: 20px; font-size: 1.15rem; line-height: 1.4;">Q${questionIndex}. 【${typeText}】${qText}</h4>
                             <div class="quiz-options-grid" style="grid-template-columns: 1fr;">
                                 <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="true" class="quiz-radio"> <span class="quiz-option-text">${trueText}</span></label>
                                 <label class="quiz-option"><input type="radio" name="dynamic_q_${item.id}" value="false" class="quiz-radio"> <span class="quiz-option-text">${falseText}</span></label>
@@ -1758,7 +1758,7 @@ window.initRadarChart = async function() {
                 <div class="flip-card" id="flip-card-${item.id}">
                     <div class="flip-card-inner">
                         <div class="flip-card-front rule-card" style="transition: 0.3s; padding-left: 15px; border-left: 5px solid transparent; height: 100%;">
-                            <h4 style="color: #00a8ff; margin-bottom: 20px; font-size: 1.5rem; line-height: 1.4;">Q${questionIndex}. 【${typeText}】${qText}</h4>
+                            <h4 style="color: #00a8ff; margin-bottom: 20px; font-size: 1.15rem; line-height: 1.4;">Q${questionIndex}. 【${typeText}】${qText}</h4>
                             <div class="quiz-options-grid">
                                 ${optionsHtml}
                             </div>
@@ -1867,7 +1867,7 @@ window.initRadarChart = async function() {
                 <div class="flip-card-back-icon"><i class="fa-solid fa-times-circle"></i></div>
                 <div class="flip-card-back-text">${isEn ? 'Incorrect.' : '答錯了。'}</div>
                 <div class="flip-card-back-answer">${isEn ? 'Correct Answer:' : '正確解答為：'}<br><span style="color: #fff; margin-top: 5px; display: inline-block; font-size: 1.2rem;">${correctAnswerText}</span></div>
-                <div style="margin-top: 15px; font-size: 1.2rem; color: #ffb8b8; max-width: 90%; line-height: 1.6; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;"><strong>${isEn ? 'Explanation:' : '詳解：'}</strong><br>${explanationText}</div>
+                <div style="margin-top: 15px; font-size: 0.9rem; color: #ffb8b8; max-width: 90%; line-height: 1.6; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;"><strong>${isEn ? 'Explanation:' : '詳解：'}</strong><br>${explanationText}</div>
                 ${btnHtml}
             `;
         }

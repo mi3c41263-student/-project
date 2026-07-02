@@ -1,4 +1,4 @@
-const API_BASE_URL = window.location.origin;
+const API_BASE_URL = window.location.port === '5500' ? 'http://localhost:3000' : window.location.origin;
 
 document.addEventListener("DOMContentLoaded", function () {
     // =========================

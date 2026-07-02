@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="main.css?v=11">
 </head>
 <body>
 
@@ -133,7 +133,7 @@
                 <div id="manualSection" class="section-container" style="display: none;">
                     <div class="manual-header glass-panel">
                         <h3 data-i18n="man-iso">ISO 27002:2022 資訊安全控制指南</h3>
-                        <p data-i18n="man-desc">本手冊收錄本次稽核任務之重點控制措施。請熟記以下條文，以利在 VR 情境中準確判斷缺失。</p>
+                        <p style="color: #8892b0; margin-top: 10px; font-size: 0.80rem; line-height: 1.6;" data-i18n="man-desc">本手冊收錄本次稽核任務之重點控制措施。請熟記以下條文，以利在 VR 情境中準確判斷缺失。</p>
                     </div>
 
                     <div class="manual-layout">
@@ -236,8 +236,8 @@
 
                 <div id="quizSection" class="section-container" style="display: none;">
                     <div class="manual-header glass-panel" style="margin-bottom: 20px;">
-                        <h3 class="clause-main-title" data-i18n="quiz-title">資安稽核情境模擬測驗</h3>
-                        <p style="color: #8892b0; margin-top: 10px;" data-i18n="quiz-desc">本測驗將隨機抽取 2 題是非題、3 題單選題、5 題多選題，共10題，包含實務稽核的灰色地帶與複合陷阱，驗證您的真實防禦能力。</p>
+                        <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="quiz-title">資安稽核情境模擬測驗</h3>
+                        <p style="color: #8892b0; margin-top: 10px; font-size: 0.80rem; line-height: 1.6;" data-i18n="quiz-desc">本測驗將隨機抽取 2 題是非題、3 題單選題、5 題多選題，共10題，包含實務稽核的灰色地帶與複合陷阱，驗證您的真實防禦能力。</p>
                     </div>
 
                     <div class="glass-panel" style="padding: 25px;">
@@ -253,7 +253,7 @@
                     
                     <div class="analysis-header glass-panel">
                         <h3 data-i18n="ana-title">防禦能力雷達與綜合評估</h3>
-                        <p data-i18n="ana-desc">基於您在 VR 情境模擬中的決策數據，系統為您生成了專屬的資安能力雷達圖。</p>
+                        <p style="color: #8892b0; margin-top: 10px; font-size: 0.8rem; line-height: 1.6;" data-i18n="ana-desc">基於您在 VR 情境模擬中的決策數據，系統為您生成了專屬的資安能力雷達圖。</p>
                     </div>
 
                     <div style="display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 20px; flex-wrap: nowrap;">
@@ -334,7 +334,7 @@
     <div id="settingsModal" class="note-modal-overlay">
         <div class="settings-modal-content glass-panel" style="height: 65vh; min-height: 480px;">
             <button class="close-modal-btn" id="closeSettingsModal"><i class="fa-solid fa-xmark"></i></button>
-            <h2 class="modal-title" style="margin-bottom: 20px;" data-i18n="set-title"><i class="fa-solid fa-sliders"></i> 系統設定</h2>
+            <h2 class="modal-title" style="margin-bottom: 10px; margin-top: 10px; border-bottom: none; padding-bottom: 0;" data-i18n="set-title"><i class="fa-solid fa-sliders"></i> 系統設定</h2>
             
             <div class="settings-layout">
                 <div class="settings-sidebar">
@@ -402,7 +402,7 @@
             <h4 style="color: #ff4757;">刪除帳號</h4>
             <p>刪除帳號後，您所有的學習歷程與數據將永久消失，無法復原。</p>
         </div>
-        <button id="deleteAccountBtn" style="background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">永久刪除帳號</button>
+        <button id="deleteAccountBtn" style="background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; white-space: nowrap; font-size: 0.9rem; min-width: 100px; font-weight: bold;">永久刪除帳號</button>
     </div>
 </div>
 
@@ -529,6 +529,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="main.js"></script>
+    <script src="main.js?v=3"></script>
 </body>
 </html>
