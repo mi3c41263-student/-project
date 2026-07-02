@@ -4,106 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ISO愛搜查 - VR 資安教育訓練系統</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
-    
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
-    <div class="left-panel">
-        <img src="logo.png" alt="ISO愛搜查 Logo" class="brand-logo">
-        <h1>VR 資安教育訓練系統</h1>
-        <p>沉浸式VR體驗，將抽象的資安規範轉化為實際防禦行為。</p>
-    </div>
-
-    <div class="right-panel">
-        <div id="particles-js"></div>
-
-        <div class="login-container" data-tilt data-tilt-max="3" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.1">
-            <h2>系統登入</h2>
-            <form id="loginForm" action="#" method="POST">
+    <div id="grid-background"></div>
+    <div class="auth-container" id="authContainer">
+        
+        <div class="form-container sign-in-container">
+            <form id="loginForm">
+                <h2 class="form-title">Login</h2>
                 <div class="form-group">
-                    <label for="username"><i class="fa-solid fa-user"></i> 帳號</label>
-                    <input type="text" id="username" name="username" placeholder="請輸入使用者名稱或電子郵件" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password"><i class="fa-solid fa-lock"></i> 密碼</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="password" name="password" placeholder="請輸入密碼" required>
-                        <i class="fa-solid fa-eye-slash" id="togglePassword"></i>
+                    <label>Email</label>
+                    <div class="input-line">
+                        <input type="email" id="username" placeholder="請輸入電子郵件" required>
+                        <i class="fa-solid fa-envelope icon-right"></i>
                     </div>
                 </div>
-
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-line">
+                        <input type="password" id="password" placeholder="請輸入密碼" required>
+                        <i class="fa-solid fa-lock icon-right"></i>
+                        <i class="fa-solid fa-eye-slash toggle-eye" id="togglePassword"></i>
+                    </div>
+                </div>
                 <div class="form-options">
-                    <label class="remember-me">
-                        <input type="checkbox" id="remember"> <span>記住我</span>
-                    </label>
-                   <a href="#" id="forgotPwdLink" class="forgot-link">忘記密碼？</a>
+                    <label class="remember-me"><input type="checkbox" id="remember"> <span>記住我</span></label>
+                    <a href="#" id="forgotPwdLink" class="forgot-link">忘記密碼？</a>
                 </div>
-
-                <button type="submit" class="btn-login">
-                    登入系統 <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                </button>
-                <div class="register-hint" style="margin-top: 20px;">
-                    尚未建立人員資料？ <a href="#" id="registerLink">立即註冊</a>
-                </div>
+                <button type="submit" class="btn-login">Login</button>
+                <div class="switch-hint">Don't have an account? <br><span class="switch-btn" id="toRegisterBtn">Sign Up</span></div>
             </form>
-
-            <div class="system-footer">
-                &copy; 2026 ISO愛搜查 專題團隊 版權所有
-            </div>
         </div>
-    </div>
 
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" id="closeRegister">&times;</span>
-            <h3>註冊新帳號</h3>
+        <div class="form-container sign-up-container">
             <form id="registerForm">
+                <h2 class="form-title">Register</h2>
                 <div class="form-group">
-                    <label>新帳號</label>
-                    <input type="text" id="regUsername" placeholder="請設定帳號" required>
+                    <label>Email</label>
+                    <div class="input-line">
+                        <input type="email" id="regUsername" placeholder="請輸入電子郵件" required>
+                        <i class="fa-solid fa-envelope icon-right"></i>
+                    </div>
                 </div>
-                
                 <div class="form-group">
-                    <label>新密碼</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="regPassword" placeholder="至少 8 碼，包含大小寫英文字母與數字" required>
-                        <i class="fa-solid fa-eye-slash" id="toggleRegPassword"></i>
+                    <label>Password</label>
+                    <div class="input-line">
+                        <input type="password" id="regPassword" placeholder="請輸入密碼" required>
+                        <i class="fa-solid fa-key icon-right"></i>
+                        <i class="fa-solid fa-eye-slash toggle-eye" id="toggleRegPassword"></i>
                     </div>
                     <ul id="pwdCriteria" class="pwd-criteria" style="display: none;">
-                        <li id="rule-length" class="invalid"><i class="fa-solid fa-circle"></i> 至少 8 個字元</li>
-                        <li id="rule-case" class="invalid"><i class="fa-solid fa-circle"></i> 包含大小寫英文字母</li>
+                        <li id="rule-length" class="invalid"><i class="fa-solid fa-circle"></i> 至少 8 碼</li>
+                        <li id="rule-case" class="invalid"><i class="fa-solid fa-circle"></i> 包含大小寫</li>
                         <li id="rule-number" class="invalid"><i class="fa-solid fa-circle"></i> 包含數字</li>
                     </ul>
                 </div>
-                <button type="submit" class="btn-login">確認註冊</button>
+                <button type="submit" class="btn-login" style="margin-top: 15px;">Register</button>
+                <div class="switch-hint">Already have an account? <br><span class="switch-btn" id="toLoginBtn">Sign In</span></div>
             </form>
         </div>
-    </div>
 
-    <div id="forgotPwdModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" id="closeForgotPwd">&times;</span>
-            <h3>找回密碼</h3>
-            <p style="margin-bottom: 15px; color: #a0aec0; font-size: 0.9rem;">請輸入您的電子郵件，我們將發送重置密碼的連結給您。</p>
-            <form id="forgotPwdForm">
-                <div class="form-group">
-                    <label>電子郵件</label>
-                <input type="email" id="forgotEmail" placeholder="example@email.com" required>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <div class="content-wrapper text-left">
+                        <img src="logo.png" class="brand-logo">
+                        <h1 class="glow-text">WELCOME!</h1>
+                        <p class="welcome-desc">建立您的帳號，開始資安防禦訓練旅程。</p>
+                    </div>
                 </div>
-                <button type="submit" class="btn-login">發送重置連結</button>
+                <div class="overlay-panel overlay-right">
+                    <div class="content-wrapper text-right">
+                        <img src="logo.png" class="brand-logo">
+                        <h1 class="glow-text">WELCOME<br>BACK!</h1>
+                        <p class="welcome-desc">VR資安教育系統，將抽象規範轉化為防禦行為。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 忘記密碼 Modal -->
+    <div id="forgotPwdModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(5px); justify-content:center; align-items:center;">
+        <div class="modal-content" style="background-color:#0b101e; border:1px solid rgba(0,243,255,0.4); padding:40px; border-radius:12px; width:90%; max-width:420px; position:relative; box-shadow:0 10px 40px rgba(0,0,0,0.6);">
+            <span class="close-btn" id="closeForgotPwd" style="position:absolute; top:15px; right:20px; font-size:28px; font-weight:bold; color:#8892b0; cursor:pointer;">&times;</span>
+            <h3 style="font-size:1.8rem; margin-bottom:20px; color:#ffffff;">找回密碼</h3>
+            <p style="margin-bottom:15px; color:#a0aec0; font-size:0.9rem;">請輸入您的電子郵件，我們將發送重置密碼的連結給您。</p>
+            <form id="forgotPwdForm">
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label style="display:block; font-size:14px; color:#e2e8f0; margin-bottom:8px;">電子郵件</label>
+                    <div class="input-line" style="position:relative; border-bottom:2px solid #e2e8f0; padding-bottom:8px;">
+                        <input type="email" id="forgotEmail" placeholder="example@email.com" required style="width:90%; background:transparent; border:none; color:#fff; font-size:16px; outline:none;">
+                    </div>
+                </div>
+                <button type="submit" class="btn-login" style="width:100%; padding:14px; border-radius:30px; background:linear-gradient(180deg, #18b5b5, #004455); border:1px solid rgba(0,243,255,0.6); color:#fff; font-size:16px; font-weight:bold; cursor:pointer;">發送重置連結</button>
             </form>
         </div>
     </div>
 
-    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="login.js"></script>
 </body>

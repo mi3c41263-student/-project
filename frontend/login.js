@@ -1,19 +1,18 @@
 const API_BASE_URL = 'http://localhost:3000';
+
 document.addEventListener("DOMContentLoaded", function () {
     // =========================
     // 0. 全域 SweetAlert2 (Toast) 
     // =========================
     const Toast = Swal.mixin({
         toast: true,
-        position: 'top-end', // 從右上角滑出
+        position: 'top-end',
         showConfirmButton: false,
-        timer: 3000, // 3秒後自動消失
-        timerProgressBar: true, // 底部進度條
-        background: '#1c2638', // 配合你的深色卡片底色
-        color: '#e2e8f0', // 科技白字體
-        customClass: {
-            popup: 'tech-toast' // 預留給未來如果想加發光邊框用的 class
-        },
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1c2638',
+        color: '#e2e8f0',
+        customClass: { popup: 'tech-toast' },
         didOpen: (toast) => {
             toast.addEventListener('mouseenter', Swal.stopTimer);
             toast.addEventListener('mouseleave', Swal.resumeTimer);
@@ -21,40 +20,103 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // =========================
-    // 1. 粒子背景
+    // 初始化網格背景
     // =========================
-    if (typeof particlesJS !== "undefined") {
-        particlesJS("particles-js", {
-            particles: {
-                number: { value: 65, density: { enable: true, value_area: 900 } },
-                color: { value: ["#00e5ff", "#4fd1ff", "#00ffa3"] },
-                shape: { type: "circle" },
-                opacity: { value: 0.45, random: true },
-                size: { value: 3, random: true },
-                line_linked: { enable: true, distance: 150, color: "#2bbcff", opacity: 0.22, width: 1 },
-                move: { enable: true, speed: 1.8, direction: "none", out_mode: "out" }
-            },
-            interactivity: {
-                detect_on: "canvas",
-                events: {
-                    onhover: { enable: true, mode: "grab" },
-                    onclick: { enable: true, mode: "push" }
-                },
-                modes: {
-                    grab: { distance: 180, line_linked: { opacity: 0.8 } },
-                    push: { particles_nb: 3 }
-                }
-            },
-            retina_detect: true
+    let gridCols = 0;
+    let gridRows = 0;
+    let lastHoveredCell = null;
+
+    function initGrid() {
+        const gridBg = document.getElementById('grid-background');
+        if (!gridBg) return;
+        
+        // 每次重新計算前先清空
+        gridBg.innerHTML = '';
+        
+        // 設定格子的固定尺寸 (例如 60px)
+        const size = 60;
+        
+        // 計算螢幕可容納多少欄與列，Math.ceil 確保能完全覆蓋螢幕
+        gridCols = Math.ceil(window.innerWidth / size);
+        gridRows = Math.ceil(window.innerHeight / size);
+        const totalCells = gridCols * gridRows;
+
+        // 設定 CSS Grid 屬性
+        gridBg.style.gridTemplateColumns = `repeat(${gridCols}, 1fr)`;
+        gridBg.style.gridTemplateRows = `repeat(${gridRows}, 1fr)`;
+
+        // 動態生成每個格子
+        for (let i = 0; i < totalCells; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('grid-cell');
+            gridBg.appendChild(cell);
+        }
+    }
+
+    // 初始化執行
+    initGrid();
+    
+    // 當視窗大小改變時重新繪製網格
+    window.addEventListener('resize', initGrid);
+
+    // =========================
+    // 全域滑鼠追蹤 (解決圖層遮擋問題)
+    // =========================
+    window.addEventListener('mousemove', (e) => {
+        const gridBg = document.getElementById('grid-background');
+        if (!gridBg || gridCols === 0 || gridRows === 0) return;
+
+        // 取得單個格子的實際寬高
+        const cellWidth = window.innerWidth / gridCols;
+        const cellHeight = window.innerHeight / gridRows;
+
+        // 計算目前滑鼠落在哪個索引的格子上
+        const c = Math.floor(e.clientX / cellWidth);
+        const r = Math.floor(e.clientY / cellHeight);
+        const index = r * gridCols + c;
+
+        const cell = gridBg.children[index];
+
+        if (cell !== lastHoveredCell) {
+            if (lastHoveredCell) {
+                lastHoveredCell.classList.remove('hovered');
+            }
+            if (cell) {
+                cell.classList.add('hovered');
+                lastHoveredCell = cell;
+            }
+        }
+    });
+
+    window.addEventListener('mouseout', (e) => {
+        // 如果滑鼠離開了整個視窗，清除最後一個發光的格子
+        if (e.relatedTarget === null && lastHoveredCell) {
+            lastHoveredCell.classList.remove('hovered');
+            lastHoveredCell = null;
+        }
+    });
+
+    // =========================
+    // 2. 面板滑動切換邏輯 (Sign Up / Sign In)
+    // =========================
+    const authContainer = document.getElementById("authContainer");
+    const toRegisterBtn = document.getElementById("toRegisterBtn");
+    const toLoginBtn = document.getElementById("toLoginBtn");
+
+    if (toRegisterBtn && toLoginBtn && authContainer) {
+        toRegisterBtn.addEventListener("click", () => {
+            authContainer.classList.add("right-panel-active");
+        });
+        toLoginBtn.addEventListener("click", () => {
+            authContainer.classList.remove("right-panel-active");
         });
     }
 
     // =========================
-    // 2. 密碼顯示 / 隱藏切換
+    // 3. 密碼顯示 / 隱藏切換
     // =========================
     const togglePassword = document.getElementById("togglePassword");
     const passwordInput = document.getElementById("password");
-
     if (togglePassword && passwordInput) {
         togglePassword.addEventListener("click", function () {
             const isHidden = passwordInput.type === "password";
@@ -66,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
     
     const toggleRegPassword = document.getElementById("toggleRegPassword");
     const regPasswordInput = document.getElementById("regPassword");
-
     if (toggleRegPassword && regPasswordInput) {
         toggleRegPassword.addEventListener("click", function () {
             const isHidden = regPasswordInput.type === "password";
@@ -77,10 +138,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // =========================
-    // 3. Modal 彈窗開關邏輯
+    // 4. 忘記密碼 Modal 開關邏輯
     // =========================
-    const registerModal = document.getElementById("registerModal");
     const forgotPwdModal = document.getElementById("forgotPwdModal");
+    const forgotPwdLink = document.getElementById("forgotPwdLink");
+    const closeForgotPwd = document.getElementById("closeForgotPwd");
 
     function openModal(modal) {
         if (!modal) return;
@@ -94,48 +156,52 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.style.overflow = "";
     }
 
-    // 綁定按鈕
-    document.getElementById("registerLink")?.addEventListener("click", (e) => { e.preventDefault(); openModal(registerModal); });
-    document.getElementById("forgotPwdLink")?.addEventListener("click", (e) => { e.preventDefault(); openModal(forgotPwdModal); });
-    document.getElementById("closeRegister")?.addEventListener("click", () => closeModal(registerModal));
-    document.getElementById("closeForgotPwd")?.addEventListener("click", () => closeModal(forgotPwdModal));
-
-    // 點擊背景關閉
+    if (forgotPwdLink) {
+        forgotPwdLink.addEventListener("click", (e) => { 
+            e.preventDefault(); 
+            openModal(forgotPwdModal); 
+        });
+    }
+    if (closeForgotPwd) {
+        closeForgotPwd.addEventListener("click", () => closeModal(forgotPwdModal));
+    }
     window.addEventListener("click", (e) => {
-        if (e.target === registerModal) closeModal(registerModal);
         if (e.target === forgotPwdModal) closeModal(forgotPwdModal);
     });
 
     // =========================
-    // 4. 登入邏輯 (連接 Node.js 後端，包含 2FA 攔截機制)
+    // 5. 登入邏輯
     // =========================
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
         loginForm.addEventListener("submit", async function (e) {
             e.preventDefault(); 
 
-            const username = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value.trim();
+            // 在您的 HTML 中，登入的電子郵件欄位 ID 是 "username"
+            const emailInput = document.getElementById("username");
+            const passwordInput = document.getElementById("password");
 
-            if (!username || !password) {
+            if (!emailInput || !passwordInput) return;
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!email || !password) {
                 Toast.fire({ icon: 'warning', title: '請完整輸入帳號與密碼！' });
                 return;
             }
 
             try {
-                // 1. 發送第一階段登入請求 (帳號密碼驗證)
                 const response = await fetch(`${API_BASE_URL}/api/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username: email, password: password }) // 確保使用 username 鍵，否則後端會找不到帳號
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    //  2. 判斷後端有沒有發出「需要 2FA 驗證」的信號
                     if (data.require2FA) {
-                        // 彈出輸入 6 位數密碼的視窗
                         const { value: code, isConfirmed } = await Swal.fire({
                             title: '<i class="fa-solid fa-shield-halved"></i> 雙重認證',
                             html: `
@@ -156,39 +222,28 @@ document.addEventListener("DOMContentLoaded", function () {
                             }
                         });
 
-                        // 如果使用者按下了「驗證登入」
                         if (isConfirmed) {
-                            try {
-                                // 3. 發送第二階段登入請求 (驗證 6 位數字)
-                                const verifyRes = await fetch(`${API_BASE_URL}/api/login/2fa`, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ userId: data.userId, token: code })
-                                });
-                                const verifyData = await verifyRes.json();
+                            const verifyRes = await fetch(`${API_BASE_URL}/api/login/2fa`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ userId: data.userId, token: code })
+                            });
+                            const verifyData = await verifyRes.json();
 
-                                if (verifyData.success) {
-                                    // ✅ 2FA 驗證成功，正式放行！
-                                    Toast.fire({ icon: 'success', title: '驗證成功！正在載入頁面...' });
-                                    localStorage.setItem('currentUser', JSON.stringify(verifyData.user));
-                                    setTimeout(() => { window.location.href = "main.html"; }, 1500);
-                                } else {
-                                    // ❌ 6 位數字打錯
-                                    Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: '#1c2638', color: '#fff' });
-                                }
-                            } catch (err) {
-                                Swal.fire({ icon: 'error', title: '錯誤', text: '伺服器連線失敗', background: '#1c2638', color: '#fff' });
+                            if (verifyData.success) {
+                                Toast.fire({ icon: 'success', title: '驗證成功！正在載入頁面...' });
+                                localStorage.setItem('currentUser', JSON.stringify(verifyData.user));
+                                setTimeout(() => { window.location.href = "main.html"; }, 1500);
+                            } else {
+                                Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: '#1c2638', color: '#fff' });
                             }
                         }
-
                     } else {
-                        // 🌟 3. 沒有開啟 2FA，一般正常登入 (原本的邏輯)
                         Toast.fire({ icon: 'success', title: data.message });
                         localStorage.setItem('currentUser', JSON.stringify(data.user)); 
                         setTimeout(() => { window.location.href = "main.html"; }, 1500);
                     }
                 } else {
-                    // 第一階段帳號密碼就打錯了
                     Toast.fire({ icon: 'error', title: data.message });
                 }
             } catch (error) {
@@ -199,11 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // =========================
-    // 5. 註冊邏輯 (連接 Node.js 後端)
-    // =========================
-    
-    // =========================
-    // 密碼強度即時驗證
+    // 6. 註冊邏輯與密碼強度即時驗證
     // =========================
     const regPwdInputNode = document.getElementById("regPassword");
     const pwdCriteria = document.getElementById("pwdCriteria");
@@ -219,32 +270,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         regPwdInputNode.addEventListener("input", (e) => {
             const val = e.target.value;
-
             // 1. 長度 >= 8
             if (val.length >= 8) {
                 ruleLength.className = "valid";
-                ruleLength.innerHTML = '<i class="fa-solid fa-circle"></i> 至少 8 個字元';
             } else {
                 ruleLength.className = "invalid";
-                ruleLength.innerHTML = '<i class="fa-solid fa-circle"></i> 至少 8 個字元';
             }
-
             // 2. 包含大小寫英文字母
             if (/[A-Z]/.test(val) && /[a-z]/.test(val)) {
                 ruleCase.className = "valid";
-                ruleCase.innerHTML = '<i class="fa-solid fa-circle"></i> 包含大小寫英文字母';
             } else {
                 ruleCase.className = "invalid";
-                ruleCase.innerHTML = '<i class="fa-solid fa-circle"></i> 包含大小寫英文字母';
             }
-
-            // 4. 包含數字
+            // 3. 包含數字
             if (/\d/.test(val)) {
                 ruleNumber.className = "valid";
-                ruleNumber.innerHTML = '<i class="fa-solid fa-circle"></i> 包含數字';
             } else {
                 ruleNumber.className = "invalid";
-                ruleNumber.innerHTML = '<i class="fa-solid fa-circle"></i> 包含數字';
             }
         });
     }
@@ -254,79 +296,68 @@ document.addEventListener("DOMContentLoaded", function () {
         registerForm.addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            const regUsername = document.getElementById("regUsername").value.trim();
-            const regPassword = document.getElementById("regPassword").value.trim();
+            // 在您的 HTML 中，註冊的電子郵件欄位 ID 是 "regUsername"
+            const regEmailInput = document.getElementById("regUsername");
+            const regPasswordInput = document.getElementById("regPassword");
+
+            if (!regEmailInput || !regPasswordInput) return;
+
+            const regEmail = regEmailInput.value.trim();
+            const regPassword = regPasswordInput.value.trim();
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-            if (!emailRegex.test(regUsername)) {
-                Toast.fire({
-                    icon: 'error',
-                    title: '格式錯誤：請輸入有效的電子郵件地址。'
-                });
+            if (!emailRegex.test(regEmail)) {
+                Toast.fire({ icon: 'error', title: '格式錯誤：請輸入有效的電子郵件地址。' });
                 return;
             }
             if (!passwordRegex.test(regPassword)) {
-                Toast.fire({
-                    icon: 'error',
-                    title: '密碼太弱：請設定至少 8 碼，包含大小寫英文字母與數字。'
-                });
+                Toast.fire({ icon: 'error', title: '密碼太弱：請設定至少 8 碼，包含大小寫英文字母與數字。' });
                 return;
             }
 
             try {
+                // 如果後端 API 需要的是 { username: ..., password: ... }，這裡會傳 regEmail 作為 username
                 const response = await fetch(`${API_BASE_URL}/api/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: regUsername, password: regPassword })
+                    body: JSON.stringify({ username: regEmail, password: regPassword })
                 });
                 
                 const data = await response.json();
 
                 if (data.success) {
-                    Toast.fire({
-                        icon: 'success',
-                        title: data.message
-                    });
-                    
-                    // 延遲關閉表單，讓使用者看清楚成功通知
+                    Toast.fire({ icon: 'success', title: data.message });
                     setTimeout(() => {
                         registerForm.reset();
-                        closeModal(registerModal);
+                        // 註冊成功後滑動回登入面板
+                        if (authContainer) authContainer.classList.remove("right-panel-active");
                     }, 1500);
-                    
                 } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: data.message
-                    });
+                    Toast.fire({ icon: 'error', title: data.message });
                 }
             } catch (error) {
                 console.error(error);
-                Toast.fire({
-                    icon: 'error',
-                    title: '無法連線至後端伺服器！'
-                });
+                Toast.fire({ icon: 'error', title: '無法連線至後端伺服器！' });
             }
         });
     }
 
     // =========================
-    // 6. 忘記密碼表單送出 (真實連線)
+    // 7. 忘記密碼表單送出
     // =========================
     const forgotPwdForm = document.getElementById("forgotPwdForm");
     if (forgotPwdForm) {
         forgotPwdForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-            
-            const email = document.getElementById("forgotEmail").value.trim();
+            const emailInput = document.getElementById("forgotEmail");
+            if (!emailInput) return;
+
+            const email = emailInput.value.trim();
             
             if (!email) {
-                Toast.fire({
-                    icon: 'warning',
-                    title: '請輸入您的信箱！'
-                });
+                Toast.fire({ icon: 'warning', title: '請輸入您的信箱！' });
                 return;
             }
             
@@ -340,28 +371,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
                 
                 if (data.success) {
-                    Toast.fire({
-                        icon: 'success',
-                        title: data.message
-                    });
-                    
-                    // 延遲關閉視窗
-                    setTimeout(() => {
-                        closeModal(forgotPwdModal);
-                    }, 1500);
-                    
+                    Toast.fire({ icon: 'success', title: data.message });
+                    setTimeout(() => { closeModal(forgotPwdModal); }, 1500);
                 } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: data.message
-                    });
+                    Toast.fire({ icon: 'error', title: data.message });
                 }
             } catch (error) {
                 console.error(error);
-                Toast.fire({
-                    icon: 'error',
-                    title: '伺服器連線失敗！'
-                });
+                Toast.fire({ icon: 'error', title: '伺服器連線失敗！' });
             }
         });
     }

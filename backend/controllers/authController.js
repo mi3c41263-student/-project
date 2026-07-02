@@ -270,7 +270,10 @@ const forgotPassword = async (req, res) => {
         await db.query(updateSql, [resetToken, expireTime, email]);
 
         // 4. 準備寄信 (這裡要連到你未來準備寫的 reset-password.html 網頁)
-        const origin = req.headers.origin || 'http://127.0.0.1:5500';
+        let origin = req.headers.origin;
+        if (!origin || origin === 'null') {
+            origin = 'http://127.0.0.1:5500';
+        }
         const resetUrl = `${origin}/frontend/reset-password.html?token=${resetToken}`;
         
         const mailOptions = {
