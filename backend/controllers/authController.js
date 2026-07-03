@@ -64,7 +64,7 @@ const registerUser = async (req, res) => {
         // 🌟 新增：準備並寄出驗證信
         let origin = req.headers.origin;
         if (!origin || origin === 'null') {
-            const host = req.get('host') || 'localhost:3000';
+            const host = req.headers['x-forwarded-host'] || req.get('host') || 'localhost:3000';
             const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
             origin = `${protocol}://${host}`;
         }
@@ -78,6 +78,7 @@ const registerUser = async (req, res) => {
                 <h2>歡迎註冊 VR 訓練系統！</h2>
                 <p>請點擊下方連結以開通您的帳號：</p>
                 <a href="${verificationUrl}" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">點我驗證信箱</a>
+                <p style="margin-top: 20px; font-size: 12px; color: #666; word-break: break-all;">如果上方的按鈕無法點擊，請複製以下網址並貼上至瀏覽器：<br>${verificationUrl}</p>
             `
         };
 

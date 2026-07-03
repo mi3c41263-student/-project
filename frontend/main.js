@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================
     const i18nDictionary = {
         'zh-TW': {
-            'nav-core': '核心訓練', 'nav-vr': '<i class="fa-solid fa-vr-cardboard"></i> VR 情境模擬', 'nav-manual': '<i class="fa-solid fa-shield-halved"></i> 資安規範手冊', 'nav-quiz': '<i class="fa-solid fa-clipboard-list"></i> 資安小測驗', 'nav-history': '學習歷程', 'nav-notes': '<i class="fa-solid fa-book-open"></i> 學習筆記', 'nav-analysis': '<i class="fa-solid fa-chart-pie"></i> 學習成果分析', 'nav-logout': '<i class="fa-solid fa-right-from-bracket"></i> 登出',
+            'nav-core': '核心訓練', 'nav-vr': '<i class="fa-solid fa-vr-cardboard"></i> VR 情境模擬', 'nav-manual': '<i class="fa-solid fa-shield-halved"></i> 資安規範手冊', 'nav-quiz': '<i class="fa-solid fa-clipboard-list"></i> 資安小測驗', 'nav-history': '學習歷程', 'nav-notes': '<i class="fa-solid fa-book-open"></i> 學習筆記', 'nav-analysis': '<i class="fa-solid fa-chart-pie"></i> 學習成果分析', 'nav-mistakes': '<i class="fa-solid fa-book-medical"></i> 錯題本與弱點強化', 'mistakes-title': '錯題本與弱點強化', 'sub-mistakes': '檢視與強化您的資安弱點', 'nav-logout': '<i class="fa-solid fa-right-from-bracket"></i> 登出',
             'set-title': '<i class="fa-solid fa-sliders"></i> 系統設定', 'set-tab-acc': '<i class="fa-solid fa-shield-halved"></i> 帳號與安全', 'set-tab-pref': '<i class="fa-solid fa-globe"></i> 系統偏好', 'set-acc-title': '個人帳號與安全性設定', 'set-pwd': '更改密碼', 'set-2fa': '雙重認證 (2FA)', 'set-pref-title': '系統偏好設定', 'set-lang': '介面語系',
             'set-theme': '外觀主題',
             'set-theme-desc': '切換為您喜歡的深色或淺色模式。',
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'sub-manual': '檢視 ISO 27002:2022 重點控制措施', 'sub-analysis': '評估您的資安防禦綜合能力', 'sub-quiz': '資安稽核情境模擬測驗'
         },
         'en': {
-            'nav-core': 'Core Training', 'nav-vr': '<i class="fa-solid fa-vr-cardboard"></i> VR Simulation', 'nav-manual': '<i class="fa-solid fa-shield-halved"></i> Security Manual', 'nav-quiz': '<i class="fa-solid fa-clipboard-list"></i> Security Quiz', 'nav-history': 'History', 'nav-notes': '<i class="fa-solid fa-book-open"></i> Learning Notes', 'nav-analysis': '<i class="fa-solid fa-chart-pie"></i> Analysis', 'nav-logout': '<i class="fa-solid fa-right-from-bracket"></i> Logout',
+            'nav-core': 'Core Training', 'nav-vr': '<i class="fa-solid fa-vr-cardboard"></i> VR Simulation', 'nav-manual': '<i class="fa-solid fa-shield-halved"></i> Security Manual', 'nav-quiz': '<i class="fa-solid fa-clipboard-list"></i> Security Quiz', 'nav-history': 'History', 'nav-notes': '<i class="fa-solid fa-book-open"></i> Learning Notes', 'nav-analysis': '<i class="fa-solid fa-chart-pie"></i> Analysis', 'nav-mistakes': '<i class="fa-solid fa-book-medical"></i> Mistake Notebook', 'mistakes-title': 'Mistake Notebook & Weaknesses', 'sub-mistakes': 'Review and reinforce your security weaknesses', 'nav-logout': '<i class="fa-solid fa-right-from-bracket"></i> Logout',
             'set-title': '<i class="fa-solid fa-sliders"></i> Settings', 'set-tab-acc': '<i class="fa-solid fa-shield-halved"></i> Account', 'set-tab-pref': '<i class="fa-solid fa-globe"></i> Preferences', 'set-acc-title': 'Account & Security', 'set-pwd': 'Change Password', 'set-2fa': 'Two-Factor Auth (2FA)', 'set-pref-title': 'System Preferences', 'set-lang': 'Language',
             'top-title': 'Learning Notes', 'top-subtitle': 'Review your security defense practices',
             'search-ph': 'Search keywords (e.g., Access, Phishing)...',
@@ -2577,9 +2577,10 @@ window.initRadarChart = async function() {
         try {
             let user = JSON.parse(userStr);
             let mistakes = (user.history && user.history.mistakes) ? user.history.mistakes : [];
+            const isEn = document.getElementById('langSelect') && document.getElementById('langSelect').value === 'en';
             
             if (mistakes.length === 0) {
-                mistakesList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px;"><i class="fa-solid fa-face-smile-beam" style="font-size: 3rem; margin-bottom: 15px; color: var(--primary-cyan);"></i><br>太棒了！您的錯題本目前空空如也，繼續保持！</div>`;
+                mistakesList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px;"><i class="fa-solid fa-face-smile-beam" style="font-size: 3rem; margin-bottom: 15px; color: var(--primary-cyan);"></i><br>${isEn ? "Great job! Your mistake notebook is empty, keep it up!" : "太棒了！您的錯題本目前空空如也，繼續保持！"}</div>`;
                 return;
             }
 
@@ -2594,7 +2595,7 @@ window.initRadarChart = async function() {
             const pagedMistakes = mistakes.slice(startIndex, endIndex);
 
             let html = '';
-            const isEn = document.getElementById('langSelect') && document.getElementById('langSelect').value === 'en-US';
+            
             
             pagedMistakes.forEach(qId => {
                 const q = bigQuestionBank.find(b => b.id === qId);
@@ -2636,13 +2637,13 @@ window.initRadarChart = async function() {
                         <p style="font-size: 1.05rem; font-weight: 500; margin-bottom: 15px; color: var(--text-bright);">${qText}</p>
                         ${optionsHtml}
                         <details style="background: var(--bg-hover); padding: 10px; border-radius: 5px; cursor: pointer; margin-bottom: 15px;">
-                            <summary style="color: var(--primary-cyan); font-weight: bold;">查看詳解</summary>
+                            <summary style="color: var(--primary-cyan); font-weight: bold;">${isEn ? "View Explanation" : "查看詳解"}</summary>
                             <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">${explanationText}</p>
                         </details>
                         
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-save" style="width: 140px; font-size: 0.85rem; padding: 8px; background: var(--danger-bg); color: var(--danger-color); border: 1px solid var(--danger-border);" onclick="removeMistake('${q.id}')">
-                                <i class="fa-solid fa-trash-can"></i> 移出錯題本
+                            <button class="btn-danger" style="width: 140px; font-size: 0.85rem; padding: 8px;" onclick="removeMistake('${q.id}')">
+                                <i class="fa-solid fa-trash-can"></i> ${isEn ? "Remove" : "移出錯題本"}
                             </button>
                         </div>
                     </div>
@@ -2898,7 +2899,7 @@ window.initRadarChart = async function() {
 
         const isLastQuestion = currentQuestionIndex === currentRoundQuestions.length - 1;
         const btnText = isLastQuestion ? (isEn ? "See Score" : "看成績") : (isEn ? "Next" : "下一題");
-        const btnHtml = `<button type="button" class="btn-save" style="margin-top: 15px; font-size: 1rem; padding: 10px 25px;" onclick="nextQuestion()">${btnText} <i class="fa-solid fa-arrow-right"></i></button>`;
+        const btnHtml = `<button type="button" class="btn-save btn-next-quiz" style="margin-top: 15px; font-size: 1rem; padding: 10px 25px;" onclick="nextQuestion()">${btnText} <i class="fa-solid fa-arrow-right"></i></button>`;
 
         if (isCorrect) {
             currentScore += 10;
@@ -2914,7 +2915,7 @@ window.initRadarChart = async function() {
             backDiv.innerHTML = `
                 <div class="flip-card-back-icon"><i class="fa-solid fa-times-circle"></i></div>
                 <div class="flip-card-back-text">${isEn ? 'Incorrect.' : '答錯了。'}</div>
-                <div class="flip-card-back-answer">${isEn ? 'Correct Answer:' : '正確解答為：'}<br><span style="color: #fff; margin-top: 5px; display: inline-block; font-size: 1.2rem;">${correctAnswerText}</span></div>
+                <div class="flip-card-back-answer">${isEn ? 'Correct Answer:' : '正確解答為：'}<br><span style="color: var(--text-bright); margin-top: 5px; display: inline-block; font-size: 1.2rem;">${correctAnswerText}</span></div>
                 <div style="margin-top: 15px; font-size: 0.9rem; color: var(--danger-color); max-width: 90%; line-height: 1.6; text-align: left; background: var(--bg-subtle); padding: 15px; border-radius: 8px;"><strong>${isEn ? 'Explanation:' : '詳解：'}</strong><br>${explanationText}</div>
                 ${btnHtml}
             `;

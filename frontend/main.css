@@ -1286,13 +1286,13 @@ div.swal2-container {
 .flip-card-back-text {
     font-size: 0.9rem;
     font-weight: bold;
-    color: #fff;
+    color: var(--text-bright);
     margin-bottom: 8px;
 }
 
 .flip-card-back-answer {
     font-size: 0.75rem;
-    color: #cbd5e1;
+    color: var(--text-muted);
 }
 
 /* ========================================= */
@@ -1523,4 +1523,53 @@ div.swal2-container {
 /* Slow Theme Transition */
 body, .sidebar, .main-content, .topbar, .dashboard-container, .rule-card, .quiz-option, .glass-panel, .setting-item, .cyber-input, .cyber-select, .cyber-textarea, .logout-btn, .manual-tab, .note-modal-overlay, .note-modal-content {
     transition: background-color 0.7s ease, background 0.7s ease, color 0.7s ease, border-color 0.7s ease !important;
+}
+
+/* Quiz Next Button Light Mode */
+[data-theme="light"] .btn-next-quiz {
+    background-color: #ffffff !important;
+    color: #1a202c !important;
+    border: 1px solid rgba(0,0,0,0.2) !important;
+}
+[data-theme="light"] .btn-next-quiz:hover {
+    background-color: #f1f5f9 !important;
+}
+
+/* Danger Button Styles */
+.btn-danger {
+    background: var(--danger-color);
+    color: #ffffff;
+    border: 1px solid var(--danger-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-danger:hover {
+    background: transparent;
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+}
+.btn-danger:active {
+    background: transparent;
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 5px rgba(255, 71, 87, 0.4);
+}
+
+[data-theme="light"] .btn-danger {
+    background: #fff0f0 !important;
+    color: #ff4d4f !important;
+    border: 1px solid #ff4d4f !important;
+}
+[data-theme="light"] .btn-danger:hover {
+    background: #ff4d4f !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3) !important;
 }
