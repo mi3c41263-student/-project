@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="main.css?v=10">
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    </script>
 </head>
 <body>
 
@@ -357,7 +362,7 @@
                 <div class="settings-content">
                     
                     <div id="tab-profile" class="setting-panel active">
-                        <h3 style="color: var(--primary-cyan); margin-bottom: 20px; font-size: 0.5rem;">編輯個人檔案</h3>
+                        <h3 style="color: var(--primary-cyan); margin-bottom: 20px;">編輯個人檔案</h3>
                         
                         <div style="display: flex; gap: 30px; margin-top: 10px;">
                             <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 150px;">
@@ -374,12 +379,12 @@
 
                             <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
                                 <div>
-                                    <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">顯示名稱 (Display Name)</label>
-                                    <input type="text" id="profileName" placeholder="請輸入您想顯示的名稱" style="width: 100%; padding: 10px 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary-cyan)'" onblur="this.style.borderColor='rgba(0, 168, 255, 0.3)'">
+                                    <label style="color: var(--text-main); margin-bottom: 8px; display: block;">顯示名稱 (Display Name)</label>
+                                    <input type="text" id="profileName" class="cyber-input" placeholder="請輸入您想顯示的名稱" style="width: 100%; padding: 10px 15px; border-radius: 6px;">
                                 </div>
                                 
                                 <div style="text-align: right; margin-top: 10px;">
-                                    <button id="saveProfileBtn" style="padding: 10px 20px; background: var(--primary-cyan); border: none; color: #000; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 168, 255, 0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                    <button id="saveProfileBtn" class="btn-save">
                                         <i class="fa-solid fa-floppy-disk"></i> 儲存變更
                                     </button>
                                 </div>
@@ -429,6 +434,16 @@
                                 <option value="zh-TW" selected>繁體中文</option>
                                 <option value="en">English</option>                
                             </select>
+                        </div>
+                        <div class="setting-item" style="margin-top: 25px;">
+                            <div class="setting-info">
+                                <h4 data-i18n="set-theme">外觀主題</h4>
+                                <p data-i18n="set-theme-desc">切換為您喜歡的深色或淺色模式。</p>
+                            </div>
+                            <button id="themeToggleBtn" class="cyber-btn" style="width: 130px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #00a8ff; background: transparent; color: #00a8ff; padding: 8px; border-radius: 4px; cursor: pointer;">
+                                <i class="fa-solid fa-moon" id="themeIcon"></i>
+                                <span id="themeText">深色模式</span>
+                            </button>
                         </div>
                     </div>
 

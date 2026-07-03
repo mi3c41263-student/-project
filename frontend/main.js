@@ -223,6 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'zh-TW': {
             'nav-core': '核心訓練', 'nav-vr': '<i class="fa-solid fa-vr-cardboard"></i> VR 情境模擬', 'nav-manual': '<i class="fa-solid fa-shield-halved"></i> 資安規範手冊', 'nav-quiz': '<i class="fa-solid fa-clipboard-list"></i> 資安小測驗', 'nav-history': '學習歷程', 'nav-notes': '<i class="fa-solid fa-book-open"></i> 學習筆記', 'nav-analysis': '<i class="fa-solid fa-chart-pie"></i> 學習成果分析', 'nav-logout': '<i class="fa-solid fa-right-from-bracket"></i> 登出',
             'set-title': '<i class="fa-solid fa-sliders"></i> 系統設定', 'set-tab-acc': '<i class="fa-solid fa-shield-halved"></i> 帳號與安全', 'set-tab-pref': '<i class="fa-solid fa-globe"></i> 系統偏好', 'set-acc-title': '個人帳號與安全性設定', 'set-pwd': '更改密碼', 'set-2fa': '雙重認證 (2FA)', 'set-pref-title': '系統偏好設定', 'set-lang': '介面語系',
+            'set-theme': '外觀主題',
+            'set-theme-desc': '切換為您喜歡的深色或淺色模式。',
             'top-title': '學習筆記', 'top-subtitle': '沉澱並複習您的資安防禦實務',
             'search-ph': '搜尋筆記關鍵字 (例如: 門禁、釣魚)...',
             'filter-all': '全部筆記', 'filter-social': '人員控制', 'filter-network': '資安事件', 'filter-device': '實體安全',
@@ -473,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     margin: 0,
                     filename: `ISO學習筆記_${new Date().getTime()}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, scrollY: 0, backgroundColor: '#ffffff', useCORS: true },
+                    html2canvas: { scale: 2, scrollY: 0, backgroundcolor: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : '#ffffff', useCORS: true },
                     jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
                 };
 
@@ -565,14 +567,14 @@ window.initRadarChart = async function() {
             maintainAspectRatio: false,
             scales: {
                 r: {
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                    angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                    grid: { color: document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255, 255, 255, 0.1)' },
+                    angleLines: { color: document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255, 255, 255, 0.1)' },
                     pointLabels: {
                         font: {
                             size: 16,
                             weight: 'bold'
                         },
-                        color: '#e2e8f0' // 加亮標籤顏色使其更清晰
+                        color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : '#e2e8f0' // 加亮標籤顏色使其更清晰
                     },
                     suggestedMin: 0,
                     suggestedMax: 100,
@@ -630,11 +632,11 @@ window.initRadarChart = async function() {
                         beginAtZero: true,
                         max: 100, // 分數最高 100
                         grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#8892b0' }
+                        ticks: { color: document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : '#8892b0' }
                     },
                     x: {
                         grid: { display: false },
-                        ticks: { color: '#8892b0' }
+                        ticks: { color: document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : '#8892b0' }
                     }
                 }
             }
@@ -703,8 +705,8 @@ window.initRadarChart = async function() {
                     icon: 'warning',
                     title: '檔案過大',
                     text: '請上傳小於 2MB 的圖片！',
-                    background: '#1c2638',
-                    color: '#fff'
+                    background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638',
+                    color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff'
                 });
                 this.value = ""; // 清空輸入
                 return;
@@ -759,7 +761,7 @@ window.initRadarChart = async function() {
                         title: '儲存成功！',
                         text: '您的個人檔案已更新。',
                         toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
-                        background: '#1c2638', color: '#e2e8f0'
+                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : '#e2e8f0'
                     });
 
                     // 覆蓋 LocalStorage，讓下次重新整理時資料還在
@@ -826,7 +828,7 @@ window.initRadarChart = async function() {
                     // 1. 顯示載入中動畫
                     Swal.fire({
                         title: '產生專屬金鑰中...',
-                        background: '#1c2638', color: '#fff',
+                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
                         didOpen: () => Swal.showLoading()
                     });
 
@@ -840,12 +842,12 @@ window.initRadarChart = async function() {
                     const { value: verificationCode, isConfirmed } = await Swal.fire({
                         title: '<i class="fa-solid fa-qrcode"></i> 設定雙重認證',
                         html: `
-                            <p style="color: #8892b0; font-size: 0.95rem; margin-bottom: 20px;">請打開 <strong>Google Authenticator</strong> 掃描下方條碼</p>
+                            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">請打開 <strong>Google Authenticator</strong> 掃描下方條碼</p>
                             <img src="${data.qrCodeUrl}" style="border: 5px solid white; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 0 15px rgba(0, 168, 255, 0.4);">
                             <br>
                             <input type="text" id="swal-input-2fa" class="cyber-input" placeholder="請輸入 6 位數驗證碼" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-weight: bold; width: 80%;">
                         `,
-                        background: '#1c2638', color: '#fff',
+                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
                         showCancelButton: true,
                         confirmButtonColor: 'var(--primary-cyan)',
                         cancelButtonColor: 'transparent',
@@ -874,13 +876,13 @@ window.initRadarChart = async function() {
                         if (verifyData.success) {
                             Swal.fire({
                                 icon: 'success', title: '2FA 已成功啟用！', text: '您的帳號防禦等級已提升。',
-                                background: '#1c2638', color: '#fff', timer: 2500, showConfirmButton: false
+                                background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', timer: 2500, showConfirmButton: false
                             });
                             // 更新前端記憶體，讓開關保持打開
                             user.is_2fa_enabled = true;
                             localStorage.setItem('currentUser', JSON.stringify(user));
                         } else {
-                            Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: '#1c2638', color: '#fff' });
+                            Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
                             e.target.checked = false; // 驗證失敗，開關退回關閉
                         }
                     } else {
@@ -888,14 +890,14 @@ window.initRadarChart = async function() {
                     }
                 } catch (error) {
                     console.error(error);
-                    Swal.fire({ icon: 'error', title: '錯誤', text: '無法連線到伺服器產生 QR Code', background: '#1c2638', color: '#fff' });
+                    Swal.fire({ icon: 'error', title: '錯誤', text: '無法連線到伺服器產生 QR Code', background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
                     e.target.checked = false;
                 }
             } else {
                 // 🔘 狀態：使用者想「關閉」2FA
                 const { isConfirmed } = await Swal.fire({
                     title: '確定要停用 2FA 嗎？', text: '停用後，您的帳號容易遭受惡意攻擊！', icon: 'warning',
-                    background: '#1c2638', color: '#fff', showCancelButton: true,
+                    background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', showCancelButton: true,
                     confirmButtonColor: '#ff4757', cancelButtonColor: 'transparent', confirmButtonText: '強制停用', cancelButtonText: '保持啟用'
                 });
 
@@ -910,7 +912,7 @@ window.initRadarChart = async function() {
                         const disableData = await disableRes.json();
 
                         if (disableData.success) {
-                            Swal.fire({ icon: 'info', title: '2FA 已停用', background: '#1c2638', color: '#fff', timer: 2000, showConfirmButton: false });
+                            Swal.fire({ icon: 'info', title: '2FA 已停用', background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', timer: 2000, showConfirmButton: false });
                             user.is_2fa_enabled = false;
                             localStorage.setItem('currentUser', JSON.stringify(user));
                         } else {
@@ -944,26 +946,26 @@ window.initRadarChart = async function() {
                 title: '<i class="fa-solid fa-lock"></i> 更改密碼',
                 html: `
                     <div style="text-align: left; margin-top: 10px;">
-                        <label style="color: #8892b0; font-size: 0.9rem;">目前密碼</label>
+                        <label style="color: var(--text-muted); font-size: 0.9rem;">目前密碼</label>
                         <div style="position: relative; margin-bottom: 15px;">
                             <input id="swal-curr-pwd" type="password" class="cyber-input" style="width: 100%; text-align: center; letter-spacing: 3px; padding-right: 40px;" placeholder="輸入目前的密碼">
-                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-curr-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8892b0;"></i>
+                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-curr-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
                         </div>
                         
-                        <label style="color: #8892b0; font-size: 0.9rem;">新密碼</label>
+                        <label style="color: var(--text-muted); font-size: 0.9rem;">新密碼</label>
                         <div style="position: relative; margin-bottom: 15px;">
                             <input id="swal-new-pwd" type="password" class="cyber-input" style="width: 100%; text-align: center; letter-spacing: 3px; padding-right: 40px;" placeholder="至少8碼，含大小寫與數字">
-                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-new-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8892b0;"></i>
+                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-new-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
                         </div>
                         
-                        <label style="color: #8892b0; font-size: 0.9rem;">確認新密碼</label>
+                        <label style="color: var(--text-muted); font-size: 0.9rem;">確認新密碼</label>
                         <div style="position: relative; margin-bottom: 15px;">
                             <input id="swal-conf-pwd" type="password" class="cyber-input" style="width: 100%; text-align: center; letter-spacing: 3px; padding-right: 40px;" placeholder="再次輸入新密碼">
-                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-conf-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8892b0;"></i>
+                            <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-conf-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
                         </div>
                     </div>
                 `,
-                background: '#1c2638', color: '#fff',
+                background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
                 showCancelButton: true,
                 confirmButtonText: '驗證並儲存',
                 cancelButtonText: '取消',
@@ -1019,7 +1021,7 @@ window.initRadarChart = async function() {
                 try {
                     Swal.fire({
                         title: '加密傳輸中...',
-                        background: '#1c2638', color: '#fff',
+                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
                         didOpen: () => Swal.showLoading()
                     });
 
@@ -1036,12 +1038,12 @@ window.initRadarChart = async function() {
                     const data = await response.json();
                     
                     if (data.success) {
-                        Swal.fire({ icon: 'success', title: '修改成功！', text: data.message, background: '#1c2638', color: '#fff' });
+                        Swal.fire({ icon: 'success', title: '修改成功！', text: data.message, background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
                     } else {
-                        Swal.fire({ icon: 'error', title: '修改失敗', text: data.message, background: '#1c2638', color: '#fff' });
+                        Swal.fire({ icon: 'error', title: '修改失敗', text: data.message, background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
                     }
                 } catch (error) {
-                    Swal.fire({ icon: 'error', title: '連線失敗', text: '無法連接到伺服器', background: '#1c2638', color: '#fff' });
+                    Swal.fire({ icon: 'error', title: '連線失敗', text: '無法連接到伺服器', background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
                 }
             }
         });
@@ -2577,7 +2579,7 @@ window.initRadarChart = async function() {
             let mistakes = (user.history && user.history.mistakes) ? user.history.mistakes : [];
             
             if (mistakes.length === 0) {
-                mistakesList.innerHTML = `<div style="text-align: center; color: #8892b0; padding: 40px;"><i class="fa-solid fa-face-smile-beam" style="font-size: 3rem; margin-bottom: 15px; color: var(--primary-cyan);"></i><br>太棒了！您的錯題本目前空空如也，繼續保持！</div>`;
+                mistakesList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px;"><i class="fa-solid fa-face-smile-beam" style="font-size: 3rem; margin-bottom: 15px; color: var(--primary-cyan);"></i><br>太棒了！您的錯題本目前空空如也，繼續保持！</div>`;
                 return;
             }
 
@@ -2610,7 +2612,7 @@ window.initRadarChart = async function() {
                 if (q.type === 'MC' || q.type === 'SC' || q.type === 'MA') {
                     const opts = isEn ? (q.en_options || q.options) : q.options;
                     if (opts) {
-                        optionsHtml = '<div style="margin-top: 5px; margin-bottom: 15px; color: #a0aec0; font-size: 0.95rem;">';
+                        optionsHtml = '<div style="margin-top: 5px; margin-bottom: 15px; color: var(--text-secondary); font-size: 0.95rem;">';
                         for (let k in opts) {
                             optionsHtml += `<div style="margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #3b82f6;">${opts[k]}</div>`;
                         }
@@ -2619,7 +2621,7 @@ window.initRadarChart = async function() {
                 } else if (q.type === 'TF') {
                     const trueText = isEn ? 'True' : '是';
                     const falseText = isEn ? 'False' : '否';
-                    optionsHtml = `<div style="margin-top: 5px; margin-bottom: 15px; color: #a0aec0; font-size: 0.95rem;">
+                    optionsHtml = `<div style="margin-top: 5px; margin-bottom: 15px; color: var(--text-secondary); font-size: 0.95rem;">
                         <div style="margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #3b82f6;">○ ${trueText}</div>
                         <div style="margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #3b82f6;">○ ${falseText}</div>
                     </div>`;
@@ -2628,18 +2630,18 @@ window.initRadarChart = async function() {
                 html += `
                 <div class="rule-card" style="margin-bottom: 0; flex-direction: column; padding: 20px;">
                     <div class="rule-header" style="margin-bottom: 15px;">
-                        <div><i class="fa-solid fa-circle-exclamation" style="color: #ffb8b8; margin-right: 8px;"></i> ${typeText}</div>
+                        <div><i class="fa-solid fa-circle-exclamation" style="color: var(--danger-color); margin-right: 8px;"></i> ${typeText}</div>
                     </div>
                     <div class="rule-content" style="width: 100%;">
-                        <p style="font-size: 1.05rem; font-weight: 500; margin-bottom: 15px; color: #e2e8f0;">${qText}</p>
+                        <p style="font-size: 1.05rem; font-weight: 500; margin-bottom: 15px; color: var(--text-bright);">${qText}</p>
                         ${optionsHtml}
-                        <details style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; cursor: pointer; margin-bottom: 15px;">
+                        <details style="background: var(--bg-hover); padding: 10px; border-radius: 5px; cursor: pointer; margin-bottom: 15px;">
                             <summary style="color: var(--primary-cyan); font-weight: bold;">查看詳解</summary>
-                            <p style="margin-top: 10px; font-size: 0.9rem; color: #8892b0; line-height: 1.6;">${explanationText}</p>
+                            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">${explanationText}</p>
                         </details>
                         
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-save" style="width: 140px; font-size: 0.85rem; padding: 8px; background: rgba(255, 71, 87, 0.1); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.5);" onclick="removeMistake('${q.id}')">
+                            <button class="btn-save" style="width: 140px; font-size: 0.85rem; padding: 8px; background: var(--danger-bg); color: var(--danger-color); border: 1px solid var(--danger-border);" onclick="removeMistake('${q.id}')">
                                 <i class="fa-solid fa-trash-can"></i> 移出錯題本
                             </button>
                         </div>
@@ -2749,7 +2751,7 @@ window.initRadarChart = async function() {
         const progressHtmlText = isEn 
             ? `Question ${questionIndex} of ${currentRoundQuestions.length}`
             : `第 ${questionIndex} 題 / 共 ${currentRoundQuestions.length} 題`;
-        const progressHtml = `<div style="color: #8892b0; margin-bottom: 15px; font-weight: bold;">${progressHtmlText}</div>`;
+        const progressHtml = `<div style="color: var(--text-muted); margin-bottom: 15px; font-weight: bold;">${progressHtmlText}</div>`;
 
         if (item.type === 'TF') {
             const trueText = isEn ? 'True' : '是 (True)';
@@ -2826,7 +2828,7 @@ window.initRadarChart = async function() {
                 if (checkedInputs.length === 0) {
                     const alertTitle = isEn ? 'Warning' : '提示';
                     const alertText = isEn ? 'Please select at least one option.' : '請至少選擇一個選項。';
-                    Swal.fire({ icon: 'warning', title: alertTitle, text: alertText, background: '#1c2638', color: '#fff' });
+                    Swal.fire({ icon: 'warning', title: alertTitle, text: alertText, background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
                     return;
                 }
                 
@@ -2913,7 +2915,7 @@ window.initRadarChart = async function() {
                 <div class="flip-card-back-icon"><i class="fa-solid fa-times-circle"></i></div>
                 <div class="flip-card-back-text">${isEn ? 'Incorrect.' : '答錯了。'}</div>
                 <div class="flip-card-back-answer">${isEn ? 'Correct Answer:' : '正確解答為：'}<br><span style="color: #fff; margin-top: 5px; display: inline-block; font-size: 1.2rem;">${correctAnswerText}</span></div>
-                <div style="margin-top: 15px; font-size: 0.9rem; color: #ffb8b8; max-width: 90%; line-height: 1.6; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;"><strong>${isEn ? 'Explanation:' : '詳解：'}</strong><br>${explanationText}</div>
+                <div style="margin-top: 15px; font-size: 0.9rem; color: var(--danger-color); max-width: 90%; line-height: 1.6; text-align: left; background: var(--bg-subtle); padding: 15px; border-radius: 8px;"><strong>${isEn ? 'Explanation:' : '詳解：'}</strong><br>${explanationText}</div>
                 ${btnHtml}
             `;
         }
@@ -2940,10 +2942,10 @@ window.initRadarChart = async function() {
         const btnText = isEn ? 'Restart Quiz' : '重新測驗';
 
         container.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px; background: rgba(0, 0, 0, 0.3); border-radius: 12px; border: 1px solid rgba(0, 168, 255, 0.2);">
+            <div style="text-align: center; padding: 40px 20px; background: var(--bg-subtle); border-radius: 12px; border: 1px solid var(--cyan-bg-strong);">
                 <h3 style="color: #00a8ff; margin-bottom: 20px; font-size: 2rem;">${titleText}</h3>
                 <div style="font-size: 4rem; font-weight: bold; color: ${currentScore >= 60 ? '#2ed573' : '#ff4757'};"><i class="fa-solid ${currentScore >= 60 ? 'fa-trophy' : 'fa-face-frown'}" style="margin-right: 15px;"></i>${currentScore} ${scoreText}</div>
-                <p style="color: #8892b0; margin-top: 20px; font-size: 1.1rem;">${currentScore >= 60 ? goodText : badText}</p>
+                <p style="color: var(--text-muted); margin-top: 20px; font-size: 1.1rem;">${currentScore >= 60 ? goodText : badText}</p>
                 <button type="button" class="btn-save" style="margin-top: 30px; font-size: 1.1rem; padding: 12px 30px;" onclick="restartQuiz()"><i class="fa-solid fa-rotate-right"></i> ${btnText}</button>
             </div>
         `;
@@ -2953,7 +2955,7 @@ window.initRadarChart = async function() {
                 icon: 'success', 
                 title: isEn ? 'Perfect Score!' : '滿分通過！',
                 text: isEn ? 'Amazing! You fully grasp the core essence of protection. Congratulations on unlocking your exclusive certificate!' : '太厲害了！您完全掌握了防護核心精髓。恭喜您解鎖專屬的合格證書！',
-                background: '#1c2638', color: '#fff', 
+                background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', 
                 showCancelButton: true,
                 confirmButtonColor: '#00a8ff',
                 cancelButtonColor: '#f39c12',
@@ -2969,13 +2971,13 @@ window.initRadarChart = async function() {
             Swal.fire({
                 icon: 'info', title: `測驗結果：${currentScore} 分`,
                 text: '及格了！繼續保持！',
-                background: '#1c2638', color: '#fff', confirmButtonColor: '#00a8ff'
+                background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', confirmButtonColor: '#00a8ff'
             });
         } else {
             Swal.fire({
                 icon: 'error', title: `測驗結果：${currentScore} 分`,
                 text: '不及格喔！請多加複習！',
-                background: '#1c2638', color: '#fff', confirmButtonColor: '#ff4757'
+                background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', confirmButtonColor: '#ff4757'
             });
         }
     }
@@ -3005,7 +3007,7 @@ window.initRadarChart = async function() {
                 cancelButtonColor: 'transparent',
                 confirmButtonText: '確定刪除',
                 cancelButtonText: '取消',
-                background: '#1c2638', color: '#fff',
+                background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
                 customClass: { cancelButton: 'cyber-cancel-btn' }
             });
 
@@ -3020,7 +3022,7 @@ window.initRadarChart = async function() {
                     // 顯示載入動畫
                     Swal.fire({
                         title: '資料抹除中...',
-                        background: '#1c2638', color: '#fff',
+                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
                         didOpen: () => Swal.showLoading()
                     });
 
@@ -3038,7 +3040,7 @@ window.initRadarChart = async function() {
                             icon: 'success', 
                             title: '帳號已刪除', 
                             text: '您的資料已從系統中徹底抹除。', 
-                            background: '#1c2638', color: '#fff', 
+                            background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', 
                             timer: 2000, 
                             showConfirmButton: false 
                         });
@@ -3046,11 +3048,11 @@ window.initRadarChart = async function() {
                         localStorage.removeItem('currentUser');
                         window.location.href = 'login.html';
                     } else {
-                        Swal.fire({ icon: 'error', title: '刪除失敗', text: data.message, background: '#1c2638', color: '#fff' });
+                        Swal.fire({ icon: 'error', title: '刪除失敗', text: data.message, background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
                     }
                 } catch (error) {
                     console.error("API 請求失敗:", error);
-                    Swal.fire({ icon: 'error', title: '連線錯誤', text: '無法連接到伺服器進行刪除', background: '#1c2638', color: '#fff' });
+                    Swal.fire({ icon: 'error', title: '連線錯誤', text: '無法連接到伺服器進行刪除', background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
                 }
             }
         });
@@ -3076,7 +3078,7 @@ window.initRadarChart = async function() {
         Swal.fire({
             title: '生成證書相片中...',
             html: '請稍候，正在為您沖洗專屬的證書照片<br><br><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--primary-cyan)"></i>',
-            background: '#1c2638', color: '#fff',
+            background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
             showConfirmButton: false,
             allowOutsideClick: false
         });
@@ -3092,7 +3094,7 @@ window.initRadarChart = async function() {
                 // 執行拍照
                 const canvas = await html2canvas(element, {
                     scale: 2, 
-                    backgroundColor: '#ffffff',
+                    backgroundcolor: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : '#ffffff',
                     useCORS: true,
                     logging: false // 關閉終端機雜訊
                 });
@@ -3111,7 +3113,7 @@ window.initRadarChart = async function() {
                     icon: 'success',
                     title: '相片下載成功！',
                     text: '合格證書相片已成功儲存至您的裝置。',
-                    background: '#1c2638', color: '#fff',
+                    background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
                     confirmButtonColor: '#00a8ff'
                 }).then(() => {
                     generateQuiz(10); // 自動刷新題目
@@ -3125,9 +3127,59 @@ window.initRadarChart = async function() {
                     icon: 'error',
                     title: '沖洗失敗',
                     text: '無法生成證書：' + error.message,
-                    background: '#1c2638', color: '#fff'
+                    background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff'
                 });
             }
         }, 500);
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+    const isEn = document.getElementById('langSelect') && document.getElementById('langSelect').value === 'en-US';
+    
+    if(themeToggleBtn && themeIcon) {
+        const updateThemeUI = (theme) => {
+            const currentIsEn = document.getElementById('langSelect') && document.getElementById('langSelect').value === 'en-US';
+            if(theme === 'light') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                if(themeText) themeText.innerText = currentIsEn ? 'Light Mode' : '淺色模式';
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                if(themeText) themeText.innerText = currentIsEn ? 'Dark Mode' : '深色模式';
+            }
+        };
+        
+        updateThemeUI(document.documentElement.getAttribute('data-theme'));
+        
+        themeToggleBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            if (current === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                updateThemeUI('dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                updateThemeUI('light');
+            }
+            
+            // Trigger chart update if radar exists
+            if(window.radarChart) {
+                const isLight = localStorage.getItem('theme') === 'light';
+                const gridColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
+                const pointLabelColor = isLight ? '#718096' : '#8892b0';
+                
+                window.radarChart.options.scales.r.grid.color = gridColor;
+                window.radarChart.options.scales.r.angleLines.color = gridColor;
+                window.radarChart.options.scales.r.pointLabels.color = pointLabelColor;
+                window.radarChart.update();
+            }
+        });
     }
 });

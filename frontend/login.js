@@ -106,9 +106,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (toRegisterBtn && toLoginBtn && authContainer) {
         toRegisterBtn.addEventListener("click", () => {
             authContainer.classList.add("right-panel-active");
+            document.body.classList.add("right-panel-active");
         });
         toLoginBtn.addEventListener("click", () => {
             authContainer.classList.remove("right-panel-active");
+            document.body.classList.remove("right-panel-active");
         });
     }
 
@@ -379,6 +381,34 @@ document.addEventListener("DOMContentLoaded", function () {
             } catch (error) {
                 console.error(error);
                 Toast.fire({ icon: 'error', title: '伺服器連線失敗！' });
+            }
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if(themeToggleBtn && themeIcon) {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme === 'light') {
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            if (current === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
             }
         });
     }

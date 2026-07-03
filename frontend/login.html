@@ -6,9 +6,21 @@
     <title>ISO愛搜查 - VR 資安教育訓練系統</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="login.css?v=1783036990724">
+<script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 </head>
 <body>
+
+    <button id="themeToggleBtn" class="theme-toggle-btn" style="position: absolute; top: 20px; right: 20px; z-index: 1000; background: transparent; color: #00f3ff; border: 2px solid #00f3ff; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(0,243,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+        <i class="fa-solid fa-moon" id="themeIcon"></i>
+    </button>
     <div id="grid-background"></div>
     <div class="auth-container" id="authContainer">
         
@@ -105,6 +117,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="login.js"></script>
+    <script src="login.js?v=1783035967104"></script>
 </body>
 </html>

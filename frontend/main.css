@@ -10,7 +10,72 @@
     --text-main: #ffffff;
     --text-muted: #8892b0;
     --border-color: rgba(255, 255, 255, 0.1);
+
+    --bg-hover: rgba(255, 255, 255, 0.05);
+    --bg-subtle: rgba(255, 255, 255, 0.02);
+    --cyan-bg-light: rgba(0, 168, 255, 0.08);
+    --cyan-bg-med: rgba(0, 168, 255, 0.15);
+    --cyan-bg-strong: rgba(0, 168, 255, 0.25);
+    --cyan-border-focus: rgba(0, 168, 255, 0.4);
+    --cyan-border-focus-strong: rgba(0, 168, 255, 0.5);
+    --danger-color: #ff4757;
+    --danger-bg: rgba(255, 71, 87, 0.1);
+    --danger-bg-hover: rgba(255, 71, 87, 0.15);
+    --danger-border: rgba(255, 71, 87, 0.4);
+    --success-color: #2ed573;
+    --success-bg: rgba(46, 213, 115, 0.15);
+    --warning-color: #ffa502;
+    --warning-bg: rgba(255, 165, 2, 0.15);
+    --text-secondary: #a0aec0;
+    --text-bright: #ffffff;
+    --text-lighter: #cbd5e1;
+    --overlay-bg: rgba(0, 0, 0, 0.5);
+    --overlay-bg-dark: rgba(0, 0, 0, 0.6);
+    --shadow-strong: rgba(0, 0, 0, 0.7);
+    --card-bg: #112240;
+    --glass-bg: rgba(26, 38, 57, 0.8);
+    --glass-bg-solid: rgba(26, 38, 57, 0.95);
+    --box-shadow-cyan: 0 0 10px rgba(0, 168, 255, 0.5);
+    --box-shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
+
+[data-theme="light"] {
+    --bg-dark: #f5f7fa;
+    --sidebar-bg: #ffffff;
+    --panel-bg: rgba(255, 255, 255, 0.9);
+    --primary-cyan: #007bb5;
+    --primary-blue: #005bb5;
+    --text-main: #2d3748;
+    --text-muted: #718096;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --bg-hover: rgba(0, 0, 0, 0.05);
+    --bg-subtle: rgba(0, 0, 0, 0.02);
+    --cyan-bg-light: rgba(0, 123, 181, 0.08);
+    --cyan-bg-med: rgba(0, 123, 181, 0.15);
+    --cyan-bg-strong: rgba(0, 123, 181, 0.25);
+    --cyan-border-focus: rgba(0, 123, 181, 0.4);
+    --cyan-border-focus-strong: rgba(0, 123, 181, 0.5);
+    --danger-color: #e53e3e;
+    --danger-bg: rgba(229, 62, 62, 0.1);
+    --danger-bg-hover: rgba(229, 62, 62, 0.15);
+    --danger-border: rgba(229, 62, 62, 0.4);
+    --success-color: #38a169;
+    --success-bg: rgba(56, 161, 105, 0.15);
+    --warning-color: #dd6b20;
+    --warning-bg: rgba(221, 107, 32, 0.15);
+    --text-secondary: #4a5568;
+    --text-bright: #1a202c;
+    --text-lighter: var(--text-secondary);
+    --overlay-bg: rgba(255, 255, 255, 0.6);
+    --overlay-bg-dark: rgba(255, 255, 255, 0.8);
+    --shadow-strong: rgba(0, 0, 0, 0.15);
+    --card-bg: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-bg-solid: rgba(255, 255, 255, 0.98);
+    --box-shadow-cyan: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --box-shadow-glass: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
 
 * {
     margin: 0;
@@ -1316,4 +1381,146 @@ div.swal2-container {
     .flip-card { width: 100% !important; height: auto !important; min-height: 300px; }
     
     h1, h2, h3 { font-size: 1.12rem !important; }
+}
+
+
+/* Light Theme Logo Swap */
+[data-theme="light"] .sidebar-logo {
+    content: url("blacklogo.png");
+}
+
+
+/* Light Theme Updates for Rule Card & Quiz */
+[data-theme="light"] .rule-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .rule-card:hover {
+    border-color: #007bb5;
+}
+
+[data-theme="light"] .rule-id {
+    background: rgba(0, 123, 181, 0.08);
+    color: #007bb5;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .rule-text h4 {
+    color: #1a202c;
+}
+
+[data-theme="light"] .rule-text p {
+    color: #4a5568;
+}
+
+[data-theme="light"] .quiz-option {
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="light"] .quiz-option:hover {
+    border-color: #007bb5 !important;
+}
+
+[data-theme="light"] .btn-save {
+    color: #ffffff !important;
+}
+
+
+/* Light Mode Layout Fixes */
+[data-theme="light"] .main-content {
+    background: var(--bg-dark) !important;
+}
+
+[data-theme="light"] .topbar {
+    background: rgba(255, 255, 255, 0.8) !important;
+}
+
+
+/* Light Mode Card Title & Logo Fixes */
+[data-theme="light"] .note-title {
+    color: var(--text-bright) !important;
+}
+
+[data-theme="light"] .sidebar-logo {
+    content: url("blacklogo.png");
+    filter: none !important;
+}
+
+
+/* Light Mode Additional Text Visibility Fixes */
+[data-theme="light"] .manual-tab {
+    color: var(--text-main) !important;
+}
+[data-theme="light"] .manual-tab:hover, 
+[data-theme="light"] .manual-tab.active {
+    color: var(--text-bright) !important;
+}
+
+[data-theme="light"] .modal-body {
+    color: var(--text-main) !important;
+}
+
+[data-theme="light"] .note-excerpt {
+    color: #4a5568 !important;
+}
+
+
+/* Light Mode Settings Panel Fixes */
+[data-theme="light"] .setting-info h4 {
+    color: var(--text-bright) !important;
+}
+
+[data-theme="light"] .setting-info p {
+    color: #4a5568 !important;
+}
+
+/* Buttons and Inputs: White background, light gray border, black text */
+[data-theme="light"] #openChangePwdBtn,
+[data-theme="light"] #themeToggleBtn,
+[data-theme="light"] .cyber-select,
+[data-theme="light"] .cyber-input,
+[data-theme="light"] .cyber-textarea {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    color: #1a202c !important;
+}
+
+/* Remove hover color overrides that conflict with the black text requirement */
+[data-theme="light"] #openChangePwdBtn:hover,
+[data-theme="light"] #themeToggleBtn:hover {
+    background: #f8f9fa !important;
+    color: #1a202c !important;
+}
+
+/* Logout button thin light gray border */
+[data-theme="light"] .logout-btn {
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+/* SweetAlert2 popups text color fix */
+[data-theme="light"] .swal2-title,
+[data-theme="light"] .swal2-html-container {
+    color: var(--text-bright) !important;
+}
+
+
+/* Light Mode 2FA Cancel Button Fix */
+[data-theme="light"] .swal2-cancel,
+[data-theme="light"] .cyber-cancel-btn {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    color: #1a202c !important;
+}
+
+[data-theme="light"] .swal2-cancel:hover,
+[data-theme="light"] .cyber-cancel-btn:hover {
+    background: #f8f9fa !important;
+}
+
+
+/* Slow Theme Transition */
+body, .sidebar, .main-content, .topbar, .dashboard-container, .rule-card, .quiz-option, .glass-panel, .setting-item, .cyber-input, .cyber-select, .cyber-textarea, .logout-btn, .manual-tab, .note-modal-overlay, .note-modal-content {
+    transition: background-color 0.7s ease, background 0.7s ease, color 0.7s ease, border-color 0.7s ease !important;
 }
