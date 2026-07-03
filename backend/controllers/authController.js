@@ -68,7 +68,11 @@ const registerUser = async (req, res) => {
             const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
             origin = `${protocol}://${host}`;
         }
-        const verificationUrl = `${origin}/api/verify?token=${verificationToken}`;
+        let apiOrigin = origin;
+        if (apiOrigin && (apiOrigin.includes('5500') || apiOrigin.includes('127.0.0.1'))) {
+            apiOrigin = 'http://localhost:3000';
+        }
+        const verificationUrl = `${apiOrigin}/api/verify?token=${verificationToken}`;
         
         const mailOptions = {
             from: 'mi3c41263@gmail.com',
@@ -115,12 +119,30 @@ const verifyEmail = async (req, res) => {
         await db.query(updateSql, [users[0].id]);
 
         // 🌟 這裡修改：把按鈕的 <a> 連結改成你前端 Live Server 的完整網址
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.send(`
-            <div style="text-align: center; margin-top: 50px; font-family: sans-serif;">
-                <h2 style="color: green;"> 帳號驗證成功！</h2>
-                <p>您的信箱已成功開通，現在可以回到首頁登入了。</p>
-                <a href="/login.html" style="padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">前往登入頁面</a>
-            </div>
+            <!DOCTYPE html>
+            <html lang="zh-TW">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>驗證成功</title>
+                <style>
+                    body { background-color: #0b101e; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                    .container { text-align: center; background: #131a2a; padding: 40px; border-radius: 12px; border: 1px solid rgba(0,243,255,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+                    h2 { color: #2ed573; margin-bottom: 15px; }
+                    p { color: #a0aec0; margin-bottom: 25px; }
+                    .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #00e5ff; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h2> 帳號驗證成功！</h2>
+                    <p>您的信箱已成功開通！<br><br>請關閉此分頁，回到原本的註冊網頁繼續登入。</p>
+                </div>
+            </body>
+            </html>
         `);
 
     } catch (error) {
@@ -181,12 +203,12 @@ const loginUser = async (req, res) => {
                     is_2fa_enabled: (user.is_2fa_enabled === 1 || user.is_2fa_enabled === true) 
                 };
 
-                res.json({ success: true, message: "登入成功！正在載入頁面...", user: responseData });
+                res.json({ success: true, message: "登入成功！正在跳轉...", user: responseData });
             } else {
-                res.status(401).json({ success: false, message: " 帳號或密碼錯誤" });
+                res.status(401).json({ success: false, message: "密碼錯誤，請重新確認" });
             }
         } else {
-            res.status(401).json({ success: false, message: " 帳號或密碼錯誤" });
+            res.status(404).json({ success: false, message: "查無此帳號，請先註冊" });
         }
     } catch (error) {
         console.error("登入伺服器錯誤:", error);
@@ -605,7 +627,24 @@ const deleteAccount = async (req, res) => {
     }
 };
 // 🌟 關鍵：將所有功能匯出給路由使用
+
+const checkVerificationStatus = async (req, res) => {
+    const email = req.query.email;
+    if (!email) return res.json({ verified: false });
+    try {
+        const [users] = await db.query('SELECT is_verified FROM users WHERE email = ?', [email]);
+        if (users.length > 0 && users[0].is_verified) {
+            res.json({ verified: true });
+        } else {
+            res.json({ verified: false });
+        }
+    } catch (error) {
+        res.json({ verified: false });
+    }
+};
+
 module.exports = {
+    checkVerificationStatus,
     registerUser,
     verifyEmail,
     loginUser,

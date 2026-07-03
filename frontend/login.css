@@ -7,7 +7,7 @@
 body {
     width: 100vw; height: 100vh;
     background-color: #0d1624; /* 深沉的柔和科技灰藍色底 */ 
-    color: #ffffff; overflow: hidden; transition: background-color 0.5s ease, color 0.5s ease; 
+    color: #ffffff; overflow: hidden; transition: background-color 0.7s ease, color 0.7s ease; 
 }
 #grid-background {
     position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; z-index: 0;
@@ -15,12 +15,12 @@ body {
     border-top: 1px solid rgba(59, 130, 246, 0.15);
     border-left: 1px solid rgba(59, 130, 246, 0.15);
     pointer-events: auto; /* 允許接收滑鼠 hover */
-    transition: border-color 0.5s ease;
+    transition: border-color 0.7s ease;
 }
 .grid-cell {
     border-right: 1px solid rgba(59, 130, 246, 0.15);
     border-bottom: 1px solid rgba(59, 130, 246, 0.15);
-    transition: background-color 1.2s ease, box-shadow 1.2s ease, border-color 0.5s ease;
+    transition: background-color 1.2s ease, box-shadow 1.2s ease, border-color 0.7s ease;
 }
 .grid-cell:hover, .grid-cell.hovered {
     background-color: rgba(59, 130, 246, 0.1); /* 非常微弱的填充色，避免搶走文字焦點 */
@@ -136,15 +136,15 @@ body {
 /* =========================================
    5. 表單內部元件細節
 ========================================= */
-.form-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 18px; color: #fff; letter-spacing: 1px; transition: color 0.5s ease; }
+.form-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 18px; color: #fff; letter-spacing: 1px; transition: color 0.7s ease; }
 .form-group { margin-bottom: 15px; text-align: left; }
-.form-group label { display: block; font-size: 0.75rem; color: #a0aec0; margin-bottom: 5px; transition: color 0.5s ease; }
+.form-group label { display: block; font-size: 0.75rem; color: #a0aec0; margin-bottom: 5px; transition: color 0.7s ease; }
 
-.input-line { position: relative; border-bottom: 2px solid rgba(255,255,255,0.2); transition: border-color 0.5s ease; }
-.input-line input { width: 100%; background: transparent; border: none; color: #fff; padding: 5px 55px 5px 5px; font-size: 0.85rem; outline: none; transition: color 0.5s ease, background-color 0.5s ease; }
+.input-line { position: relative; border-bottom: 2px solid rgba(255,255,255,0.2); transition: border-color 0.7s ease; }
+.input-line input { width: 100%; background: transparent; border: none; color: #fff; padding: 5px 55px 5px 5px; font-size: 0.85rem; outline: none; transition: color 0.7s ease, background-color 0.7s ease; }
 .input-line:focus-within { border-bottom-color: #3b82f6; }
 
-.icon-right { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); color: #64748b; transition: color 0.5s ease; }
+.icon-right { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); color: #64748b; transition: color 0.7s ease; }
 .input-line:focus-within .icon-right { color: #3b82f6; }
 .toggle-eye { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); color: #fff; cursor: pointer; z-index: 2; background-color: transparent;}
 .input-line:focus-within .toggle-eye { color: #3b82f6; }
@@ -207,7 +207,7 @@ body {
 
 /* Theme Toggle Button Specific Styles */
 .theme-toggle-btn {
-    transition: all 0.3s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease, background 0.5s ease;
+    transition: all 0.3s ease, color 0.7s ease, border-color 0.7s ease, box-shadow 0.7s ease, background 0.7s ease;
 }
 
 .theme-toggle-btn:hover {
@@ -252,10 +252,6 @@ body {
 [data-theme="light"] .input-line:focus-within .icon-right,
 [data-theme="light"] .input-line:focus-within .toggle-eye {
     color: #007bb5;
-}
-
-[data-theme="light"] .overlay {
-    background: linear-gradient(135deg, #4eb5f1 0%, #197bc8 100%);
 }
 
 [data-theme="light"] .overlay-panel h1,
@@ -370,4 +366,42 @@ body {
 
 [data-theme="light"] .overlay::before {
     opacity: 1;
+}
+
+
+/* Light theme for pwd criteria */
+[data-theme="light"] .pwd-criteria {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 123, 181, 0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+[data-theme="light"] .pwd-criteria li.valid {
+    color: #16a085;
+}
+
+/* Forgot Password Modal Dark Theme Base (for elements without default css) */
+.modal-desc {
+    margin-bottom: 15px; color: #a0aec0; font-size: 0.9rem; transition: color 0.7s ease;
+}
+.btn-forgot-submit {
+    width: 100%; padding: 14px; border-radius: 30px; background: linear-gradient(180deg, #18b5b5, #004455); border: 1px solid rgba(0, 243, 255, 0.6); color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
+}
+
+/* Light Theme Modal Overrides */
+[data-theme="light"] .modal {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+[data-theme="light"] .modal-content {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+[data-theme="light"] .modal-content h3 {
+    color: #1a202c;
+}
+[data-theme="light"] .modal-desc {
+    color: #4a5568;
+}
+[data-theme="light"] .btn-forgot-submit {
+    background: transparent;
 }

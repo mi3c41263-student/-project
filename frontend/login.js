@@ -330,12 +330,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (data.success) {
-                    Toast.fire({ icon: 'success', title: data.message });
-                    setTimeout(() => {
-                        registerForm.reset();
-                        // 註冊成功後滑動回登入面板
-                        if (authContainer) authContainer.classList.remove("right-panel-active");
-                    }, 1500);
+                    Toast.fire({ icon: 'success', title: '註冊成功！請至信箱點擊驗證連結' });
+                    
+                    // 開始輪詢檢查是否已驗證
+                    let pollCount = 0;
+                    const pollInterval = setInterval(async () => {
+                        pollCount++;
+                        if (pollCount > 100) clearInterval(pollInterval); // 最多等 5 分鐘
+                        try {
+                            const checkRes = await fetch(`${API_BASE_URL}/api/check-verify?email=${encodeURIComponent(regEmail)}`);
+                            const checkData = await checkRes.json();
+                            if (checkData.verified) {
+                                clearInterval(pollInterval);
+                                Toast.fire({ icon: 'success', title: '驗證成功！' });
+                                registerForm.reset();
+                                if (authContainer) authContainer.classList.remove("right-panel-active");
+                            }
+                        } catch (e) {}
+                    }, 3000);
                 } else {
                     Toast.fire({ icon: 'error', title: data.message });
                 }
