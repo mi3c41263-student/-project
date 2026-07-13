@@ -25,7 +25,7 @@ transporter.verify(function(error, success) {
     }
 });
 // --- 驗證規則 ---
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // =========================================
@@ -115,7 +115,7 @@ const verifyEmail = async (req, res) => {
         }
 
         // 把 is_verified 改成 1，並清空 token
-        const updateSql = "UPDATE users SET is_verified = TRUE, verification_token = NULL WHERE id = ?";
+        const updateSql = "UPDATE users SET is_verified = TRUE WHERE id = ?"; // 不清空 token 避免預覽器重複點擊失敗
         await db.query(updateSql, [users[0].id]);
 
         // 🌟 這裡修改：把按鈕的 <a> 連結改成你前端 Live Server 的完整網址
@@ -643,8 +643,59 @@ const checkVerificationStatus = async (req, res) => {
     }
 };
 
+
+// =========================================
+// 新增：重新發送驗證信
+// =========================================
+const resendVerifyEmail = async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: "未提供電子郵件" });
+
+    try {
+        const checkSql = "SELECT * FROM users WHERE email = ?";
+        const [users] = await db.query(checkSql, [email]);
+        if (users.length === 0) return res.status(404).json({ success: false, message: "找不到此帳號" });
+
+        const user = users[0];
+        if (user.is_verified) return res.status(400).json({ success: false, message: "帳號已驗證，無須重新發送" });
+
+        let origin = req.headers.origin;
+        if (!origin || origin === 'null') {
+            const host = req.headers['x-forwarded-host'] || req.get('host') || 'localhost:3000';
+            const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+            origin = `${protocol}://${host}`;
+        }
+        let apiOrigin = origin;
+        if (apiOrigin && (apiOrigin.includes('5500') || apiOrigin.includes('127.0.0.1'))) {
+            apiOrigin = 'http://localhost:3000';
+        }
+        const verificationUrl = `${apiOrigin}/api/verify?token=${user.verification_token}`;
+
+        const mailOptions = {
+            from: 'mi3c41263@gmail.com',
+            to: email,
+            subject: '【系統通知】請驗證您的電子郵件（補發）',
+            html: `
+                <h2>歡迎註冊 VR 訓練系統！</h2>
+                <p>請點擊下方連結以開通您的帳號：</p>
+                <a href="${verificationUrl}" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">點我驗證信箱</a>
+                <p style="margin-top: 20px; font-size: 12px; color: #666; word-break: break-all;">如果上方的按鈕無法點擊，請複製以下網址並貼上至瀏覽器：<br>${verificationUrl}</p>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`已重新發送驗證信至：${email}`);
+        res.json({ success: true, message: "驗證信已重新發送！" });
+
+    } catch (error) {
+        console.error("重新發送驗證信錯誤:", error);
+        res.status(500).json({ success: false, message: "伺服器內部錯誤" });
+    }
+};
+
 module.exports = {
     checkVerificationStatus,
+    resendVerifyEmail,
     registerUser,
     verifyEmail,
     loginUser,

@@ -954,7 +954,7 @@ window.initRadarChart = async function() {
                         
                         <label style="color: var(--text-muted); font-size: 0.9rem;">新密碼</label>
                         <div style="position: relative; margin-bottom: 15px;">
-                            <input id="swal-new-pwd" type="password" class="cyber-input" style="width: 100%; text-align: center; letter-spacing: 3px; padding-right: 40px;" placeholder="至少8碼，含大小寫與數字">
+                            <input id="swal-new-pwd" type="password" class="cyber-input" style="width: 100%; text-align: center; letter-spacing: 3px; padding-right: 40px;" placeholder="至少8碼，含大小寫、數字及特殊符號">
                             <i class="fa-solid fa-eye-slash toggle-pwd-icon" data-target="swal-new-pwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
                         </div>
                         
@@ -1008,9 +1008,9 @@ window.initRadarChart = async function() {
                         Swal.showValidationMessage(' 兩次新密碼輸入不一致！');
                         return false;
                     }
-                    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+                    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
                     if (!passwordRegex.test(newPwd)) {
-                        Swal.showValidationMessage(' 密碼強度不足 (需8碼，含大小寫英文字母與數字)！');
+                        Swal.showValidationMessage(' 密碼強度不足 (需8碼，含大小寫、數字與特殊符號)！');
                         return false;
                     }
                     return { currentPassword: curr, newPassword: newPwd };
@@ -2955,7 +2955,7 @@ window.initRadarChart = async function() {
             Swal.fire({
                 icon: 'success', 
                 title: isEn ? 'Perfect Score!' : '滿分通過！',
-                text: isEn ? 'Amazing! You fully grasp the core essence of protection. Congratulations on unlocking your exclusive certificate!' : '太厲害了！您完全掌握了防護核心精髓。恭喜您解鎖專屬的合格證書！',
+                html: isEn ? 'Amazing! You fully grasp the core essence of protection.<br>Congratulations on unlocking your exclusive certificate!' : '太厲害了！您完全掌握了防護核心精髓。<br>恭喜您解鎖專屬的合格證書！',
                 background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', 
                 showCancelButton: true,
                 confirmButtonColor: '#00a8ff',

@@ -12,6 +12,7 @@ router.get('/stats', authController.getUserStats);
 // --- 信箱驗證與密碼路徑 ---
 router.get('/verify', authController.verifyEmail);
 router.get('/check-verify', authController.checkVerificationStatus);
+router.post('/resend-verify', authController.resendVerifyEmail);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
 

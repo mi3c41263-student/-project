@@ -922,7 +922,7 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 90px;
+    min-width: 140px;
     white-space: nowrap;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
 }

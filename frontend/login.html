@@ -6,7 +6,7 @@
     <title>ISO愛搜查 - VR 資安教育訓練系統</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="login.css?v=1783036990724">
+    <link rel="stylesheet" href="login.css?v=1783090574031">
 <script>
         (function() {
             const savedTheme = localStorage.getItem('theme');
@@ -72,6 +72,7 @@
                         <li id="rule-length" class="invalid"><i class="fa-solid fa-circle"></i> 至少 8 碼</li>
                         <li id="rule-case" class="invalid"><i class="fa-solid fa-circle"></i> 包含大小寫</li>
                         <li id="rule-number" class="invalid"><i class="fa-solid fa-circle"></i> 包含數字</li>
+                        <li id="rule-special" class="invalid"><i class="fa-solid fa-circle"></i> 包含特殊符號</li>
                     </ul>
                 </div>
                 <button type="submit" class="btn-login" style="margin-top: 15px;">註冊</button>
@@ -91,7 +92,7 @@
                 <div class="overlay-panel overlay-right">
                     <div class="content-wrapper text-right">
                         <img src="logo.png" class="brand-logo">
-                        <h1 class="glow-text">WELCOME<br>BACK!</h1>
+                        <h1 class="glow-text">WELCOME BACK!</h1>
                         <p class="welcome-desc">VR資安教育系統，將抽象規範轉化為防禦行為。</p>
                     </div>
                 </div>
@@ -99,24 +100,24 @@
         </div>
     </div>
     <!-- 忘記密碼 Modal -->
-    <div id="forgotPwdModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(5px); justify-content:center; align-items:center;">
-        <div class="modal-content" style="background-color:#0b101e; border:1px solid rgba(0,243,255,0.4); padding:40px; border-radius:12px; width:90%; max-width:420px; position:relative; box-shadow:0 10px 40px rgba(0,0,0,0.6);">
-            <span class="close-btn" id="closeForgotPwd" style="position:absolute; top:15px; right:20px; font-size:28px; font-weight:bold; color:#8892b0; cursor:pointer;">&times;</span>
-            <h3 style="font-size:1.8rem; margin-bottom:20px; color:#ffffff;">找回密碼</h3>
-            <p style="margin-bottom:15px; color:#a0aec0; font-size:0.9rem;">請輸入您的電子郵件，我們將發送重置密碼的連結給您。</p>
+    <div id="forgotPwdModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeForgotPwd">&times;</span>
+            <h3>找回密碼</h3>
+            <p class="modal-desc">請輸入您的電子郵件，我們將發送重置密碼的連結給您。</p>
             <form id="forgotPwdForm">
-                <div class="form-group" style="margin-bottom:20px;">
-                    <label style="display:block; font-size:14px; color:#e2e8f0; margin-bottom:8px;">電子郵件</label>
-                    <div class="input-line" style="position:relative; border-bottom:2px solid #e2e8f0; padding-bottom:8px;">
-                        <input type="email" id="forgotEmail" placeholder="example@email.com" required style="width:90%; background:transparent; border:none; color:#fff; font-size:16px; outline:none;">
+                <div class="form-group">
+                    <label>電子郵件</label>
+                    <div class="input-line">
+                        <input type="email" id="forgotEmail" placeholder="example@email.com" required>
                     </div>
                 </div>
-                <button type="submit" class="btn-login" style="width:100%; padding:14px; border-radius:30px; background:linear-gradient(180deg, #18b5b5, #004455); border:1px solid rgba(0,243,255,0.6); color:#fff; font-size:16px; font-weight:bold; cursor:pointer;">發送重置連結</button>
+                <button type="submit" class="btn-forgot-submit">發送重置連結</button>
             </form>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="login.js?v=1783089192122"></script>
+    <script src="login.js?v=1783960210367"></script>
 </body>
 </html>

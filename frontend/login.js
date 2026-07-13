@@ -265,6 +265,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const ruleLength = document.getElementById("rule-length");
         const ruleCase = document.getElementById("rule-case");
         const ruleNumber = document.getElementById("rule-number");
+        const ruleSpecial = document.getElementById("rule-special");
 
         regPwdInputNode.addEventListener("focus", () => {
             pwdCriteria.style.display = "block";
@@ -290,6 +291,12 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 ruleNumber.className = "invalid";
             }
+            // 4. 包含特殊符號
+            if (/[^A-Za-z0-9]/.test(val)) {
+                if(ruleSpecial) ruleSpecial.className = "valid";
+            } else {
+                if(ruleSpecial) ruleSpecial.className = "invalid";
+            }
         });
     }
 
@@ -308,14 +315,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const regPassword = regPasswordInput.value.trim();
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
             if (!emailRegex.test(regEmail)) {
                 Toast.fire({ icon: 'error', title: '格式錯誤：請輸入有效的電子郵件地址。' });
                 return;
             }
             if (!passwordRegex.test(regPassword)) {
-                Toast.fire({ icon: 'error', title: '密碼太弱：請設定至少 8 碼，包含大小寫英文字母與數字。' });
+                Toast.fire({ icon: 'error', title: '密碼太弱：請設定至少 8 碼，包含大小寫英文字母、數字與特殊符號。' });
                 return;
             }
 
@@ -330,7 +337,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (data.success) {
-                    Toast.fire({ icon: 'success', title: '註冊成功！請至信箱點擊驗證連結' });
+                    Swal.fire({
+                        icon: 'success',
+                        title: '註冊成功！',
+                        text: '請至信箱點擊驗證連結，我們正在等待您的驗證...',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        timer: undefined, // Explicitly disable any inherited timer
+                        footer: '<a href="#" id="resend-email-btn" style="color: #007bff; text-decoration: none; font-size: 1.1em; padding: 10px;">沒收到信嗎？點此重新發送</a>',
+                        didOpen: () => {
+                            Swal.showLoading();
+                            const resendBtn = document.getElementById('resend-email-btn');
+                            if (resendBtn) {
+                                resendBtn.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    Swal.getFooter().innerHTML = '<span style="color: #555;">發送中...</span>';
+                                    fetch(`${API_BASE_URL}/api/resend-verify`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ email: regEmail })
+                                    }).then(res => res.json()).then(resData => {
+                                        if (resData.success) {
+                                            Swal.getFooter().innerHTML = '<span style="color: green;">驗證信已重新發送！請檢查信箱。</span>';
+                                        } else {
+                                            Swal.getFooter().innerHTML = `<span style="color: red;">${resData.message}</span>`;
+                                        }
+                                    }).catch(() => {
+                                        Swal.getFooter().innerHTML = '<span style="color: red;">發生錯誤，請稍後再試</span>';
+                                    });
+                                });
+                            }
+                        }
+                    });
                     
                     // 開始輪詢檢查是否已驗證
                     let pollCount = 0;
@@ -342,6 +381,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             const checkData = await checkRes.json();
                             if (checkData.verified) {
                                 clearInterval(pollInterval);
+                                Swal.close();
                                 Toast.fire({ icon: 'success', title: '驗證成功！' });
                                 registerForm.reset();
                                 if (authContainer) authContainer.classList.remove("right-panel-active");
