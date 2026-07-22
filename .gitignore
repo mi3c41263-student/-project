@@ -33,3 +33,26 @@ config.json
 
 
 _ScriptDuplicateBackup/
+
+Library/
+Temp/
+Logs/
+UserSettings/
+_ScriptDuplicateBackup/
+*.csproj
+*.sln
+Library/
+Temp/
+Logs/
+UserSettings/
+_ScriptDuplicateBackup/
+*.csproj
+*.sln
+Assets/_Recovery/
+_ScriptDuplicateBackup/
+Library/
+Temp/
+Logs/
+UserSettings/
+*.csproj
+*.sln
