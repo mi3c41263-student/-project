@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隱私權政策 - ISO愛搜查</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 40px; font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-color, #0b1120); color: var(--text-color, #e2e8f0); }
+        .container { max-width: 800px; margin: 0 auto; background: var(--bg-card, #1c2638); padding: 40px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,243,255,0.1); border: 1px solid var(--border-color, #2d3748); }
+        h1 { color: #00a8ff; text-align: center; margin-bottom: 30px; font-weight: 700; }
+        h2 { color: #00f3ff; margin-top: 30px; margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid var(--border-color, #2d3748); padding-bottom: 10px; }
+        p, li { line-height: 1.8; margin-bottom: 15px; font-size: 1.05rem; }
+        ul { padding-left: 20px; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #00a8ff; text-decoration: none; font-weight: bold; }
+        .back-btn:hover { text-decoration: underline; }
+    
+        [data-theme="light"] {
+            --bg-color: #f0f2f5;
+            --text-color: #2d3748;
+            --bg-card: #ffffff;
+            --border-color: #cbd5e0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+</head>
+<body>
+    
+    <div class="container">
+        <a href="login.html" class="back-btn">← 回到首頁</a>
+        <h1>ISO愛搜查 隱私權政策</h1>
+        <p>「ISO愛搜查 VR資安教育訓練系統」（以下簡稱本系統）非常重視您的隱私權。為了讓您能夠安心使用本系統的各項服務與資訊，特此向您說明本系統的隱私權保護政策，以保障您的權益。</p>
+
+        <h2>1. 隱私權政策的適用範圍</h2>
+        <p>隱私權保護政策內容，包括本系統如何處理在您使用網站服務時收集到的個人識別資料。隱私權保護政策不適用於本系統以外的相關連結網站，也不適用於非本系統所委託或參與管理的人員。</p>
+
+        <h2>2. 個人資料的蒐集、處理及利用方式</h2>
+        <ul>
+            <li>當您造訪本系統或使用本系統提供之功能服務時，我們將視該服務功能性質，請您提供必要的個人資料（如：電子郵件信箱、系統密碼），並在該特定目的範圍內處理及利用您的個人資料。</li>
+            <li>於一般瀏覽時，伺服器會自行記錄相關行徑，包括您使用連線設備的 IP 位址、使用時間、使用的瀏覽器、瀏覽及點選資料記錄等，做為我們增進網站服務的參考依據。</li>
+            <li>本系統會記錄您在系統內的測驗成績、錯題紀錄與 VR 訓練數據，以提供您專屬的「學習成果分析」與「錯題本」服務。</li>
+        </ul>
+
+        <h2>3. 資料之保護</h2>
+        <ul>
+            <li>本系統主機均設有防火牆、防毒系統等相關的各項資訊安全設備及必要的安全防護措施，加以保護網站及您的個人資料。</li>
+            <li>您的密碼皆經過強加密雜湊演算法（Bcrypt）處理後安全儲存於資料庫中，本系統無法得知您的明文密碼。</li>
+        </ul>
+
+        <h2>4. 與第三人共用個人資料之政策</h2>
+        <p>本系統絕不會提供、交換、出租或出售任何您的個人資料給其他個人、團體、私人企業或公務機關，但有法律依據或合約義務者，不在此限。前項但書之情形包括不限於：</p>
+        <ul>
+            <li>經由您書面同意。</li>
+            <li>法律明文規定。</li>
+            <li>為維護國家安全或增進公共利益所必要。</li>
+            <li>當您在網站的行為，違反服務條款或可能損害或妨礙網站與其他使用者權益或導致任何人遭受損害時，經網站管理單位研析揭露您的個人資料是為了辨識、聯絡或採取法律行動所必要者。</li>
+        </ul>
+
+        <h2>5. Cookie 之使用</h2>
+        <p>為了提供您最佳的服務（例如記憶您的深/淺色主題偏好），本系統會使用 localStorage 及 Cookie 相關技術儲存部分設定。若您不願接受，您可在您使用的瀏覽器功能項中設定隱私權等級為高，但可能會導致網站某些功能無法正常執行。</p>
+
+        <h2>6. 隱私權政策之修正</h2>
+        <p>本系統隱私權政策將因應需求隨時進行修正，修正後的條款將刊登於網站上。</p>
+    </div>
+
+    </body>
+</html>

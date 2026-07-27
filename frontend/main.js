@@ -66,9 +66,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const mistakesSection = document.getElementById('mistakesSection'); 
     
     menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
+        item.addEventListener('click', async function(e) {
             if(this.getAttribute('href') === '#') {
                 e.preventDefault(); 
+                
+                const targetMenuId = this.getAttribute('data-i18n');
+                if (window.isQuizActive && targetMenuId !== 'nav-quiz' && typeof currentQuestionIndex !== 'undefined' && currentQuestionIndex < currentRoundQuestions.length) {
+                    const confirmLeave = await Swal.fire({
+                        title: '確定要離開測驗嗎？',
+                        text: '您目前正在進行測驗，跳出頁面將會遺失目前的測驗進度，下次進入需重新答題！',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: '確定離開',
+                        cancelButtonText: '繼續測驗',
+                        confirmButtonColor: '#ff4757',
+                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', 
+                        color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
+                        customClass: { cancelButton: 'cyber-cancel-btn' }
+                    });
+                    if (!confirmLeave.isConfirmed) {
+                        return; // 終止切換，留在測驗
+                    }
+                    window.isQuizActive = false;
+                }
+
                 menuItems.forEach(nav => nav.classList.remove('active'));
                 this.classList.add('active');
                 
@@ -2530,6 +2551,28 @@ window.initRadarChart = async function() {
     let currentRoundQuestions = [];
     let currentQuestionIndex = 0;
     let currentScore = 0;
+    window.isQuizActive = false;
+
+    window.addEventListener('beforeunload', function (e) {
+        if (window.isQuizActive && typeof currentQuestionIndex !== 'undefined' && currentQuestionIndex < currentRoundQuestions.length) {
+            e.preventDefault();
+            e.returnValue = '您正在進行測驗，確定要離開嗎？進度將不會保留。';
+            return e.returnValue;
+        }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden && window.isQuizActive && typeof currentQuestionIndex !== 'undefined' && currentQuestionIndex < currentRoundQuestions.length) {
+            Swal.fire({
+                icon: 'warning',
+                title: '系統警告：異常操作',
+                text: '測驗期間請勿切換分頁或離開視窗，此動作已被系統記錄，多次違規可能影響成績！',
+                confirmButtonColor: '#f39c12',
+                background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638',
+                color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff'
+            });
+        }
+    });
 
     
     // =========================================
@@ -2719,6 +2762,7 @@ window.initRadarChart = async function() {
         currentRoundQuestions = shuffleArray(selected);
         currentQuestionIndex = 0;
         currentScore = 0;
+        window.isQuizActive = true;
         
         const quizForm = document.getElementById('quizForm');
         if (quizForm) {
@@ -2932,6 +2976,7 @@ window.initRadarChart = async function() {
     };
 
     function showFinalScore() {
+        window.isQuizActive = false;
         const langSelectElem = document.getElementById('langSelect');
         const isEn = langSelectElem && langSelectElem.value === 'en';
 
