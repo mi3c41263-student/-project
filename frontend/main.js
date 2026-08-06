@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const analysisSection = document.getElementById('analysisSection'); 
     const quizSection = document.getElementById('quizSection'); 
     const mistakesSection = document.getElementById('mistakesSection'); 
+    const vrSection = document.getElementById('vrSection');
     
     menuItems.forEach(item => {
         item.addEventListener('click', async function(e) {
@@ -102,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (manualSection) manualSection.style.display = 'none';
                 if (quizSection) quizSection.style.display = 'none';
                 if (mistakesSection) mistakesSection.style.display = 'none';
+                if (vrSection) vrSection.style.display = 'none';
 
                 // 取得當前語系字典以設定副標題
                 const langSelectElem = document.getElementById('langSelect');
@@ -110,7 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 根據 i18n 屬性顯示對應區塊 (不再依賴 innerText 判斷，解決語系切換失效的問題)
                 const menuId = this.getAttribute('data-i18n');
-                if (menuId === 'nav-manual') {
+                if (menuId === 'nav-vr') {
+                    if (vrSection) vrSection.style.display = 'block';
+                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = dict['vr-desc'] || '開始您的沉浸式資安稽核訓練，或回顧過去的探索紀錄與正確解答。';
+                } else if (menuId === 'nav-manual') {
                     if (manualSection) manualSection.style.display = 'block';
                     if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = dict['sub-manual'];
                 } else if (menuId === 'nav-notes') {
@@ -3227,5 +3232,269 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.radarChart.update();
             }
         });
+        // ================= VR 專區重構邏輯 =================
+
+        // 綁定按鈕與視圖
+        const btnShowVrHistory = document.getElementById('btnShowVrHistory');
+        const btnShowVrAnswers = document.getElementById('btnShowVrAnswers');
+        const vrHistoryContainer = document.getElementById('vrHistoryContainer');
+        const vrAnswersContainer = document.getElementById('vrAnswersContainer');
+
+        if (btnShowVrHistory && btnShowVrAnswers && vrHistoryContainer && vrAnswersContainer) {
+            btnShowVrHistory.addEventListener('click', () => {
+                vrHistoryContainer.style.display = 'block';
+                vrAnswersContainer.style.display = 'none';
+                btnShowVrHistory.style.backgroundColor = 'var(--primary-cyan)';
+                btnShowVrHistory.style.color = '#0a192f';
+                btnShowVrAnswers.style.backgroundColor = 'transparent';
+                btnShowVrAnswers.style.color = 'var(--primary-cyan)';
+            });
+
+            btnShowVrAnswers.addEventListener('click', () => {
+                vrHistoryContainer.style.display = 'none';
+                vrAnswersContainer.style.display = 'block';
+                btnShowVrAnswers.style.backgroundColor = 'var(--primary-cyan)';
+                btnShowVrAnswers.style.color = '#0a192f';
+                btnShowVrHistory.style.backgroundColor = 'transparent';
+                btnShowVrHistory.style.color = 'var(--primary-cyan)';
+            });
+        }
+
+        // VR 資料
+        const vrRecords = [
+            {
+                id: 1,
+                date: '2023-11-20 14:30',
+                duration: '15:42',
+                score: 85,
+                suggestion: '在第一站啟動會議與高階訪談中，您成功找出了大部分的資安缺失。建議未來在會議中可多加留意桌面上的敏感資訊以及無人看管的設備。',
+                levelName: '第一站【啟動會議】&【高階訪談】',
+                images: ['vr-ans-1.png', 'vr-ans-1-2.png', 'vr-ans-1-3.png', 'vr-ans-1-4.png'],
+                found: [],
+                correctAnswers: [
+                    `A6.1 清潔桌面與淨空螢幕：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：會議室桌面上遺留了包含機密資訊的便條紙或文件，未遵守桌面淨空原則。</div>\n                    </div>`,
+                    `A6.3 資訊與通訊設備安全：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：會議室白板上寫有未經授權的系統架構圖或密碼資訊，且無人看管。</div>\n                    </div>`,
+                    `A8.1 實體與環境安全：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：訪客未經換證或登記即進入會議室，違反門禁管制規定。</div>\n                    </div>`,
+                    `A8.2 設備安全 (遺留 USB 隨身碟)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：會議室桌上遺留了未知的 USB 隨身碟。未經掃描與授權的外部儲存媒體可能會帶來惡意軟體感染或資料外洩的風險。</div>\n                    </div>`
+                ]
+            },
+            {
+                id: 2,
+                date: '2023-11-21 09:15',
+                duration: '22:10',
+                score: 72,
+                suggestion: '第二站辦公區巡檢表現尚可，但漏看了幾個隱蔽的缺失。請特別注意員工螢幕上的便利貼，以及未鎖定的電腦畫面。',
+                levelName: '第二站【條文檢查 Session 1】',
+                imageUrl: 'vr-ans-2.png',
+                found: [],
+                correctAnswers: [
+                    'A6.1 清潔桌面與淨空螢幕 (螢幕貼密碼)',
+                    'A6.2 可攜式媒體管理 (未上鎖的USB)',
+                    'A6.3 資訊與通訊設備安全 (電腦未登出)',
+                    'A6.4 軟體安裝限制 (安裝未授權軟體)'
+                ]
+            },
+            {
+                id: 3,
+                date: '2023-11-22 16:45',
+                duration: '18:30',
+                score: 95,
+                suggestion: '第三站機房重地表現非常優異！您具備了極高的資安敏銳度，幾乎找出了所有潛在的風險。請繼續保持！',
+                levelName: '第三站【條文檢查 Session 2】',
+                images: ['vr-ans-3-1.png', 'vr-ans-3-2.png', 'vr-ans-3-3.png', 'vr-ans-3-4.png', 'vr-ans-3-5.png', 'vr-ans-3-6.png'],
+                found: [],
+                correctAnswers: [
+                    `A7.14 設備汰除或重新使用之保全 (機房內堆放報廢設備)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：受管制之機房內放置了一大批待銷毀或報廢的舊設備，此舉可能阻礙逃生動線並影響散熱，應記錄為缺失行為。</div>\n                    </div>`,
+                    `A7.13 設備維護 (機房內堆放報廢設備 - 影響維護)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：機房內不應隨意堆放雜物與報廢品，影響環境安全與設備維護。</div>\n                    </div>`,
+                    `A7.8 設備安置與保護 (維修表未簽名)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：進出機房未簽名。當機房管理員進入維修機房時，應配合本中心所設立之「機房與工作室」簽名表單，符合該區域之管制規範。</div>\n                    </div>`,
+                    `A7.12 佈纜安全 / 設備安置與保護 (機房內食物)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：發現受管制之機房內放置非施工用器具，不應該出現包裝完整密封的零食餅乾，記錄為缺失行為。</div>\n                    </div>`,
+                    `A7.7 桌面淨空與螢幕淨空 (電腦螢幕貼密碼紙條)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：員工為了方便記憶，將登入帳密寫在便利貼並貼在電腦螢幕上，此行為已違反桌面淨空與螢幕淨空政策，為缺失行為。</div>\n                    </div>`,
+                    `A6.4 違規懲處 (資安政策海報未明訂懲處)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：辦公室安全政策海報上向員工宣導資訊安全規範，但未帶出相關違規處置程序，未明確表示若將遭受何種懲處或影響。不符合程序與明確規範。</div>\n                    </div>`
+                ]
+            }
+        ];
+
+        const vrHistoryList = document.getElementById('vrHistoryList');
+        const vrHistoryModal = document.getElementById('vrHistoryModal');
+        const closeVrHistoryModalBtn = document.getElementById('closeVrHistoryModal');
+        
+        if (vrHistoryList) {
+            vrHistoryList.innerHTML = vrRecords.map(record => `
+                <div class="note-card glass-panel vr-history-card" data-id="` + record.id + `" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 20px; transition: transform 0.2s, box-shadow 0.2s;">
+                    <div>
+                        <h3 style="color: var(--primary-cyan); margin: 0 0 5px 0;"><i class="fa-solid fa-vr-cardboard"></i> 模擬探索 #${record.id} - ${record.levelName}</h3>
+                        <p style="color: #8892b0; margin: 0; font-size: 0.9rem;">${record.date} | 耗時: ${record.duration}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 1.5rem; font-weight: bold; color: ${record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757')};">${record.score} 分</span>
+                        <p style="color: #8892b0; margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
+                    </div>
+                </div>
+            `).join('');
+
+            const historyCards = document.querySelectorAll('.vr-history-card');
+            historyCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const recordId = parseInt(this.getAttribute('data-id'));
+                    const record = vrRecords.find(r => r.id === recordId);
+                    
+                    if (record) {
+                        document.getElementById('vrModalDate').textContent = record.date;
+                        document.getElementById('vrModalDuration').innerHTML = '<i class="fa-regular fa-clock"></i> 探索耗時: ' + record.duration;
+                        
+                        const scoreElem = document.getElementById('vrModalScore');
+                        if (scoreElem) {
+                            scoreElem.textContent = '綜合評分: ' + record.score + ' / 100';
+                            scoreElem.style.color = record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757');
+                        }
+                        
+                        const foundList = document.getElementById('vrModalFoundList');
+                        if (foundList) {
+                            foundList.innerHTML = record.found.map(item => '<li style="margin-bottom: 8px;"><i class="fa-solid fa-crosshairs" style="color: #2ed573; margin-right: 8px;"></i>' + item + '</li>').join('');
+                        }
+                        
+                        document.getElementById('vrModalSuggestion').textContent = record.suggestion;
+                        vrHistoryModal.classList.add('show');
+                    }
+                });
+            });
+        }
+
+        if (closeVrHistoryModalBtn) {
+            closeVrHistoryModalBtn.addEventListener('click', () => vrHistoryModal.classList.remove('show'));
+        }
+        if (vrHistoryModal) {
+            vrHistoryModal.addEventListener('click', (e) => {
+                if (e.target === vrHistoryModal) vrHistoryModal.classList.remove('show');
+            });
+        }
+
+        const vrAnswerLevelSelect = document.getElementById('vrAnswerLevelSelect');
+        if (vrAnswerLevelSelect) {
+            vrAnswerLevelSelect.innerHTML = vrRecords.map(r => `<option value="${r.levelName}">${r.levelName}</option>`).join('');
+            vrAnswerLevelSelect.addEventListener('change', (e) => {
+                renderDirectAnswer(e.target.value);
+            });
+            renderDirectAnswer(vrAnswerLevelSelect.value);
+        }
+
+        function renderDirectAnswer(levelName) {
+            const record = vrRecords.find(r => r.levelName === levelName);
+            if (record) {
+                const answerList = document.getElementById('vrAnswerDirectList');
+                const imgElem = document.getElementById('vrAnswerDirectImage');
+                const noImgElem = document.getElementById('vrAnswerDirectNoImage');
+                
+                if (answerList && imgElem && noImgElem) {
+                    answerList.innerHTML = record.correctAnswers.map((item, index) => `
+                        <li class="vr-direct-answer-item" data-index="${index}" style="margin-bottom: 8px; padding: 10px; cursor: pointer; border-radius: 6px; border: 1px solid transparent; transition: all 0.2s;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <i class="fa-solid fa-check-double" style="color: #ff4757; margin-right: 8px; margin-top: 4px;"></i>
+                                <div style="flex: 1;">${item}</div>
+                            </div>
+                        </li>
+                    `).join('');
+                    
+                    const items = answerList.querySelectorAll('.vr-direct-answer-item');
+                    
+                    function selectItem(idx) {
+                        items.forEach((el, i) => {
+                            if (i === idx) {
+                                el.style.backgroundColor = 'rgba(255, 71, 87, 0.1)';
+                                el.style.borderColor = 'rgba(255, 71, 87, 0.4)';
+                            } else {
+                                el.style.backgroundColor = 'transparent';
+                                el.style.borderColor = 'transparent';
+                            }
+                        });
+                        
+                        if (record.images && record.images[idx]) {
+                            imgElem.style.opacity = 0;
+                            setTimeout(() => {
+                                imgElem.src = record.images[idx];
+                                imgElem.style.display = 'block';
+                                imgElem.style.opacity = 1;
+                                noImgElem.style.display = 'none';
+                            }, 150);
+                        } else if (record.imageUrl && idx === 0) {
+                            imgElem.style.opacity = 0;
+                            setTimeout(() => {
+                                imgElem.src = record.imageUrl;
+                                imgElem.style.display = 'block';
+                                imgElem.style.opacity = 1;
+                                noImgElem.style.display = 'none';
+                            }, 150);
+                        } else {
+                            imgElem.style.display = 'none';
+                            noImgElem.style.display = 'block';
+                        }
+                    }
+                    
+                    items.forEach((item, idx) => {
+                        item.addEventListener('mouseenter', () => {
+                            if (item.style.backgroundColor === 'transparent' || item.style.backgroundColor === '') {
+                                item.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                            }
+                        });
+                        item.addEventListener('mouseleave', () => {
+                            if (item.style.borderColor === 'transparent' || item.style.borderColor === '') {
+                                item.style.backgroundColor = 'transparent';
+                            }
+                        });
+                        item.addEventListener('click', () => {
+                            selectItem(idx);
+                        });
+                    });
+                    
+                    if (items.length > 0) {
+                        selectItem(0);
+                    } else {
+                        imgElem.style.display = 'none';
+                        noImgElem.style.display = 'block';
+                    }
+                }
+            }
+        }
+
+        const startVrBtn = document.getElementById('startVrBtn');
+        if (startVrBtn) {
+            startVrBtn.addEventListener('click', () => {
+                alert('系統準備進入 VR 訓練... (此為示範按鈕，需與後端系統串接)');
+            });
+        }
+        
+        // 圖片放大功能
+        const vrAnswerDirectImage = document.getElementById('vrAnswerDirectImage');
+        const imageZoomModal = document.getElementById('imageZoomModal');
+        const enlargedImage = document.getElementById('enlargedImage');
+        const closeImageZoom = document.getElementById('closeImageZoom');
+        
+        if (vrAnswerDirectImage && imageZoomModal && enlargedImage && closeImageZoom) {
+            vrAnswerDirectImage.addEventListener('click', () => {
+                enlargedImage.src = vrAnswerDirectImage.src;
+                imageZoomModal.style.display = 'flex';
+                void imageZoomModal.offsetWidth;
+                imageZoomModal.style.opacity = '1';
+                imageZoomModal.style.pointerEvents = 'auto';
+                enlargedImage.style.transform = 'scale(1)';
+            });
+
+            const hideZoomModal = () => {
+                imageZoomModal.style.opacity = '0';
+                imageZoomModal.style.pointerEvents = 'none';
+                enlargedImage.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    imageZoomModal.style.display = 'none';
+                }, 300);
+            };
+
+            closeImageZoom.addEventListener('click', hideZoomModal);
+            imageZoomModal.addEventListener('click', (e) => {
+                if (e.target === imageZoomModal) {
+                    hideZoomModal();
+                }
+            });
+        }
+
     }
 });

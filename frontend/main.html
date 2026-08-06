@@ -58,13 +58,70 @@
                 </div>
                 
                 <div class="topbar-actions">
-                    <button class="action-btn"><i class="fa-regular fa-bell"></i></button>
                     <button class="action-btn" id="settingsBtn"><i class="fa-solid fa-gear"></i></button>
                 </div>
             </header>
 
             <div class="content-wrapper">
-                
+                <div id="vrSection" class="section-container" style="display: none;">
+                    <div class="manual-header glass-panel" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="vr-title">VR 情境模擬</h3>
+                            <p style="color: #8892b0; margin-top: 10px; font-size: 0.95rem; line-height: 1.6;" data-i18n="vr-desc">開始您的沉浸式資安稽核訓練，或回顧過去的探索紀錄與正確解答。</p>
+                        </div>
+                        <button id="startVrBtn" style="background-color: var(--primary-cyan); color: #000; font-weight: bold; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(0, 168, 255, 0.4); font-size: 1rem; transition: transform 0.2s;"><i class="fa-solid fa-play" style="margin-right: 8px;"></i> <span data-i18n="vr-start">啟動 VR 訓練</span></button>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                        <button id="btnShowVrHistory" style="background-color: #00a8ff; color: #000; padding: 8px 20px; border-radius: 5px; border: 1px solid #00a8ff; cursor: pointer; font-weight: bold; white-space: nowrap;"><i class="fa-solid fa-clock-rotate-left"></i> 我的探索紀錄</button>
+                        <button id="btnShowVrAnswers" style="background-color: transparent; color: #00a8ff; padding: 8px 20px; border-radius: 5px; border: 1px solid #00a8ff; cursor: pointer; font-weight: bold; white-space: nowrap;"><i class="fa-solid fa-key"></i> 關卡正確解答</button>
+                    </div>
+
+                    <!-- 大類別一：我的探索紀錄 -->
+                    <div id="vrHistoryContainer" style="margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(46, 213, 115, 0.2);">
+                        <h4 style="color: #2ed573; margin-bottom: 15px; border-bottom: 1px dashed rgba(46, 213, 115, 0.4); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-clock-rotate-left"></i> 我的探索紀錄
+                        </h4>
+                        <div id="vrHistoryList" style="display: flex; flex-direction: column; gap: 15px;">
+                            <!-- VR history cards will be rendered here dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- 大類別二：關卡正確解答區 -->
+                    <div id="vrAnswersContainer" style="display: none; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 71, 87, 0.2);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(255, 71, 87, 0.4); padding-bottom: 10px;">
+                            <h4 style="color: #ff4757; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-key"></i> 關卡正確解答區
+                            </h4>
+                            <select id="vrAnswerLevelSelect" style="background: rgba(0,0,0,0.5); color: #fff; border: 1px solid #ff4757; padding: 5px 10px; border-radius: 5px; cursor: pointer; outline: none; font-size: 0.95rem;">
+                                <!-- Options dynamically generated -->
+                            </select>
+                        </div>
+                        
+                        <p style="color: #8892b0; margin-bottom: 20px; line-height: 1.6;">以下是本關卡中所有的標準缺失解答，以及情境對照圖示。</p>
+
+                        <div style="background: rgba(255, 71, 87, 0.05); padding: 20px; border-radius: 8px; border: 1px solid rgba(255, 71, 87, 0.2); display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
+                            <!-- 答案列表 -->
+                            <div style="flex: 1; min-width: 250px;">
+                                <p style="color: #ff4757; margin-top: 0; margin-bottom: 10px; font-weight: bold; border-bottom: 1px dashed rgba(255, 71, 87, 0.3); padding-bottom: 8px;">標準缺失清單：</p>
+                                <ul id="vrAnswerDirectList" style="list-style: none; padding: 0; margin: 0; color: #e2e8f0; font-size: 0.95rem; line-height: 1.6;">
+                                </ul>
+                            </div>
+                            <!-- 圖片展示 -->
+                            <div style="flex: 1; min-width: 300px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 71, 87, 0.2); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 15px; position: relative;">
+                                <span style="position: absolute; top: 10px; left: 15px; font-size: 0.8rem; color: #8892b0;"><i class="fa-solid fa-image"></i> 情境快照對照</span>
+                                
+                                <!-- 單圖容器 (會隨著左側點擊而切換) -->
+                                <div style="display: flex; flex-direction: column; width: 100%; height: 100%; margin-top: 25px; align-items: center; justify-content: center; min-height: 200px;">
+                                    <img id="vrAnswerDirectImage" src="" alt="情境解答圖片" style="max-width: 100%; max-height: 500px; object-fit: contain; display: none; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: opacity 0.2s, transform 0.2s; cursor: zoom-in;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                </div>
+                                
+                                <div id="vrAnswerDirectNoImage" style="color: #8892b0; text-align: center; font-size: 0.9rem; margin-top: 25px;">無相關圖片</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="mistakesSection" class="section-container" style="display: none;">
                     <div class="manual-header glass-panel" style="margin-bottom: 20px;">
                         <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="mistakes-title">錯題本與弱點強化</h3>
@@ -551,6 +608,48 @@
             </div>
         </div>
     </div>
+    <div id="vrHistoryModal" class="note-modal-overlay">
+        <div class="settings-modal-content glass-panel" style="max-width: 700px; height: auto; max-height: 85vh; overflow-y: auto;">
+            <button class="close-modal-btn" id="closeVrHistoryModal"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="modal-title" style="margin-bottom: 15px; color: var(--primary-cyan); display: flex; align-items: center; justify-content: space-between;">
+                <span><i class="fa-solid fa-file-invoice"></i> 訓練結果總結</span>
+                <span id="vrModalDate" style="font-size: 0.9rem; color: #8892b0; font-weight: normal;"></span>
+            </h2>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(0, 168, 255, 0.2);">
+                <div id="vrModalDuration" style="color: #e2e8f0; font-size: 0.95rem;"></div>
+                <div id="vrModalScore" style="font-size: 1.2rem; font-weight: bold;"></div>
+            </div>
+
+            <p style="color: #8892b0; margin-bottom: 20px; line-height: 1.6;" data-i18n="vr-modal-desc">以下是您在本次 VR 情境中的表現，與系統標準解答的詳細對照。</p>
+
+            <!-- 區塊一：探索紀錄 -->
+            <div style="margin-bottom: 25px; border: 1px solid rgba(46, 213, 115, 0.3); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h4 style="color: #000; background: #2ed573; margin: 0; padding: 12px 20px; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-user-check"></i> 您的探索紀錄
+                </h4>
+                <div style="background: rgba(46, 213, 115, 0.05); padding: 15px 20px;">
+                    <ul id="vrModalFoundList" style="list-style: none; padding: 0; margin: 0; color: #e2e8f0; font-size: 0.95rem; line-height: 1.6;">
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; background: rgba(0, 168, 255, 0.05); border: 1px solid rgba(0, 168, 255, 0.2); border-radius: 8px; padding: 15px;">
+                <h4 style="color: var(--primary-cyan); margin-bottom: 10px;" data-i18n="vr-modal-sug-title">
+                    <i class="fa-solid fa-lightbulb"></i> 系統綜合建議
+                </h4>
+                <p id="vrModalSuggestion" style="color: #e2e8f0; font-size: 0.95rem; line-height: 1.6; margin: 0;"></p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 圖片放大檢視 Modal -->
+    <div id="imageZoomModal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <span id="closeImageZoom" style="position: absolute; top: 20px; right: 30px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; transition: 0.3s;" onmouseover="this.style.color='#ff4757'" onmouseout="this.style.color='#f1f1f1'">&times;</span>
+        <img id="enlargedImage" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.3s ease;">
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
