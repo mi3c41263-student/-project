@@ -564,7 +564,7 @@ window.initRadarChart = async function() {
     if (!ctx) return;
 
     // 配合你現有 CSS 的文字顏色設定
-    Chart.defaults.color = '#8892b0'; 
+    Chart.defaults.color = 'var(--text-light)'; 
 
     const langSelectElem = document.getElementById('langSelect');
     const initLang = langSelectElem ? langSelectElem.value : 'zh-TW';
@@ -600,7 +600,7 @@ window.initRadarChart = async function() {
                             size: 16,
                             weight: 'bold'
                         },
-                        color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : '#e2e8f0' // 加亮標籤顏色使其更清晰
+                        color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : 'var(--text-color)' // 加亮標籤顏色使其更清晰
                     },
                     suggestedMin: 0,
                     suggestedMax: 100,
@@ -647,7 +647,7 @@ window.initRadarChart = async function() {
                     legend: { display: false }, // 隱藏上方圖例
                     tooltip: {
                         backgroundColor: 'rgba(28, 38, 56, 0.9)',
-                        titleColor: '#8892b0',
+                        titleColor: 'var(--text-light)',
                         bodyColor: '#fff',
                         borderColor: '#00a8ff',
                         borderWidth: 1
@@ -658,11 +658,11 @@ window.initRadarChart = async function() {
                         beginAtZero: true,
                         max: 100, // 分數最高 100
                         grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : '#8892b0' }
+                        ticks: { color: document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : 'var(--text-light)' }
                     },
                     x: {
                         grid: { display: false },
-                        ticks: { color: document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : '#8892b0' }
+                        ticks: { color: document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : 'var(--text-light)' }
                     }
                 }
             }
@@ -787,7 +787,7 @@ window.initRadarChart = async function() {
                         title: '儲存成功！',
                         text: '您的個人檔案已更新。',
                         toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
-                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : '#e2e8f0'
+                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : 'var(--text-color)'
                     });
 
                     // 覆蓋 LocalStorage，讓下次重新整理時資料還在
@@ -1015,7 +1015,7 @@ window.initRadarChart = async function() {
                                 inputField.type = "password";
                                 this.classList.remove('fa-eye');
                                 this.classList.add('fa-eye-slash');
-                                this.style.color = '#8892b0';
+                                this.style.color = 'var(--text-light)';
                             }
                         });
                     });
@@ -3224,7 +3224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(window.radarChart) {
                 const isLight = localStorage.getItem('theme') === 'light';
                 const gridColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
-                const pointLabelColor = isLight ? '#718096' : '#8892b0';
+                const pointLabelColor = isLight ? '#718096' : 'var(--text-light)';
                 
                 window.radarChart.options.scales.r.grid.color = gridColor;
                 window.radarChart.options.scales.r.angleLines.color = gridColor;
@@ -3323,11 +3323,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="note-card glass-panel vr-history-card" data-id="` + record.id + `" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 20px; transition: transform 0.2s, box-shadow 0.2s;">
                     <div>
                         <h3 style="color: var(--primary-cyan); margin: 0 0 5px 0;"><i class="fa-solid fa-vr-cardboard"></i> 模擬探索 #${record.id} - ${record.levelName}</h3>
-                        <p style="color: #8892b0; margin: 0; font-size: 0.9rem;">${record.date} | 耗時: ${record.duration}</p>
+                        <p style="color: var(--text-light); margin: 0; font-size: 0.9rem;">${record.date} | 耗時: ${record.duration}</p>
                     </div>
                     <div style="text-align: right;">
                         <span style="font-size: 1.5rem; font-weight: bold; color: ${record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757')};">${record.score} 分</span>
-                        <p style="color: #8892b0; margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
+                        <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
                     </div>
                 </div>
             `).join('');
@@ -3411,7 +3411,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (record.images && record.images[idx]) {
                             imgElem.style.opacity = 0;
                             setTimeout(() => {
-                                imgElem.src = record.images[idx];
+                                imgElem.src = record.images[idx] + '?t=' + new Date().getTime();
                                 imgElem.style.display = 'block';
                                 imgElem.style.opacity = 1;
                                 noImgElem.style.display = 'none';
@@ -3419,7 +3419,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else if (record.imageUrl && idx === 0) {
                             imgElem.style.opacity = 0;
                             setTimeout(() => {
-                                imgElem.src = record.imageUrl;
+                                imgElem.src = record.imageUrl + '?t=' + new Date().getTime();
                                 imgElem.style.display = 'block';
                                 imgElem.style.opacity = 1;
                                 noImgElem.style.display = 'none';

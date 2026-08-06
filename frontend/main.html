@@ -67,7 +67,7 @@
                     <div class="manual-header glass-panel" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="vr-title">VR 情境模擬</h3>
-                            <p style="color: #8892b0; margin-top: 10px; font-size: 0.95rem; line-height: 1.6;" data-i18n="vr-desc">開始您的沉浸式資安稽核訓練，或回顧過去的探索紀錄與正確解答。</p>
+                            <p style="color: var(--text-light); margin-top: 10px; font-size: 0.95rem; line-height: 1.6;" data-i18n="vr-desc">開始您的沉浸式資安稽核訓練，或回顧過去的探索紀錄與正確解答。</p>
                         </div>
                         <button id="startVrBtn" style="background-color: var(--primary-cyan); color: #000; font-weight: bold; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(0, 168, 255, 0.4); font-size: 1rem; transition: transform 0.2s;"><i class="fa-solid fa-play" style="margin-right: 8px;"></i> <span data-i18n="vr-start">啟動 VR 訓練</span></button>
                     </div>
@@ -78,7 +78,7 @@
                     </div>
 
                     <!-- 大類別一：我的探索紀錄 -->
-                    <div id="vrHistoryContainer" style="margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(46, 213, 115, 0.2);">
+                    <div id="vrHistoryContainer" class="glass-panel" style="margin-bottom: 40px; border-color: rgba(46, 213, 115, 0.4);">
                         <h4 style="color: #2ed573; margin-bottom: 15px; border-bottom: 1px dashed rgba(46, 213, 115, 0.4); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-clock-rotate-left"></i> 我的探索紀錄
                         </h4>
@@ -88,35 +88,35 @@
                     </div>
 
                     <!-- 大類別二：關卡正確解答區 -->
-                    <div id="vrAnswersContainer" style="display: none; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 71, 87, 0.2);">
+                    <div id="vrAnswersContainer" class="glass-panel" style="display: none; border-color: rgba(255, 71, 87, 0.4);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(255, 71, 87, 0.4); padding-bottom: 10px;">
                             <h4 style="color: #ff4757; margin: 0; display: flex; align-items: center; gap: 8px;">
                                 <i class="fa-solid fa-key"></i> 關卡正確解答區
                             </h4>
-                            <select id="vrAnswerLevelSelect" style="background: rgba(0,0,0,0.5); color: #fff; border: 1px solid #ff4757; padding: 5px 10px; border-radius: 5px; cursor: pointer; outline: none; font-size: 0.95rem;">
+                            <select id="vrAnswerLevelSelect" class="cyber-select" style="border: 1px solid #ff4757; font-size: 0.95rem;">
                                 <!-- Options dynamically generated -->
                             </select>
                         </div>
                         
-                        <p style="color: #8892b0; margin-bottom: 20px; line-height: 1.6;">以下是本關卡中所有的標準缺失解答，以及情境對照圖示。</p>
+                        <p style="color: var(--text-light); margin-bottom: 20px; line-height: 1.6;">以下是本關卡中所有的標準缺失解答，以及情境對照圖示。</p>
 
                         <div style="background: rgba(255, 71, 87, 0.05); padding: 20px; border-radius: 8px; border: 1px solid rgba(255, 71, 87, 0.2); display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
                             <!-- 答案列表 -->
                             <div style="flex: 1; min-width: 250px;">
                                 <p style="color: #ff4757; margin-top: 0; margin-bottom: 10px; font-weight: bold; border-bottom: 1px dashed rgba(255, 71, 87, 0.3); padding-bottom: 8px;">標準缺失清單：</p>
-                                <ul id="vrAnswerDirectList" style="list-style: none; padding: 0; margin: 0; color: #e2e8f0; font-size: 0.95rem; line-height: 1.6;">
+                                <ul id="vrAnswerDirectList" style="list-style: none; padding: 0; margin: 0; color: var(--text-color); font-size: 0.95rem; line-height: 1.6;">
                                 </ul>
                             </div>
                             <!-- 圖片展示 -->
-                            <div style="flex: 1; min-width: 300px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 71, 87, 0.2); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 15px; position: relative;">
-                                <span style="position: absolute; top: 10px; left: 15px; font-size: 0.8rem; color: #8892b0;"><i class="fa-solid fa-image"></i> 情境快照對照</span>
+                            <div class="vr-image-box" style="flex: 1; min-width: 300px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 15px; position: relative;">
+                                <span style="position: absolute; top: 10px; left: 15px; font-size: 0.8rem; color: var(--text-light);"><i class="fa-solid fa-image"></i> 情境快照對照</span>
                                 
                                 <!-- 單圖容器 (會隨著左側點擊而切換) -->
                                 <div style="display: flex; flex-direction: column; width: 100%; height: 100%; margin-top: 25px; align-items: center; justify-content: center; min-height: 200px;">
                                     <img id="vrAnswerDirectImage" src="" alt="情境解答圖片" style="max-width: 100%; max-height: 500px; object-fit: contain; display: none; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: opacity 0.2s, transform 0.2s; cursor: zoom-in;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                                 </div>
                                 
-                                <div id="vrAnswerDirectNoImage" style="color: #8892b0; text-align: center; font-size: 0.9rem; margin-top: 25px;">無相關圖片</div>
+                                <div id="vrAnswerDirectNoImage" style="color: var(--text-light); text-align: center; font-size: 0.9rem; margin-top: 25px;">無相關圖片</div>
                             </div>
                         </div>
                     </div>
@@ -125,7 +125,7 @@
                 <div id="mistakesSection" class="section-container" style="display: none;">
                     <div class="manual-header glass-panel" style="margin-bottom: 20px;">
                         <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="mistakes-title">錯題本與弱點強化</h3>
-                        <p style="color: #8892b0; margin-top: 10px; font-size: 0.95rem; line-height: 1.6;" data-i18n="mistakes-desc">這裡記錄了您在測驗中曾經答錯的題目。您可以隨時複習詳解，加深對資安規範的印象。</p>
+                        <p style="color: var(--text-light); margin-top: 10px; font-size: 0.95rem; line-height: 1.6;" data-i18n="mistakes-desc">這裡記錄了您在測驗中曾經答錯的題目。您可以隨時複習詳解，加深對資安規範的印象。</p>
                     </div>
 
                     <div id="mistakesList" style="display: flex; flex-direction: column; gap: 15px;">
@@ -310,7 +310,7 @@
                 <div id="quizSection" class="section-container" style="display: none;">
                     <div class="manual-header glass-panel" style="margin-bottom: 20px;">
                         <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="quiz-title">資安稽核情境模擬測驗</h3>
-                        <p style="color: #8892b0; margin-top: 10px; font-size: 0.80rem; line-height: 1.6;" data-i18n="quiz-desc">本測驗將隨機抽取 2 題是非題、3 題單選題、5 題多選題，共10題，包含實務稽核的灰色地帶與複合陷阱，驗證您的真實防禦能力。</p>
+                        <p style="color: var(--text-light); margin-top: 10px; font-size: 0.80rem; line-height: 1.6;" data-i18n="quiz-desc">本測驗將隨機抽取 2 題是非題、3 題單選題、5 題多選題，共10題，包含實務稽核的灰色地帶與複合陷阱，驗證您的真實防禦能力。</p>
                     </div>
 
                     <div class="glass-panel" style="padding: 25px;">
@@ -338,7 +338,7 @@
                         <div class="stat-card glass-panel" style="flex: 1; min-width: 0; display: flex; align-items: center; padding: 15px;">
                             <i class="fa-solid fa-shield-virus stat-icon" style="margin-right: 15px; font-size: 2rem;"></i>
                             <div class="stat-info" style="flex: 1;">
-                                <span class="stat-label" data-i18n="stat-score" style="display: block; font-size: 0.9rem; color: #8892b0;">綜合防禦評分</span>
+                                <span class="stat-label" data-i18n="stat-score" style="display: block; font-size: 0.9rem; color: var(--text-light);">綜合防禦評分</span>
                                 <span class="stat-value" id="valScore" style="display: block; font-size: 1.5rem; font-weight: bold; color: #fff;">--<small style="font-size: 0.8rem; margin-left: 5px;">分</small></span>
                             </div>
                         </div>
@@ -346,7 +346,7 @@
                         <div class="stat-card glass-panel" style="flex: 1; min-width: 0; display: flex; align-items: center; padding: 15px;">
                             <i class="fa-solid fa-clock-rotate-left stat-icon" style="margin-right: 15px; font-size: 2rem;"></i>
                             <div class="stat-info" style="flex: 1;">
-                                <span class="stat-label" data-i18n="stat-time" style="display: block; font-size: 0.9rem; color: #8892b0;">VR 訓練總時數</span>
+                                <span class="stat-label" data-i18n="stat-time" style="display: block; font-size: 0.9rem; color: var(--text-light);">VR 訓練總時數</span>
                                 <span class="stat-value" id="valTime" style="display: block; font-size: 1.5rem; font-weight: bold; color: #fff;">--<small style="font-size: 0.8rem; margin-left: 5px;">小時</small></span>
                             </div>
                         </div>
@@ -354,7 +354,7 @@
                         <div class="stat-card glass-panel" style="flex: 1; min-width: 0; display: flex; align-items: center; padding: 15px;">
                             <i class="fa-solid fa-triangle-exclamation stat-icon" style="margin-right: 15px; font-size: 2rem;"></i>
                             <div class="stat-info" style="flex: 1;">
-                                <span class="stat-label" data-i18n="stat-block" style="display: block; font-size: 0.9rem; color: #8892b0;">成功攔截威脅</span>
+                                <span class="stat-label" data-i18n="stat-block" style="display: block; font-size: 0.9rem; color: var(--text-light);">成功攔截威脅</span>
                                 <span class="stat-value" id="valBlock" style="display: block; font-size: 1.5rem; font-weight: bold; color: #fff;">--<small style="font-size: 0.8rem; margin-left: 5px;">次</small></span>
                             </div>
                         </div>
@@ -431,7 +431,7 @@
                                     </div>
                                 </div>
                                 <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/gif" style="display: none;">
-                                <p style="font-size: 0.8rem; color: #8892b0; text-align: center; line-height: 1.5;">支援 JPG, PNG<br>最大 2MB</p>
+                                <p style="font-size: 0.8rem; color: var(--text-light); text-align: center; line-height: 1.5;">支援 JPG, PNG<br>最大 2MB</p>
                             </div>
 
                             <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
@@ -523,7 +523,7 @@
                         <div class="evidence-tag">等待判定</div>
                     </div>
                     <p class="evidence-time"><i class="fa-regular fa-clock"></i> 拍攝時間：2026-03-25 10:06:30</p>
-                    <p class="evidence-desc" style="color: #8892b0; font-size: 0.9rem; margin-top: 10px;">
+                    <p class="evidence-desc" style="color: var(--text-light); font-size: 0.9rem; margin-top: 10px;">
                         提示：請根據左側您在 VR 環境中拍下的現場畫面，於右側填寫對應的 ISO 規範與缺失描述。
                     </p>
                 </div>
@@ -531,7 +531,7 @@
                 <div class="ncr-form-panel">
                     <form id="ncrForm">
                         <div class="form-group">
-                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">缺失分類 (Category)</label>
+                            <label style="color: var(--text-color); margin-bottom: 8px; display: block;">缺失分類 (Category)</label>
                             <select class="cyber-select" required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px;">
                                 <option value="">請選擇分類...</option>
                                 <option value="people">人員控制措施 (Clause 6)</option>
@@ -540,7 +540,7 @@
                         </div>
                         
                         <div class="form-group" style="margin-top: 15px;">
-                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">違反條文對應 (Clause Mapping)</label>
+                            <label style="color: var(--text-color); margin-bottom: 8px; display: block;">違反條文對應 (Clause Mapping)</label>
                             <select class="cyber-select" required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px;">
                                 <option value="">請選擇對應條文...</option>
                                 <option value="6.6">6.6 保密協議 (NDA) 流程疏漏</option>
@@ -550,7 +550,7 @@
                         </div>
 
                         <div class="form-group" style="margin-top: 15px;">
-                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">風險嚴重度 (Severity)</label>
+                            <label style="color: var(--text-color); margin-bottom: 8px; display: block;">風險嚴重度 (Severity)</label>
                             <div class="severity-options" style="display: flex; gap: 15px;">
                                 <label><input type="radio" name="severity" value="high" required> <span style="color: #ff4757;">高風險</span></label>
                                 <label><input type="radio" name="severity" value="medium"> <span style="color: #ffa502;">中風險</span></label>
@@ -559,17 +559,17 @@
                         </div>
 
                         <div class="form-group" style="margin-top: 15px;">
-                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">客觀事實描述 (Observation)</label>
+                            <label style="color: var(--text-color); margin-bottom: 8px; display: block;">客觀事實描述 (Observation)</label>
                             <textarea rows="3" placeholder="請具體描述您在 VR 情境中觀察到的缺失狀況..." required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; resize: none;"></textarea>
                         </div>
 
                         <div class="form-group" style="margin-top: 15px;">
-                            <label style="color: #e2e8f0; margin-bottom: 8px; display: block;">改善建議 (Corrective Action)</label>
+                            <label style="color: var(--text-color); margin-bottom: 8px; display: block;">改善建議 (Corrective Action)</label>
                             <textarea rows="2" placeholder="請提出防範此漏洞的具體作法..." required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; resize: none;"></textarea>
                         </div>
 
                         <div class="form-actions" style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 15px;">
-                            <button type="button" id="cancelNcrBtn" style="padding: 10px 20px; background: transparent; border: 1px solid #8892b0; color: #8892b0; border-radius: 6px; cursor: pointer;">取消</button>
+                            <button type="button" id="cancelNcrBtn" style="padding: 10px 20px; background: transparent; border: 1px solid var(--text-light); color: var(--text-light); border-radius: 6px; cursor: pointer;">取消</button>
                             <button type="submit" style="padding: 10px 20px; background: var(--primary-cyan); border: none; color: #000; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 168, 255, 0.5);">
                                 <i class="fa-solid fa-paper-plane"></i> 提交審核
                             </button>
@@ -613,15 +613,15 @@
             <button class="close-modal-btn" id="closeVrHistoryModal"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="modal-title" style="margin-bottom: 15px; color: var(--primary-cyan); display: flex; align-items: center; justify-content: space-between;">
                 <span><i class="fa-solid fa-file-invoice"></i> 訓練結果總結</span>
-                <span id="vrModalDate" style="font-size: 0.9rem; color: #8892b0; font-weight: normal;"></span>
+                <span id="vrModalDate" style="font-size: 0.9rem; color: var(--text-light); font-weight: normal;"></span>
             </h2>
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(0, 168, 255, 0.2);">
-                <div id="vrModalDuration" style="color: #e2e8f0; font-size: 0.95rem;"></div>
+                <div id="vrModalDuration" style="color: var(--text-color); font-size: 0.95rem;"></div>
                 <div id="vrModalScore" style="font-size: 1.2rem; font-weight: bold;"></div>
             </div>
 
-            <p style="color: #8892b0; margin-bottom: 20px; line-height: 1.6;" data-i18n="vr-modal-desc">以下是您在本次 VR 情境中的表現，與系統標準解答的詳細對照。</p>
+            <p style="color: var(--text-light); margin-bottom: 20px; line-height: 1.6;" data-i18n="vr-modal-desc">以下是您在本次 VR 情境中的表現，與系統標準解答的詳細對照。</p>
 
             <!-- 區塊一：探索紀錄 -->
             <div style="margin-bottom: 25px; border: 1px solid rgba(46, 213, 115, 0.3); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
@@ -629,7 +629,7 @@
                     <i class="fa-solid fa-user-check"></i> 您的探索紀錄
                 </h4>
                 <div style="background: rgba(46, 213, 115, 0.05); padding: 15px 20px;">
-                    <ul id="vrModalFoundList" style="list-style: none; padding: 0; margin: 0; color: #e2e8f0; font-size: 0.95rem; line-height: 1.6;">
+                    <ul id="vrModalFoundList" style="list-style: none; padding: 0; margin: 0; color: var(--text-color); font-size: 0.95rem; line-height: 1.6;">
                     </ul>
                 </div>
             </div>
@@ -638,7 +638,7 @@
                 <h4 style="color: var(--primary-cyan); margin-bottom: 10px;" data-i18n="vr-modal-sug-title">
                     <i class="fa-solid fa-lightbulb"></i> 系統綜合建議
                 </h4>
-                <p id="vrModalSuggestion" style="color: #e2e8f0; font-size: 0.95rem; line-height: 1.6; margin: 0;"></p>
+                <p id="vrModalSuggestion" style="color: var(--text-color); font-size: 0.95rem; line-height: 1.6; margin: 0;"></p>
             </div>
         </div>
     </div>

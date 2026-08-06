@@ -1573,3 +1573,13 @@ body, .sidebar, .main-content, .topbar, .dashboard-container, .rule-card, .quiz-
     color: #ffffff !important;
     box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3) !important;
 }
+.vr-image-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 71, 87, 0.2);
+}
+
+[data-theme="light"] .vr-image-box {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
