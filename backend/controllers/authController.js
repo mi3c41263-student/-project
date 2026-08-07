@@ -626,6 +626,275 @@ const deleteAccount = async (req, res) => {
         res.status(500).json({ success: false, message: "刪除失敗，請稍後再試。" });
     }
 };
+// =========================================
+// 16. 接收 Unity 單題作答並自動判分
+// =========================================
+const saveUnityAnswer = async (req, res) => {
+    const { userId, questionId, selectedOption } = req.body;
+
+    // 1. 檢查 Unity 有沒有把必要資料傳過來
+    if (
+        userId === undefined ||
+        questionId === undefined ||
+        selectedOption === undefined
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "缺少 userId、questionId 或 selectedOption"
+        });
+    }
+
+    // 統一轉成大寫，避免 o / x / c 大小寫造成判斷錯誤
+    const option = String(selectedOption).trim().toUpperCase();
+
+    // Unity 目前只有三種合法值：
+    // O、X，以及 Q2 特殊題使用的 C（Completed）
+    if (!["O", "X", "C"].includes(option)) {
+        return res.status(400).json({
+            success: false,
+            message: "selectedOption 只能是 O、X 或 C"
+        });
+    }
+
+    try {
+        // 2. 確認使用者存在
+        const [users] = await db.query(
+            "SELECT id FROM users WHERE id = ?",
+            [userId]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "找不到此使用者"
+            });
+        }
+
+        // 3. 從 questions 查這一題真正的正確答案與配分
+        const [questions] = await db.query(
+            `SELECT id, question_text, correct_option, score
+             FROM questions
+             WHERE id = ?`,
+            [questionId]
+        );
+
+        if (questions.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "找不到此題目"
+            });
+        }
+
+        const question = questions[0];
+
+        const correctOption =
+            String(question.correct_option).trim().toUpperCase();
+
+        // 4. Node.js 自己判斷答案
+        const isCorrect = option === correctOption;
+
+        // 答對取得該題原始分數；答錯 0 分
+        const earnedScore = isCorrect
+            ? Number(question.score)
+            : 0;
+
+        // 5. 寫入 user_answers
+        const insertSql = `
+            INSERT INTO user_answers
+            (
+                user_id,
+                question_id,
+                selected_option,
+                is_correct,
+                score
+            )
+            VALUES (?, ?, ?, ?, ?)
+        `;
+
+        const [result] = await db.query(insertSql, [
+            userId,
+            questionId,
+            option,
+            isCorrect ? 1 : 0,
+            earnedScore
+        ]);
+
+        console.log(
+            `[Unity作答] User=${userId}, ` +
+            `Question=${questionId}, ` +
+            `選擇=${option}, ` +
+            `正解=${correctOption}, ` +
+            `結果=${isCorrect ? "答對" : "答錯"}, ` +
+            `得分=${earnedScore}`
+        );
+
+        // 6. 回傳給 Unity
+        return res.status(201).json({
+            success: true,
+            message: "Unity 作答紀錄已成功儲存",
+            data: {
+                answerId: result.insertId,
+                userId: Number(userId),
+                questionId: Number(questionId),
+                selectedOption: option,
+                correctOption: correctOption,
+                isCorrect: isCorrect,
+                score: earnedScore
+            }
+        });
+
+    } catch (error) {
+        console.error("儲存 Unity 作答紀錄失敗：", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "伺服器發生錯誤，無法儲存 Unity 作答紀錄"
+        });
+    }
+};
+// =========================================
+// 17. Web 產生 Unity VR 一次性登入 Ticket
+// =========================================
+const createVRTicket = async (req, res) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({
+            success: false,
+            message: "缺少使用者 ID"
+        });
+    }
+
+    try {
+        // 確認使用者存在
+        const [users] = await db.query(
+            "SELECT id, username, email FROM users WHERE id = ?",
+            [userId]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "找不到此使用者"
+            });
+        }
+
+        // 產生一次性 Ticket
+        const ticket = crypto.randomBytes(32).toString('hex');
+
+        // 5 分鐘後失效
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+        await db.query(
+            `INSERT INTO vr_login_tickets
+             (user_id, ticket, expires_at)
+             VALUES (?, ?, ?)`,
+            [userId, ticket, expiresAt]
+        );
+
+        console.log(
+            `[VR Ticket] 已為 User=${userId} 建立登入 Ticket`
+        );
+
+        return res.json({
+            success: true,
+            message: "VR 登入 Ticket 建立成功",
+            ticket: ticket,
+            expiresAt: expiresAt
+        });
+
+    } catch (error) {
+        console.error("建立 VR Ticket 失敗：", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "無法建立 VR 登入 Ticket"
+        });
+    }
+};
+// =========================================
+// 18. Unity 使用 Ticket 取得登入使用者
+// =========================================
+const exchangeVRTicket = async (req, res) => {
+    const { ticket } = req.body;
+
+    if (!ticket) {
+        return res.status(400).json({
+            success: false,
+            message: "缺少 VR Ticket"
+        });
+    }
+
+    try {
+        const [tickets] = await db.query(
+            `SELECT
+                t.id,
+                t.user_id,
+                t.is_used,
+                t.expires_at,
+                u.username,
+                u.email
+             FROM vr_login_tickets t
+             JOIN users u
+                ON t.user_id = u.id
+             WHERE t.ticket = ?`,
+            [ticket]
+        );
+
+        if (tickets.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "VR Ticket 不存在"
+            });
+        }
+
+        const loginTicket = tickets[0];
+
+        if (loginTicket.is_used) {
+            return res.status(400).json({
+                success: false,
+                message: "VR Ticket 已經使用過"
+            });
+        }
+
+        if (new Date(loginTicket.expires_at) < new Date()) {
+            return res.status(400).json({
+                success: false,
+                message: "VR Ticket 已過期"
+            });
+        }
+
+        // Ticket 使用後立即作廢
+        await db.query(
+            `UPDATE vr_login_tickets
+             SET is_used = 1
+             WHERE id = ?`,
+            [loginTicket.id]
+        );
+
+        console.log(
+            `[VR Login] Unity 登入成功 User=${loginTicket.user_id}`
+        );
+
+        return res.json({
+            success: true,
+            message: "Unity VR 登入成功",
+            user: {
+                id: loginTicket.user_id,
+                username: loginTicket.username,
+                email: loginTicket.email
+            }
+        });
+
+    } catch (error) {
+        console.error("VR Ticket 驗證失敗：", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "VR 登入驗證失敗"
+        });
+    }
+};
 // 🌟 關鍵：將所有功能匯出給路由使用
 
 const checkVerificationStatus = async (req, res) => {
@@ -708,8 +977,11 @@ module.exports = {
     verify2FA,    
     disable2FA ,
     verifyLogin2FA ,
-    getUserStats, 
     saveVRStats ,
     changePassword,
-    deleteAccount   
+    deleteAccount ,
+    saveUnityAnswer  ,
+    // Web → Unity 登入
+    createVRTicket,
+    exchangeVRTicket
 };

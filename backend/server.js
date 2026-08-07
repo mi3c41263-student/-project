@@ -18,9 +18,26 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 // 1. 原本的帳號密碼登入、註冊 Router
 const authRoutes = require('./routes/authRoutes');
 app.use('/api', authRoutes); 
-
+app.get("/api/health", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Unity 已成功連接 Node.js API"
+    });
+});
 // --- 啟動伺服器 ---
 const PORT = 3000;
-app.listen(PORT, () => {
+app.post("/api/unity/test-record", (req, res) => {
+    const record = req.body;
+
+    console.log("收到 Unity 測試學習紀錄：");
+    console.log(record);
+
+    res.status(201).json({
+        success: true,
+        message: "Node.js 已收到 Unity 學習紀錄",
+        receivedData: record
+    });
+});
+app.listen(PORT, "0.0.0.0",() => {
     console.log(` ISO 後端伺服器運作中：http://localhost:${PORT}`);
 });

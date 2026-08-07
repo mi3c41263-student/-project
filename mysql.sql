@@ -1,1 +1,1 @@
-SELECT * FROM my_app.users;
+DESCRIBE vr_login_tickets;
