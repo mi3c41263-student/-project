@@ -106,24 +106,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (vrSection) vrSection.style.display = 'none';
 
                 // 取得當前語系字典以設定副標題
-                const langSelectElem = document.getElementById('langSelect');
-                const currentLang = langSelectElem ? langSelectElem.value : 'zh-TW';
-                const dict = i18nDictionary[currentLang] || i18nDictionary['zh-TW'];
+                
 
                 // 根據 i18n 屬性顯示對應區塊 (不再依賴 innerText 判斷，解決語系切換失效的問題)
                 const menuId = this.getAttribute('data-i18n');
                 if (menuId === 'nav-vr') {
                     if (vrSection) vrSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = dict['vr-desc'] || '開始您的沉浸式資安稽核訓練，或回顧過去的探索紀錄與正確解答。';
+                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '開始您的沉浸式資安稽核訓練，或回顧過去的探索紀錄與正確解答。';
                 } else if (menuId === 'nav-manual') {
                     if (manualSection) manualSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = dict['sub-manual'];
+                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = 'ISO 27002:2022 資訊安全控制指南';
                 } else if (menuId === 'nav-notes') {
                     if (notesSection) notesSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = dict['top-subtitle'];
+                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '沉澱並複習您的資安防禦實務';
                 } else if (menuId === 'nav-analysis') {
                     if (analysisSection) analysisSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = dict['sub-analysis'];
+                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '檢視您各項資安能力的綜合評估';
                     
                     if (!window.radarChartCreated) {
                         if (typeof initRadarChart === 'function') initRadarChart();
@@ -132,11 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 } else if (menuId === 'nav-mistakes') {
                     if (mistakesSection) mistakesSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = dict['sub-mistakes'] || '集中火力消滅資安盲區';
+                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '集中火力消滅資安盲區';
                     if (typeof renderMistakes === 'function') renderMistakes();
                 } else if (menuId === 'nav-quiz') { 
                     if (quizSection) quizSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = dict['sub-quiz'];
+                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '資安稽核情境模擬測驗';
                     
                     // 每次點進來就自動抽 10 題新的
                     if (typeof generateQuiz === 'function') {
@@ -245,121 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================================
     // 7. 即時翻譯引擎 
     // =========================================
-    const i18nDictionary = {
-        'zh-TW': {
-            'nav-core': '核心訓練', 'nav-vr': '<i class="fa-solid fa-vr-cardboard"></i> VR 情境模擬', 'nav-manual': '<i class="fa-solid fa-shield-halved"></i> 資安規範手冊', 'nav-quiz': '<i class="fa-solid fa-clipboard-list"></i> 資安小測驗', 'nav-history': '學習歷程', 'nav-notes': '<i class="fa-solid fa-book-open"></i> 學習筆記', 'nav-analysis': '<i class="fa-solid fa-chart-pie"></i> 學習成果分析', 'nav-mistakes': '<i class="fa-solid fa-book-medical"></i> 錯題本與弱點強化', 'mistakes-title': '錯題本與弱點強化', 'sub-mistakes': '檢視與強化您的資安弱點', 'nav-logout': '<i class="fa-solid fa-right-from-bracket"></i> 登出',
-            'set-title': '<i class="fa-solid fa-sliders"></i> 系統設定', 'set-tab-acc': '<i class="fa-solid fa-shield-halved"></i> 帳號與安全', 'set-tab-pref': '<i class="fa-solid fa-globe"></i> 系統偏好', 'set-acc-title': '個人帳號與安全性設定', 'set-pwd': '更改密碼', 'set-2fa': '雙重認證 (2FA)', 'set-pref-title': '系統偏好設定', 'set-lang': '介面語系',
-            'set-theme': '外觀主題',
-            'set-theme-desc': '切換為您喜歡的深色或淺色模式。',
-            'top-title': '學習筆記', 'top-subtitle': '沉澱並複習您的資安防禦實務',
-            'search-ph': '搜尋筆記關鍵字 (例如: 門禁、釣魚)...',
-            'filter-all': '全部筆記', 'filter-social': '人員控制', 'filter-network': '資安事件', 'filter-device': '實體安全',
-            'c1-title': '門禁漏洞與桌面淨空缺失', 'c1-desc': '發現使用過期卡片仍可進入大廳 (7.2實體進入控制漏洞)。此外，主管識別證被隨意棄置桌面，測試用USB放在靠近門口的桌緣。印表機上也有未認領的資料，未落實桌面淨空 (7.7)。',
-            'c2-title': '聘用流程與保密協議疏漏', 'c2-desc': '發現公司缺少對求職者的背景查證紀錄 (6.1篩選)。更嚴重的是，有外包人員未簽署保密協議 (6.6 NDA) 就接觸內網。聘用合約也缺少違規懲處機制 (6.2)。',
-            'c3-title': '機房安全與設備安置風險', 'c3-desc': '目擊外包維修工在機房內違規拍照 (7.6在安全區域工作)。機房設備上放著乖乖，且地板下電線有被老鼠啃咬的痕跡，嚴重違反設備安置與保護規範。',
-            'c4-title': '釣魚測試失敗與通報意識', 'c4-desc': '發送模擬釣魚郵件後，員工點擊了惡意附件。但員工卻未向 IT 部門報告 (6.8報告資安事件)。這顯示日常的資訊安全認知教育及訓練 (6.3) 尚未完全落實。',
-            'c-add-title': '新增稽核發現', 'c-add-desc': '上傳缺失照片與對應法規', 'c-readmore': '檢視完整筆記 <i class="fa-solid fa-arrow-right"></i>',
-            'm-cat': '稽核總結', 'm-title': '結束會議：今日三大核心缺失',
-            'm-p1': '在今日的實務演練中，我向資安主管報告了以下三大缺失：',
-            'm-li1': '<strong>實體門禁控制失效 (7.2)：</strong> 測試大廳門禁時，發現使用過期卡片仍可進入。',
-            'm-li2': '<strong>保密協議 (6.6) 漏洞：</strong> 檢查人資部資料發現，部分外包人員的 NDA 還在跑流程，未簽署即接觸內網資源。',
-            'm-li3': '<strong>缺乏報告資安事件意識 (6.8)：</strong> 員工點擊釣魚文件附件後，卻因為「忙著趕報告」而未進行通報。',
-            'm-p2': '資安主管表示這些發現非常有價值，將針對 these 佐證照片重新檢討訓練計畫。',
-            'm-btn-edit': '<i class="fa-solid fa-pen-to-square"></i> 編輯報告',
-            'man-iso': 'ISO 27002:2022 資訊安全控制指南', 'man-desc': '本手冊收錄本次稽核任務之重點控制措施。請熟記以下條文，以利在 VR 情境中準確判斷缺失。',
-            'man-c6': 'Clause 6: 人員控制措施', 'man-c7': 'Clause 7: 實體環境控制',
-            'man-c6-title': 'Clause 6 人員控制措施', 'man-c7-title': 'Clause 7 實體與環境控制',
-            'r61-t': '篩選 (Screening)', 'r61-d': '公司準則應明確記載對求職者的相關背景調查紀錄，確保人員背景符合資安要求。',
-            'r62-t': '聘用條款及條件 (Terms and conditions of employment)', 'r62-d': '聘用合約中應包含員工違反資安規定時的懲處機制，以及離職後的保密條款。',
-            'r63-t': '資訊安全認知、教育訓練與獎懲', 'r63-d': '定期舉辦資安講習。員工不得隨意放置識別證，重大違規將直接影響績效獎金，情節嚴重者進行行政警告。',
-            'r66-t': '保密協議 (NDA)', 'r66-d': '包含正職與外包人員，在接觸內網資源前，必須確保已完成保密協議的簽署流程。',
-            'r68-t': '報告資安事件', 'r68-d': '員工如收到可疑郵件或發現異常文件，必須依照標準程序立即向 IT 部門報告。',
-            'r71-t': '實體安全周界與進入控制', 'r71-d': '會議室視訊鏡頭未使用時應關閉，避免正對敏感文件。門禁系統應嚴格管控，過期卡片必須失效。',
-            'r76-t': '在安全區域工作 (Working in secure areas)', 'r76-d': '在機房等高度安全區域內，未經授權且無監督人員在場的情況下，嚴禁進行拍照或錄影。',
-            'r77-t': '桌面淨空及螢幕淨空', 'r77-d': '機密文件、訪客名片、USB不應隨意放置桌面。印表機資料應及時取走，嚴禁將帳密貼在螢幕上。',
-            'r710-t': '儲存媒體實體存放安全', 'r710-d': '含有機密資訊或測試用的 USB 隨身碟，必須妥善保管，不可隨意丟棄於靠近門口或公共區域的桌緣。',
-            'r714-t': '設備維護與汰除保全', 'r714-d': '機房設備禁止放置飲料食物(如乖乖)，並應防範老鼠破壞線路。報廢設備與碎紙機內的機密文件必須妥善銷毀。',
-            'ana-title': '防禦能力雷達與綜合評估', 'ana-desc': '基於您在 VR 情境模擬中的決策數據，系統為您生成了專屬的資安能力雷達圖。',
-            'quiz-title': '資安稽核情境模擬測驗', 'quiz-desc': '本測驗將隨機抽取 10 題是非&選擇題，包含實務稽核的灰色地帶與複合陷阱，驗證您的真實防禦能力。',
-            'sub-manual': '檢視 ISO 27002:2022 重點控制措施', 'sub-analysis': '評估您的資安防禦綜合能力', 'sub-quiz': '資安稽核情境模擬測驗'
-        },
-        'en': {
-            'nav-core': 'Core Training', 'nav-vr': '<i class="fa-solid fa-vr-cardboard"></i> VR Simulation', 'nav-manual': '<i class="fa-solid fa-shield-halved"></i> Security Manual', 'nav-quiz': '<i class="fa-solid fa-clipboard-list"></i> Security Quiz', 'nav-history': 'History', 'nav-notes': '<i class="fa-solid fa-book-open"></i> Learning Notes', 'nav-analysis': '<i class="fa-solid fa-chart-pie"></i> Analysis', 'nav-mistakes': '<i class="fa-solid fa-book-medical"></i> Mistake Notebook', 'mistakes-title': 'Mistake Notebook & Weaknesses', 'sub-mistakes': 'Review and reinforce your security weaknesses', 'nav-logout': '<i class="fa-solid fa-right-from-bracket"></i> Logout',
-            'set-title': '<i class="fa-solid fa-sliders"></i> Settings', 'set-tab-acc': '<i class="fa-solid fa-shield-halved"></i> Account', 'set-tab-pref': '<i class="fa-solid fa-globe"></i> Preferences', 'set-acc-title': 'Account & Security', 'set-pwd': 'Change Password', 'set-2fa': 'Two-Factor Auth (2FA)', 'set-pref-title': 'System Preferences', 'set-lang': 'Language',
-            'top-title': 'Learning Notes', 'top-subtitle': 'Review your security defense practices',
-            'search-ph': 'Search keywords (e.g., Access, Phishing)...',
-            'filter-all': 'All Notes', 'filter-social': 'Personnel Control', 'filter-network': 'Security Events', 'filter-device': 'Physical Security',
-            'c1-title': 'Access Control & Clear Desk Violations', 'c1-desc': 'Found that expired cards can still access the lobby (7.2). The manager\'s ID was left on the desk, and a test USB was at the edge of the table. Unclaimed documents were on the printer (7.7).',
-            'c2-title': 'Hiring Process & NDA Omissions', 'c2-desc': 'The company lacks background check records for candidates (6.1). Crucially, outsourced staff accessed the intranet without signing NDAs (6.6).',
-            'c3-title': 'Server Room & Equipment Risks', 'c3-desc': 'Witnessed a maintenance worker taking photos in the server room (7.6). Equipment protection was violated with snacks on servers and wires chewed by rats under the floor.',
-            'c4-title': 'Phishing Test Failure', 'c4-desc': 'Employees clicked malicious attachments in a simulated phishing email and failed to report it to the IT department (6.8). Security awareness training is lacking (6.3).',
-            'c-add-title': 'Add Audit Finding', 'c-add-desc': 'Upload photos and regulations', 'c-readmore': 'Read Full Note <i class="fa-solid fa-arrow-right"></i>',
-            'm-cat': 'Audit Summary', 'm-title': 'Closing Meeting: Top 3 Deficiencies',
-            'm-p1': 'During today\'s practical drill, I reported the following top three deficiencies to the Security Manager:',
-            'm-li1': '<strong>Access Control Failure (7.2):</strong> Expired cards could still be used to enter the lobby.',
-            'm-li2': '<strong>NDA Loophole (6.6):</strong> Outsourced personnel accessed internal resources before their NDAs were fully processed.',
-            'm-li3': '<strong>Lack of Incident Reporting (6.8):</strong> Employees clicked phishing links but failed to report them due to "being busy with reports".',
-            'm-p2': 'The Security Manager stated these findings are valuable and will review the training plan based on these photographic evidence.',
-            'm-btn-edit': '<i class="fa-solid fa-pen-to-square"></i> Edit Report',
-            'man-iso': 'ISO 27002:2022 Information Security Controls', 'man-desc': 'This manual includes key controls for this audit task. Please familiarize yourself with them to accurately identify deficiencies in the VR scenario.',
-            'man-c6': 'Clause 6: Personnel Controls', 'man-c7': 'Clause 7: Physical Controls',
-            'man-c6-title': 'Clause 6 Personnel Controls', 'man-c7-title': 'Clause 7 Physical & Environmental Controls',
-            'r61-t': 'Screening', 'r61-d': 'Company guidelines should clearly document background verification checks on candidates to ensure their background meets security requirements.',
-            'r62-t': 'Terms and conditions of employment', 'r62-d': 'Employment contracts should include disciplinary mechanisms for violating security regulations and post-employment confidentiality clauses.',
-            'r63-t': 'Information security awareness, education and training', 'r63-d': 'Regular security seminars should be held. IDs must not be left unattended. Major violations will affect performance bonuses, and severe cases will lead to administrative warnings.',
-            'r66-t': 'Confidentiality or non-disclosure agreements (NDA)', 'r66-d': 'Full-time and outsourced personnel must ensure the completion of NDA signing processes before accessing internal network resources.',
-            'r68-t': 'Reporting information security events', 'r68-d': 'If employees receive suspicious emails or find abnormal documents, they must immediately report to the IT department following standard procedures.',
-            'r71-t': 'Physical security perimeter & Entry controls', 'r71-d': 'Conference room webcams should be turned off when not in use to avoid facing sensitive documents. Access control systems must be strictly managed; expired cards must be invalidated.',
-            'r76-t': 'Working in secure areas', 'r76-d': 'In highly secure areas like server rooms, unauthorized photography or recording is strictly prohibited without authorized supervision.',
-            'r77-t': 'Clear desk and clear screen', 'r77-d': 'Sensitive documents, visitor business cards, and USBs should not be casually left on desks. Printer materials should be promptly retrieved. Sticking passwords on screens is strictly prohibited.',
-            'r710-t': 'Storage media', 'r710-d': 'USB flash drives containing sensitive information or for testing must be properly secured and cannot be casually left near doors or on table edges in public areas.',
-            'r714-t': 'Equipment maintenance & Secure disposal', 'r714-d': 'No food or drinks (like Kuai Kuai snacks) are allowed in server rooms, and lines must be protected from rats. Obsolete equipment and sensitive documents in shredders must be properly destroyed.',
-            'ana-title': 'Defense Capability Radar & Comprehensive Evaluation', 'ana-desc': 'Based on your decision data in the VR scenario simulation, the system has generated your exclusive security capability radar chart.',
-            'quiz-title': 'Security Audit Scenario Simulation Quiz', 'quiz-desc': 'This test will randomly select 10 true/false & multiple-choice questions, covering gray areas and complex traps in practical audits to verify your real defense capabilities.',
-            'sub-manual': 'Review ISO 27002:2022 Key Controls', 'sub-analysis': 'Evaluate your comprehensive security capabilities', 'sub-quiz': 'Security Audit Scenario Simulation Quiz'
-        }
-    };
-    // 監聽下拉選單切換
-    document.body.addEventListener('change', function(e) {
-        if (e.target.id === 'langSelect') {
-            const selectedLang = e.target.value;
-            const dict = i18nDictionary[selectedLang];
-            if (!dict) return;
-            
-            // 翻譯所有帶有 data-i18n 屬性的元素
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (dict[key]) el.innerHTML = dict[key];
-            });
-            
-            // 翻譯所有帶有 data-i18n-placeholder 屬性的輸入框
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (dict[key]) el.setAttribute('placeholder', dict[key]);
-            });
-
-            // 動態更新雷達圖與折線圖的語系
-            if (window.myRadarChart) {
-                const radarLabels = selectedLang === 'en' 
-                    ? ['Physical Protection', 'Anti-Social Engineering', 'Server Room Security', 'Device Control', 'Regulatory Awareness']
-                    : ['實體防護', '社交工程防範', '機房安全', '設備管控', '法規認知'];
-                window.myRadarChart.data.labels = radarLabels;
-                window.myRadarChart.update();
-            }
-            if (window.myTrendChart) {
-                const trendLabel = selectedLang === 'en' ? 'Overall Security Score' : '資安防禦綜合分數';
-                window.myTrendChart.data.datasets[0].label = trendLabel;
-                window.myTrendChart.update();
-            }
-
-            if (window.updateQuizLanguage) {
-                window.updateQuizLanguage();
-            }
-        }
-    });
-  // =========================================
-    // 8. 頁面載入時：更新左下角使用者資訊 & 個人檔案設定
-    // =========================================
+        // =========================================
     const userStr = localStorage.getItem('currentUser');
     let currentUserId = null;
 
@@ -3415,7 +3299,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 imgElem.style.display = 'block';
                                 imgElem.style.opacity = 1;
                                 noImgElem.style.display = 'none';
-                            }, 150);
+                            }, 10);
                         } else if (record.imageUrl && idx === 0) {
                             imgElem.style.opacity = 0;
                             setTimeout(() => {
@@ -3423,7 +3307,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 imgElem.style.display = 'block';
                                 imgElem.style.opacity = 1;
                                 noImgElem.style.display = 'none';
-                            }, 150);
+                            }, 10);
                         } else {
                             imgElem.style.display = 'none';
                             noImgElem.style.display = 'block';
@@ -3498,3 +3382,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 });
+
