@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
-using System.Collections;
 using UnityEngine.Events;
+using System.Collections;
 
 public class OpeningDialogueSequence : MonoBehaviour
 {
@@ -9,54 +9,60 @@ public class OpeningDialogueSequence : MonoBehaviour
     public GameObject dialogueCanvas;
     public TMP_Text dialogueText;
 
-    [Tooltip("一開始顯示的「開始劇情」按鈕")]
+    [Tooltip("一開始顯示的「開始劇情」按鈕。若這段劇情是由 GameFlowManager 自動播放，可以留空或搭配 Show Start Button On Reset 關閉。")]
     public GameObject startStoryButton;
 
-    [Tooltip("第一站播放完後顯示的「繼續」按鈕")]
+    [Tooltip("第一段播放完後顯示的「繼續」按鈕")]
     public GameObject continueButton;
+
+    [Header("按鈕顯示控制")]
+    [Tooltip("Reset 或 Start 時是否自動顯示開始劇情按鈕。自動播放劇情請取消勾選；需要玩家手動按開始請勾選。")]
+    public bool showStartButtonOnReset = true;
+
+    [Tooltip("如果有第二段劇情，第一段播完後是否等待玩家按繼續")]
+    public bool waitContinueBeforeSecondPart = true;
 
     [Header("聲音播放")]
     public AudioSource audioSource;
 
     [Header("播放設定")]
-    [Tooltip("勾選後會在進入場景時直接播放第一站；若要按按鈕才播放，請不要勾選")]
+    [Tooltip("勾選後會在進入場景時直接播放；目前若交給 GameFlowManager 控制，請不要勾選")]
     public bool playOnStart = false;
 
-    public bool hideCanvasWhenFinished = false;
+    [Tooltip("全部劇情播放完後是否隱藏對話框")]
+    public bool hideCanvasWhenFinished = true;
 
     [Tooltip("每句語音播放完畢後，等待多久才播放下一句")]
     public float delayAfterEachLine = 0.4f;
 
-    [Header("第一站劇情台詞")]
+    [Header("第一段劇情台詞")]
     [TextArea(2, 5)]
     public string[] dialogueLines;
 
-    [Header("第一站每句對應音檔")]
+    [Header("第一段每句對應音檔")]
     public AudioClip[] dialogueClips;
 
-    [Header("第二站劇情台詞")]
+    [Header("第二段劇情台詞，可不填")]
     [TextArea(2, 5)]
     public string[] secondStationDialogueLines;
 
-    [Header("第二站每句對應音檔")]
+    [Header("第二段每句對應音檔，可不填")]
     public AudioClip[] secondStationDialogueClips;
 
-    [Header("播完第二站後要啟用的 LLM，可不填")]
+    [Header("全部劇情播完後要啟用的 LLM，可不填")]
     public OpenAIManager openAIManager;
 
-    [Header("劇情事件")]
-    [Tooltip("第一段劇情播放完畢時觸發。通常不用接主流程，只用來顯示繼續按鈕。")]
-    public UnityEvent onFirstStationFinished;
-
-    [Tooltip("全部劇情播放完畢時觸發。請把主系統解鎖支線、開透明牆、開始倒數接在這裡。")]
+    [Header("全部劇情播放完畢後要通知誰")]
     public UnityEvent onAllDialogueFinished;
 
     private int currentIndex = 0;
     private bool isPlayingSequence = false;
+    private bool firstPartFinished = false;
+    private bool allDialogueFinished = false;
     private Coroutine dialogueCoroutine;
 
     // 0 = 沒播放，1 = 第一段，2 = 第二段
-    private int currentStage = 0;
+    private int currentPart = 0;
 
     private void Start()
     {
@@ -65,31 +71,26 @@ public class OpeningDialogueSequence : MonoBehaviour
             openAIManager.enabled = false;
         }
 
-        if (dialogueCanvas != null)
-        {
-            dialogueCanvas.SetActive(true);
-        }
-
         if (dialogueText != null)
         {
             dialogueText.text = "";
         }
 
-        SetStartButtonVisible(false);
         SetContinueButtonVisible(false);
 
         if (playOnStart)
         {
+            SetStartButtonVisible(false);
             StartOpeningDialogue();
         }
         else
         {
-            SetStartButtonVisible(true);
+            ResetOpeningDialogue();
         }
     }
 
     /// <summary>
-    /// 給「開始劇情」按鈕呼叫。
+    /// 給「開始劇情」按鈕或 GameFlowManager 呼叫。
     /// 播放第一段劇情。
     /// </summary>
     public void StartOpeningDialogue()
@@ -99,30 +100,33 @@ public class OpeningDialogueSequence : MonoBehaviour
             return;
         }
 
-        if (dialogueLines == null || dialogueLines.Length == 0)
+        if (allDialogueFinished)
         {
-            Debug.LogWarning("尚未設定第一段劇情台詞。", this);
-            SetStartButtonVisible(true);
+            Debug.LogWarning($"{gameObject.name} 劇情已經全部播放完成。若要重播，請先呼叫 ResetOpeningDialogue。", this);
             return;
         }
 
-        currentStage = 1;
+        if (dialogueLines == null || dialogueLines.Length == 0)
+        {
+            Debug.LogWarning($"{gameObject.name} 尚未設定第一段劇情台詞。", this);
+            SetStartButtonVisible(showStartButtonOnReset);
+            return;
+        }
+
+        currentPart = 1;
         currentIndex = 0;
+        firstPartFinished = false;
         isPlayingSequence = true;
 
         SetStartButtonVisible(false);
         SetContinueButtonVisible(false);
-
-        if (dialogueCanvas != null)
-        {
-            dialogueCanvas.SetActive(true);
-        }
+        SetDialogueCanvasVisible(true);
 
         dialogueCoroutine = StartCoroutine(
             PlayDialogueSequence(
                 dialogueLines,
                 dialogueClips,
-                OnFirstStageFinished
+                OnFirstPartFinished
             )
         );
     }
@@ -138,30 +142,31 @@ public class OpeningDialogueSequence : MonoBehaviour
             return;
         }
 
-        if (secondStationDialogueLines == null || secondStationDialogueLines.Length == 0)
+        if (!firstPartFinished)
         {
-            Debug.LogWarning("尚未設定第二段劇情台詞，將直接視為全部劇情完成。", this);
-            OnSecondStageFinished();
+            Debug.LogWarning($"{gameObject.name} 第一段尚未播放完成，不能播放第二段。", this);
             return;
         }
 
-        currentStage = 2;
+        if (!HasSecondPart())
+        {
+            FinishAllDialogue();
+            return;
+        }
+
+        currentPart = 2;
         currentIndex = 0;
         isPlayingSequence = true;
 
         SetStartButtonVisible(false);
         SetContinueButtonVisible(false);
-
-        if (dialogueCanvas != null)
-        {
-            dialogueCanvas.SetActive(true);
-        }
+        SetDialogueCanvasVisible(true);
 
         dialogueCoroutine = StartCoroutine(
             PlayDialogueSequence(
                 secondStationDialogueLines,
                 secondStationDialogueClips,
-                OnSecondStageFinished
+                FinishAllDialogue
             )
         );
     }
@@ -208,7 +213,7 @@ public class OpeningDialogueSequence : MonoBehaviour
     {
         if (dialogueText == null)
         {
-            Debug.LogWarning("尚未綁定 DialogueText。", this);
+            Debug.LogWarning($"{gameObject.name} 尚未綁定 DialogueText。", this);
             return;
         }
 
@@ -224,7 +229,7 @@ public class OpeningDialogueSequence : MonoBehaviour
     {
         if (audioSource == null)
         {
-            Debug.LogWarning("尚未綁定 AudioSource，將只顯示字幕。", this);
+            Debug.LogWarning($"{gameObject.name} 尚未綁定 AudioSource，將只顯示字幕。", this);
             return;
         }
 
@@ -232,7 +237,7 @@ public class OpeningDialogueSequence : MonoBehaviour
             currentIndex >= clips.Length ||
             clips[currentIndex] == null)
         {
-            Debug.LogWarning($"第 {currentIndex + 1} 句沒有設定音檔，將使用字幕等待時間。", this);
+            Debug.LogWarning($"{gameObject.name} 第 {currentIndex + 1} 句沒有設定音檔，將使用字幕等待時間。", this);
             return;
         }
 
@@ -271,33 +276,59 @@ public class OpeningDialogueSequence : MonoBehaviour
         return Mathf.Clamp(text.Length * 0.12f, 2.0f, 8.0f);
     }
 
-    private void OnFirstStageFinished()
+    private void OnFirstPartFinished()
     {
-        currentStage = 0;
+        firstPartFinished = true;
+        currentPart = 0;
 
-        if (dialogueText != null)
+        if (HasSecondPart())
         {
-            dialogueText.text = "第一段劇情播放完成，請按「繼續」。";
+            if (dialogueText != null)
+            {
+                dialogueText.text = "第一段劇情播放完成，請按「繼續」。";
+            }
+
+            if (waitContinueBeforeSecondPart)
+            {
+                SetContinueButtonVisible(true);
+                Debug.Log($"{gameObject.name} 第一段劇情播放完成，等待繼續播放第二段。", this);
+            }
+            else
+            {
+                StartSecondStationDialogue();
+            }
         }
-
-        SetStartButtonVisible(false);
-        SetContinueButtonVisible(true);
-
-        onFirstStationFinished?.Invoke();
-
-        Debug.Log("第一段劇情播放完成，等待繼續播放第二段。", this);
+        else
+        {
+            FinishAllDialogue();
+        }
     }
 
-    private void OnSecondStageFinished()
+    private bool HasSecondPart()
     {
-        currentStage = 0;
+        return secondStationDialogueLines != null &&
+               secondStationDialogueLines.Length > 0;
+    }
+
+    private void FinishAllDialogue()
+    {
+        if (allDialogueFinished)
+        {
+            return;
+        }
+
+        currentPart = 0;
+        currentIndex = 0;
+        isPlayingSequence = false;
+        allDialogueFinished = true;
 
         SetStartButtonVisible(false);
         SetContinueButtonVisible(false);
 
-        if (hideCanvasWhenFinished && dialogueCanvas != null)
+        if (audioSource != null)
         {
-            dialogueCanvas.SetActive(false);
+            audioSource.Stop();
+            audioSource.clip = null;
         }
 
         if (openAIManager != null)
@@ -305,9 +336,14 @@ public class OpeningDialogueSequence : MonoBehaviour
             openAIManager.enabled = true;
         }
 
-        onAllDialogueFinished?.Invoke();
+        if (hideCanvasWhenFinished)
+        {
+            SetDialogueCanvasVisible(false);
+        }
 
-        Debug.Log("全部劇情播放完成，已觸發 onAllDialogueFinished。", this);
+        Debug.Log($"{gameObject.name} 全部劇情播放完成，通知 GameFlowManager。", this);
+
+        onAllDialogueFinished?.Invoke();
     }
 
     public void SkipDialogueSequence()
@@ -326,13 +362,17 @@ public class OpeningDialogueSequence : MonoBehaviour
 
         isPlayingSequence = false;
 
-        if (currentStage == 1)
+        if (currentPart == 1)
         {
-            OnFirstStageFinished();
+            OnFirstPartFinished();
         }
-        else if (currentStage == 2)
+        else if (currentPart == 2)
         {
-            OnSecondStageFinished();
+            FinishAllDialogue();
+        }
+        else
+        {
+            FinishAllDialogue();
         }
     }
 
@@ -350,14 +390,11 @@ public class OpeningDialogueSequence : MonoBehaviour
             audioSource.clip = null;
         }
 
-        currentStage = 0;
+        currentPart = 0;
         currentIndex = 0;
         isPlayingSequence = false;
-
-        if (dialogueCanvas != null)
-        {
-            dialogueCanvas.SetActive(true);
-        }
+        firstPartFinished = false;
+        allDialogueFinished = false;
 
         if (dialogueText != null)
         {
@@ -369,8 +406,38 @@ public class OpeningDialogueSequence : MonoBehaviour
             openAIManager.enabled = false;
         }
 
-        SetStartButtonVisible(true);
+        SetDialogueCanvasVisible(true);
+        SetStartButtonVisible(showStartButtonOnReset);
         SetContinueButtonVisible(false);
+    }
+
+    public void ForceCloseDialogueCanvas()
+    {
+        if (dialogueCoroutine != null)
+        {
+            StopCoroutine(dialogueCoroutine);
+            dialogueCoroutine = null;
+        }
+
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.clip = null;
+        }
+
+        isPlayingSequence = false;
+
+        SetStartButtonVisible(false);
+        SetContinueButtonVisible(false);
+        SetDialogueCanvasVisible(false);
+    }
+
+    private void SetDialogueCanvasVisible(bool visible)
+    {
+        if (dialogueCanvas != null)
+        {
+            dialogueCanvas.SetActive(visible);
+        }
     }
 
     private void SetStartButtonVisible(bool visible)

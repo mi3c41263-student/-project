@@ -24,6 +24,25 @@ public TMP_InputField userInputField;
 public GameObject dialogueCanvas;
 public TMP_Text npcDialogueText;
 
+[Header("LLM 評分 / Web 結果上傳")]
+[Tooltip("是否在 LLM 評分完成後自動送到 Web 後端")]
+public bool uploadScoreResultToWeb = true;
+
+[Tooltip("接收評分 JSON 的 Web API，例如：http://localhost/iso_audit_api/save_result.php")]
+public string scoreUploadUrl = "http://localhost/iso_audit_api/save_result.php";
+
+[Tooltip("目前登入或測試用的使用者 ID")]
+public string scoreUserId = "S001";
+
+[Tooltip("目前登入或測試用的使用者名稱")]
+public string scoreUserName = "測試使用者";
+
+[Tooltip("評分完成後是否把總評顯示在 NPC 對話框")]
+public bool showScoreSummaryOnDialogue = true;
+
+private List<AuditAnswer> auditAnswers = new List<AuditAnswer>();
+private bool isWaitingForScoreResponse = false;
+
 private List<Message> chatHistory = new List<Message>();
 private bool isWaitingForResponse = false;
 
@@ -66,6 +85,40 @@ public class Choice
 {
     public Message message;
 }
+
+[System.Serializable]
+public class AuditAnswer
+{
+    public string questionId;
+    public string questionName;
+    public string userAnswer;
+    public string correctAnswer;
+    public string isoClause;
+}
+
+[System.Serializable]
+public class ScoreItem
+{
+    public string questionId;
+    public string questionName;
+    public string userAnswer;
+    public string correctAnswer;
+    public int score;
+    public string feedback;
+}
+
+[System.Serializable]
+public class ScoreResult
+{
+    public string userId;
+    public string userName;
+    public int totalScore;
+    public string level;
+    public string summary;
+    public List<ScoreItem> items;
+    public string suggestion;
+}
+
 
 void Start()
 {
@@ -128,6 +181,11 @@ private void SetupSystemPrompt()
 7.1 實體安全邊界：
 視訊鏡頭沒關，且正對著敏感文件。
 你的狡辯策略：裝傻說以為剛開完會系統就自動關閉了，會馬上拔電源。
+
+【系統事件處理】
+當輸入內容包含「系統事件：主線劇情已播放完畢」時，這不是玩家提問，而是遊戲流程事件。
+請你以資安主管口吻提醒玩家接著巡視現場，完成後續支線稽核。
+不要解釋系統事件，不要提到 JSON，不要列點。
 
 【輸出規則】
 每次回覆請盡量控制在 30 到 50 字之間，以符合遊戲語音播放節奏。
@@ -196,6 +254,320 @@ public void SendMessageToNPC(string userText)
     StartCoroutine(PostToOpenAI());
 }
 
+
+// ============================================================
+// LLM 評分與 Web 上傳功能
+// 原本 NPC 對話流程不動；以下是新增功能。
+// ============================================================
+
+/// <summary>
+/// 給支線問答腳本呼叫，用來記錄玩家每一題選 O / X 的結果。
+/// 建議在 DefectQuestionController 的 AnswerYes() / AnswerNo() 裡呼叫。
+/// </summary>
+public void RecordAuditAnswer(
+    string questionId,
+    string questionName,
+    string userAnswer,
+    string correctAnswer,
+    string isoClause
+)
+{
+    if (string.IsNullOrEmpty(questionId))
+    {
+        Debug.LogWarning("RecordAuditAnswer 收到空的 questionId，已忽略。");
+        return;
+    }
+
+    AuditAnswer existing = auditAnswers.Find(answer => answer.questionId == questionId);
+
+    if (existing != null)
+    {
+        existing.questionName = questionName;
+        existing.userAnswer = userAnswer;
+        existing.correctAnswer = correctAnswer;
+        existing.isoClause = isoClause;
+    }
+    else
+    {
+        auditAnswers.Add(new AuditAnswer
+        {
+            questionId = questionId,
+            questionName = questionName,
+            userAnswer = userAnswer,
+            correctAnswer = correctAnswer,
+            isoClause = isoClause
+        });
+    }
+
+    Debug.Log($"已記錄稽核答案：{questionId} / {questionName} = {userAnswer}，正確答案 = {correctAnswer}");
+}
+
+/// <summary>
+/// 清空目前記錄的所有使用者答案。
+/// 新的一輪測驗開始時可以呼叫。
+/// </summary>
+public void ClearAuditAnswers()
+{
+    auditAnswers.Clear();
+    Debug.Log("已清空稽核作答紀錄。");
+}
+
+/// <summary>
+/// 取得目前所有作答資料的 JSON，方便 Debug。
+/// </summary>
+public string GetAuditAnswersJson()
+{
+    return JsonConvert.SerializeObject(auditAnswers, Formatting.Indented);
+}
+
+/// <summary>
+/// 給「查看成績 / 完成稽核」按鈕呼叫。
+/// 會把目前已記錄的作答送給 LLM 評分。
+/// </summary>
+public void ScoreCurrentAuditAnswers()
+{
+    if (isWaitingForScoreResponse)
+    {
+        Debug.LogWarning("LLM 正在評分中，請稍等。");
+        return;
+    }
+
+    if (auditAnswers == null || auditAnswers.Count == 0)
+    {
+        Debug.LogWarning("目前沒有任何作答紀錄，無法評分。");
+        ShowNPCDialogue("目前沒有作答紀錄，無法產生成績。");
+        return;
+    }
+
+    string answersJson = JsonConvert.SerializeObject(auditAnswers);
+    StartCoroutine(PostScoreToOpenAI(answersJson));
+}
+
+/// <summary>
+/// 如果你已經在其他腳本整理好答案 JSON，可以直接呼叫這個方法評分。
+/// </summary>
+public void ScoreAuditAnswersJson(string answersJson)
+{
+    if (isWaitingForScoreResponse)
+    {
+        Debug.LogWarning("LLM 正在評分中，請稍等。");
+        return;
+    }
+
+    if (string.IsNullOrEmpty(answersJson))
+    {
+        Debug.LogWarning("ScoreAuditAnswersJson 收到空資料，無法評分。");
+        ShowNPCDialogue("目前沒有作答資料，無法產生成績。");
+        return;
+    }
+
+    StartCoroutine(PostScoreToOpenAI(answersJson));
+}
+
+private IEnumerator PostScoreToOpenAI(string answersJson)
+{
+    if (string.IsNullOrEmpty(apiKey))
+    {
+        Debug.LogError("尚未填寫 API Key。請在 OpenAIManager 的 apiKey 欄位貼上你的 API Key。");
+        ShowNPCDialogue("系統錯誤：尚未設定 API Key，無法評分。");
+        yield break;
+    }
+
+    isWaitingForScoreResponse = true;
+    ShowNPCDialogue("正在產生成績報告……");
+
+    string systemPrompt =
+        "你是 VR 資安稽核訓練系統的評分模型。" +
+        "請根據使用者每一題的回答、正確答案與 ISO 條文進行評分。" +
+        "每題答對給滿分，答錯給 0 分，最後換算成 0 到 100 的總分。" +
+        "請產生總分、等級、總評、每題回饋與學習建議。" +
+        "必須使用繁體中文。" +
+        "必須只回傳 JSON，不要加任何說明文字。";
+
+    string userPrompt =
+        "使用者 ID：" + scoreUserId + "\n" +
+        "使用者名稱：" + scoreUserName + "\n" +
+        "以下是使用者在 VR 稽核訓練中的作答資料 JSON：\n" +
+        answersJson + "\n\n" +
+        "請用以下 JSON 格式回傳：\n" +
+        "{\n" +
+        "  \"userId\": \"" + scoreUserId + "\",\n" +
+        "  \"userName\": \"" + scoreUserName + "\",\n" +
+        "  \"totalScore\": 0,\n" +
+        "  \"level\": \"優良 / 良好 / 待加強\",\n" +
+        "  \"summary\": \"總評，請控制在 60 字內\",\n" +
+        "  \"items\": [\n" +
+        "    {\n" +
+        "      \"questionId\": \"Q1\",\n" +
+        "      \"questionName\": \"題目名稱\",\n" +
+        "      \"userAnswer\": \"O\",\n" +
+        "      \"correctAnswer\": \"O\",\n" +
+        "      \"score\": 10,\n" +
+        "      \"feedback\": \"單題回饋，請控制在 40 字內\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"suggestion\": \"學習建議，請控制在 80 字內\"\n" +
+        "}";
+
+    PostData data = new PostData
+    {
+        model = modelName,
+        response_format = new ResponseFormat
+        {
+            type = "json_object"
+        },
+        messages = new List<Message>
+        {
+            new Message
+            {
+                role = "system",
+                content = systemPrompt
+            },
+            new Message
+            {
+                role = "user",
+                content = userPrompt
+            }
+        }
+    };
+
+    string json = JsonConvert.SerializeObject(data);
+
+    using (UnityWebRequest request = new UnityWebRequest(apiUrl, "POST"))
+    {
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + apiKey);
+
+        yield return request.SendWebRequest();
+
+        isWaitingForScoreResponse = false;
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            HandleScoreOpenAIResponse(request.downloadHandler.text);
+        }
+        else
+        {
+            Debug.LogError("LLM 評分失敗：" + request.error);
+            Debug.LogError("伺服器回傳：" + request.downloadHandler.text);
+            ShowNPCDialogue("系統錯誤：評分失敗。請查看 Console。");
+        }
+    }
+}
+
+private void HandleScoreOpenAIResponse(string responseText)
+{
+    try
+    {
+        OpenAIResponse response = JsonConvert.DeserializeObject<OpenAIResponse>(responseText);
+
+        if (response == null || response.choices == null || response.choices.Count == 0)
+        {
+            Debug.LogError("LLM 評分回傳格式異常，沒有 choices。");
+            Debug.LogError("原始回傳內容：" + responseText);
+            ShowNPCDialogue("系統錯誤：評分回傳格式異常。");
+            return;
+        }
+
+        string scoreJson = response.choices[0].message.content;
+
+        if (string.IsNullOrEmpty(scoreJson))
+        {
+            Debug.LogError("LLM 評分內容是空的。");
+            ShowNPCDialogue("系統錯誤：評分內容是空的。");
+            return;
+        }
+
+        Debug.Log("<color=green>LLM 評分結果：</color>");
+        Debug.Log(scoreJson);
+
+        ScoreResult scoreResult = JsonConvert.DeserializeObject<ScoreResult>(scoreJson);
+
+        if (showScoreSummaryOnDialogue && scoreResult != null)
+        {
+            ShowNPCDialogue(
+                "評分完成。總分：" +
+                scoreResult.totalScore +
+                "，等級：" +
+                scoreResult.level +
+                "。" +
+                scoreResult.summary
+            );
+        }
+        else
+        {
+            ShowNPCDialogue("評分完成，結果已產生。");
+        }
+
+        if (uploadScoreResultToWeb)
+        {
+            StartCoroutine(UploadScoreResultToWeb(scoreJson));
+        }
+    }
+    catch (System.Exception e)
+    {
+        Debug.LogError("解析 LLM 評分結果失敗：" + e.Message);
+        Debug.LogError("原始回傳內容：" + responseText);
+        ShowNPCDialogue("系統錯誤：解析評分結果失敗。");
+    }
+}
+
+private IEnumerator UploadScoreResultToWeb(string scoreJson)
+{
+    if (string.IsNullOrEmpty(scoreUploadUrl))
+    {
+        Debug.LogWarning("尚未設定 scoreUploadUrl，因此不會上傳成績到 Web。");
+        yield break;
+    }
+
+    byte[] bodyRaw = Encoding.UTF8.GetBytes(scoreJson);
+
+    using (UnityWebRequest request = new UnityWebRequest(scoreUploadUrl, "POST"))
+    {
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log("成績已送到 Web：" + request.downloadHandler.text);
+        }
+        else
+        {
+            Debug.LogError("成績送到 Web 失敗：" + request.error);
+            Debug.LogError("Web 回傳：" + request.downloadHandler.text);
+        }
+    }
+}
+
+
+public void GenerateSideMissionHintAfterMainStory(string stageName)
+{
+    if (isWaitingForResponse)
+    {
+        Debug.LogWarning("LLM 正在回覆中，暫時不產生支線提示。");
+        return;
+    }
+
+    string prompt =
+        "系統事件：主線劇情已播放完畢。" +
+        "目前站點是「" + stageName + "」。" +
+        "請你以資安主管的口吻，自然提醒玩家接下來巡視現場，完成後續支線稽核。" +
+        "語氣要像遊戲 NPC，不要列點。" +
+        "回覆請控制在 20 到 35 字之間。" +
+        "必須只回傳 JSON，格式為：" +
+        "{ \"reply\": \"你的台詞\", \"emotion\": \"professional\" }";
+
+    SendMessageToNPC(prompt);
+}
 IEnumerator PostToOpenAI()
 {
     isWaitingForResponse = true;

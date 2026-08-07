@@ -1,39 +1,52 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class DefectQuestionController : MonoBehaviour
 {
-    [Header("3D 問答框整體物件，請拖 QuestionRoot")]
-    [SerializeField] private GameObject questionRoot;
+    [Header("3D 問答框整體物件")]
+    public GameObject questionRoot;
 
     [Header("這個支線的完成度物件")]
-    [SerializeField] private MissionTarget missionTarget;
+    public MissionTarget missionTarget;
 
-    [Header("正確答案是否為「是」")]
-    [SerializeField] private bool correctAnswerIsYes = true;
+    [Header("流程管理器，可不填，會自動尋找")]
+    public AuditStageFlowManager flowManager;
 
-    [Header("答對後是否自動關閉問答框")]
-    [SerializeField] private bool hideAfterCorrect = false;
+    [Header("正確答案是否為 O / 是")]
+    public bool correctAnswerIsYes = true;
 
-    [Header("答錯後是否自動關閉問答框")]
-    [SerializeField] private bool hideAfterWrong = false;
+    [Header("是否答題後就算完成支線")]
+    public bool completeMissionWhenAnswered = true;
 
-    [Header("答對後是否只能完成一次")]
-    [SerializeField] private bool completeOnlyOnce = true;
+    [Header("是否只有答對才完成支線")]
+    public bool completeOnlyWhenCorrect = false;
 
-    [Header("作答提示文字，可不填")]
-    [SerializeField] private TMP_Text answerFeedbackText;
+    [Header("回答後自動關閉問答框")]
+    public bool hideAfterAnswer = true;
 
-    [Header("點 O 時顯示的文字")]
-    [SerializeField] private string yesFeedbackMessage = "已選擇：O";
+    [Header("回答後幾秒關閉")]
+    public float hideDelay = 2f;
 
-    [Header("點 X 時顯示的文字")]
-    [SerializeField] private string noFeedbackMessage = "已選擇：X";
+    [Header("顯示已選擇文字，可不填")]
+    public TMP_Text answerFeedbackText;
 
-    [Header("是否顯示正確 / 錯誤結果")]
-    [SerializeField] private bool showCorrectWrongResult = true;
+    [Header("O 按鈕 Renderer，可不填")]
+    public Renderer yesButtonRenderer;
 
-    private bool completed;
+    [Header("X 按鈕 Renderer，可不填")]
+    public Renderer noButtonRenderer;
+
+    [Header("一般材質，可不填")]
+    public Material normalMaterial;
+
+    [Header("選取後材質，可不填")]
+    public Material selectedMaterial;
+
+    private bool hasAnswered = false;
+    private bool lastAnswerIsYes = false;
+    private bool missionCompleted = false;
+    private Coroutine hideCoroutine;
 
     private void Awake()
     {
@@ -42,21 +55,13 @@ public class DefectQuestionController : MonoBehaviour
             missionTarget = GetComponent<MissionTarget>();
         }
 
-        ClearFeedback();
-
-        if (questionRoot != null)
+        if (flowManager == null)
         {
-            questionRoot.SetActive(false);
+            flowManager = FindFirstObjectByType<AuditStageFlowManager>();
         }
-    }
 
-    /// <summary>
-    /// 給支線物件的 XR Simple Interactable → Activated 呼叫。
-    /// 再次點同一個支線物件時，切換問答框顯示 / 隱藏。
-    /// </summary>
-    public void OpenQuestion()
-    {
-        ToggleQuestion();
+        HideQuestionRoot();
+        RefreshAnswerVisual();
     }
 
     public void ToggleQuestion()
@@ -67,31 +72,29 @@ public class DefectQuestionController : MonoBehaviour
             return;
         }
 
-        bool nextState = !questionRoot.activeSelf;
-        questionRoot.SetActive(nextState);
+        bool nextVisible = !questionRoot.activeSelf;
 
-        // 每次重新打開問答框時，先清空上一次的作答提示。
-        if (nextState)
+        if (nextVisible)
         {
-            ClearFeedback();
+            ShowQuestion();
         }
-
-        Debug.Log($"{gameObject.name} 問答框切換為：{nextState}", this);
+        else
+        {
+            HideQuestionRoot();
+        }
     }
 
     public void ShowQuestion()
     {
-        if (questionRoot == null)
+        if (questionRoot != null)
         {
-            Debug.LogWarning($"{gameObject.name} 尚未指定 Question Root。", this);
-            return;
+            questionRoot.SetActive(true);
         }
 
-        questionRoot.SetActive(true);
-        ClearFeedback();
+        RefreshAnswerVisual();
     }
 
-    public void CloseQuestion()
+    public void HideQuestionRoot()
     {
         if (questionRoot != null)
         {
@@ -99,108 +102,147 @@ public class DefectQuestionController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 給「O / 是」按鈕呼叫。
-    /// </summary>
     public void AnswerYes()
     {
-        CheckAnswer(true);
+        SelectAnswer(true);
     }
 
-    /// <summary>
-    /// 給「X / 不是」按鈕呼叫。
-    /// </summary>
     public void AnswerNo()
     {
-        CheckAnswer(false);
+        SelectAnswer(false);
     }
 
-    private void CheckAnswer(bool playerAnswerIsYes)
+    // 給不同命名事件相容用
+    public void AnswerO() { SelectAnswer(true); }
+    public void AnswerX() { SelectAnswer(false); }
+    public void SelectYes() { SelectAnswer(true); }
+    public void SelectNo() { SelectAnswer(false); }
+    public void OnYesClicked() { SelectAnswer(true); }
+    public void OnNoClicked() { SelectAnswer(false); }
+
+    private void SelectAnswer(bool isYes)
     {
-        bool isCorrect = playerAnswerIsYes == correctAnswerIsYes;
+        hasAnswered = true;
+        lastAnswerIsYes = isYes;
 
-        ShowAnswerFeedback(playerAnswerIsYes, isCorrect);
+        bool isCorrect = lastAnswerIsYes == correctAnswerIsYes;
 
-        if (isCorrect)
+        Debug.Log($"{gameObject.name} 問答框切換為：{lastAnswerIsYes}，是否正確：{isCorrect}", this);
+
+        RefreshAnswerVisual();
+
+        if (completeMissionWhenAnswered && !missionCompleted)
         {
-            Debug.Log($"{gameObject.name}：判斷正確，已紀錄為缺失。", this);
-
-            CompleteMission();
-
-            if (hideAfterCorrect)
+            if (!completeOnlyWhenCorrect || isCorrect)
             {
-                CloseQuestion();
+                CompleteMissionOnce();
             }
         }
-        else
-        {
-            Debug.Log($"{gameObject.name}：判斷錯誤。", this);
 
-            if (hideAfterWrong)
+        if (hideAfterAnswer)
+        {
+            if (hideCoroutine != null)
             {
-                CloseQuestion();
+                StopCoroutine(hideCoroutine);
             }
+
+            hideCoroutine = StartCoroutine(HideAfterDelayRoutine());
         }
     }
 
-    private void ShowAnswerFeedback(bool playerAnswerIsYes, bool isCorrect)
+    private void CompleteMissionOnce()
     {
-        if (answerFeedbackText == null)
+        if (missionCompleted)
         {
             return;
         }
 
-        string selectedMessage = playerAnswerIsYes
-            ? yesFeedbackMessage
-            : noFeedbackMessage;
+        if (flowManager == null)
+        {
+            Debug.LogWarning($"{gameObject.name} 找不到 AuditStageFlowManager，無法登記完成。", this);
+            return;
+        }
 
-        if (showCorrectWrongResult)
+        if (missionTarget == null)
         {
-            string resultMessage = isCorrect ? "，判斷正確" : "，判斷錯誤";
-            answerFeedbackText.text = selectedMessage + resultMessage;
+            Debug.LogWarning($"{gameObject.name} 找不到 MissionTarget，無法登記完成。", this);
+            return;
         }
-        else
-        {
-            answerFeedbackText.text = selectedMessage;
-        }
+
+        missionCompleted = true;
+        flowManager.RegisterMissionComplete(missionTarget);
     }
 
-    private void ClearFeedback()
+    private IEnumerator HideAfterDelayRoutine()
+    {
+        yield return new WaitForSeconds(hideDelay);
+        HideQuestionRoot();
+        hideCoroutine = null;
+    }
+
+    private void RefreshAnswerVisual()
     {
         if (answerFeedbackText != null)
         {
-            answerFeedbackText.text = "";
+            if (hasAnswered)
+            {
+                answerFeedbackText.text = lastAnswerIsYes ? "已選擇：O" : "已選擇：X";
+            }
+            else
+            {
+                answerFeedbackText.text = "";
+            }
         }
-    }
 
-    private void CompleteMission()
-    {
-        if (completeOnlyOnce && completed)
+        if (yesButtonRenderer != null && normalMaterial != null)
         {
-            Debug.Log($"{gameObject.name} 已經完成過，不重複增加完成度。", this);
+            yesButtonRenderer.material = normalMaterial;
+        }
+
+        if (noButtonRenderer != null && normalMaterial != null)
+        {
+            noButtonRenderer.material = normalMaterial;
+        }
+
+        if (!hasAnswered || selectedMaterial == null)
+        {
             return;
         }
 
-        completed = true;
-
-        if (missionTarget != null)
+        if (lastAnswerIsYes && yesButtonRenderer != null)
         {
-            missionTarget.Complete();
+            yesButtonRenderer.material = selectedMaterial;
         }
-        else
+
+        if (!lastAnswerIsYes && noButtonRenderer != null)
         {
-            Debug.LogWarning($"{gameObject.name} 尚未指定 MissionTarget，無法更新完成度。", this);
+            noButtonRenderer.material = selectedMaterial;
         }
     }
 
-    public void ResetQuestion()
+    public bool HasAnswered()
     {
-        completed = false;
-        ClearFeedback();
+        return hasAnswered;
+    }
 
-        if (questionRoot != null)
+    public bool GetLastAnswerIsYes()
+    {
+        return lastAnswerIsYes;
+    }
+
+    public void ResetQuestionState()
+    {
+        hasAnswered = false;
+        lastAnswerIsYes = false;
+        missionCompleted = false;
+
+        if (hideCoroutine != null)
         {
-            questionRoot.SetActive(false);
+            StopCoroutine(hideCoroutine);
+            hideCoroutine = null;
         }
+
+        HideQuestionRoot();
+        RefreshAnswerVisual();
     }
 }
