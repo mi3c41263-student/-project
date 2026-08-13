@@ -200,7 +200,8 @@ const loginUser = async (req, res) => {
                 const responseData = {
                     id: user.id, username: user.username, email: user.email, 
                     avatar_url: user.avatar_url, 
-                    is_2fa_enabled: (user.is_2fa_enabled === 1 || user.is_2fa_enabled === true) 
+                    is_2fa_enabled: (user.is_2fa_enabled === 1 || user.is_2fa_enabled === true),
+                    mistakes: (function(){ try { return typeof user.mistakes === 'string' ? JSON.parse(user.mistakes) : (user.mistakes || []); } catch(e) { return []; } })()
                 };
 
                 res.json({ success: true, message: "登入成功！正在跳轉...", user: responseData });
@@ -216,62 +217,306 @@ const loginUser = async (req, res) => {
     }
 };
 // =========================================
-// 4. 取得使用者學習成果數據 (雷達圖 + 趨勢圖雙支援)
+// 4. 取得使用者最新學習成果
+// 雷達圖改由 user_answers 真實作答結果計算
 // =========================================
 const getUserStats = async (req, res) => {
-    const userId = req.query.userId;
+    const userId = Number(req.query.userId);
 
-    if (!userId) {
-        return res.status(400).json({ success: false, message: "缺少使用者 ID" });
+    if (!Number.isInteger(userId) || userId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "缺少或無效的使用者 ID"
+        });
     }
 
     try {
-        // 1. 取得總時數與總攔截次數
-        const [totals] = await db.query(
-            "SELECT SUM(duration_hours) as totalHours, SUM(blocks_count) as totalBlocks FROM vr_training_records WHERE user_id = ?", 
-            [userId]
+        // =========================================
+        // 1. 取得每一題「最新一次」作答
+        //
+        // 因為玩家可以重新選 O / X，
+        // 所以同一題如果有多筆紀錄，只取最後一筆。
+        // =========================================
+        const [latestAnswers] = await db.query(
+            `
+            SELECT
+                ua.id,
+                ua.question_id,
+                ua.selected_option,
+                ua.is_correct,
+                ua.score,
+                q.question_text,
+                q.correct_option
+            FROM user_answers ua
+
+            INNER JOIN questions q
+                ON ua.question_id = q.id
+
+            INNER JOIN (
+                SELECT
+                    question_id,
+                    MAX(id) AS latest_answer_id
+                FROM user_answers
+                WHERE user_id = ?
+                GROUP BY question_id
+            ) latest
+                ON ua.id = latest.latest_answer_id
+
+            WHERE ua.user_id = ?
+            `,
+            [userId, userId]
         );
 
-        // 🌟 2. 撈取「最新 5 次」的訓練紀錄
-        // 注意：用 DESC 是為了抓最新的 5 筆，但畫趨勢圖需要「從舊到新」，等一下會在 JS 裡反轉
-        const [historyScores] = await db.query(
-            "SELECT score_physical, score_social, score_server, score_device, score_legal, total_score FROM vr_training_records WHERE user_id = ? ORDER BY id DESC LIMIT 5",
-            [userId]
-        );
 
-        // 第 0 筆就是最新的一筆 (給雷達圖用)
-        const latestScore = historyScores.length > 0 ? historyScores[0] : null;
-
-        // 把陣列反轉成「時間由舊到新」 (給折線圖用)
-        const chronologicalScores = historyScores.reverse();
-
-        // 3. 打包成前端需要的格式
-        const stats = {
-            radarScores: latestScore ? [
-                latestScore.score_physical,
-                latestScore.score_social,
-                latestScore.score_server,
-                latestScore.score_device,
-                latestScore.score_legal
-            ] : [0, 0, 0, 0, 0],
-            totalScore: latestScore ? latestScore.total_score : 0,
-            trainingHours: totals[0].totalHours ? parseFloat(totals[0].totalHours) : 0.0,
-            blocks: totals[0].totalBlocks ? parseInt(totals[0].totalBlocks) : 0,
-            
-            // 🌟 新增：專門給趨勢圖的數據
-            trendLabels: chronologicalScores.map((_, index) => `第 ${index + 1} 次`),
-            trendData: chronologicalScores.map(item => item.total_score)
+        // =========================================
+        // 2. 預設十題都是 0 分
+        //
+        // 1 = 答對
+        // 0 = 答錯 / 尚未作答
+        // =========================================
+        const answers = {
+            Q1: 0,
+            Q2: 0,
+            Q3: 0,
+            Q4: 0,
+            Q5: 0,
+            Q6: 0,
+            Q7: 0,
+            Q8: 0,
+            Q9: 0,
+            Q10: 0
         };
 
-        res.json({ 
-            success: true, 
-            message: "成功獲取真實學習數據",
-            data: stats 
+
+        // =========================================
+        // 3. 使用 question_text 對應正式 Q1～Q10
+        //
+        // 不直接假設 questions.id = 1~10，
+        // 因為資料庫 AUTO_INCREMENT 曾經有刪除資料。
+        // =========================================
+        const questionMap = {
+            "主管隨意放置主管專用識別證": "Q1",
+
+            "提供已失效的稽核通行證": "Q2",
+
+            "存有重要檔案的 USB 硬碟隨意放在桌緣": "Q3",
+
+            "未上鎖的平板放置於辦公桌面上": "Q4",
+
+            "重要訪客名片隨意放置在辦公桌上": "Q5",
+
+            "未加蓋咖啡放在電腦旁": "Q6",
+
+            "公司內部文件隨意放置": "Q7",
+
+            "機房堆放報廢電子設備": "Q8",
+
+            "管制機房內放置食物": "Q9",
+
+            "帳號密碼寫在便利貼上": "Q10"
+        };
+
+
+        // 把資料庫最新答案放進 Q1～Q10
+        latestAnswers.forEach(row => {
+
+            const questionNumber =
+                questionMap[String(row.question_text).trim()];
+
+            if (!questionNumber) {
+                console.warn(
+                    "⚠️ 找不到題目對應：",
+                    row.question_text
+                );
+
+                return;
+            }
+
+            answers[questionNumber] =
+                Number(row.is_correct) === 1 ? 1 : 0;
         });
 
+
+        // =========================================
+        // 4. 五大雷達能力正式評分公式
+        // =========================================
+
+        // A：身分與門禁管理
+        // Q1 60% + Q2 40%
+        const identityAccess =
+            answers.Q1 * 60 +
+            answers.Q2 * 40;
+
+
+        // B：設備與媒體防護
+        // Q3 60% + Q4 40%
+        const deviceMedia =
+            answers.Q3 * 60 +
+            answers.Q4 * 40;
+
+
+        // C：文件與敏感資訊保護
+        // Q5 30% + Q7 30% + Q10 40%
+        const documentInfo =
+            answers.Q5 * 30 +
+            answers.Q7 * 30 +
+            answers.Q10 * 40;
+
+
+        // D：環境風險防護
+        // Q6 50% + Q9 50%
+        const environmentRisk =
+            answers.Q6 * 50 +
+            answers.Q9 * 50;
+
+
+        // E：機房與資產管理
+        // Q8 70% + Q9 30%
+        const serverAsset =
+            answers.Q8 * 70 +
+            answers.Q9 * 30;
+
+
+        // =========================================
+        // 5. 五項平均 = 綜合總分
+        // =========================================
+        const totalScore = Math.round(
+            (
+                identityAccess +
+                deviceMedia +
+                documentInfo +
+                environmentRisk +
+                serverAsset
+            ) / 5
+        );
+
+
+        // =========================================
+        // 6. 計算目前答對題數
+        // =========================================
+        const correctCount =
+            Object.values(answers)
+                .filter(value => value === 1)
+                .length;
+
+
+        // =========================================
+        // 7. 保留原本 VR 訓練總時數
+        // =========================================
+        const [totals] = await db.query(
+            `
+            SELECT
+                COALESCE(SUM(duration_hours), 0) AS totalHours
+            FROM vr_training_records
+            WHERE user_id = ?
+            `,
+            [userId]
+        );
+
+
+        const trainingHours =
+            totals.length > 0
+                ? Number(totals[0].totalHours)
+                : 0;
+
+
+        // =========================================
+        // 8. 保留原本歷史趨勢資料
+        // =========================================
+        const [historyScores] = await db.query(
+            `
+            SELECT total_score
+            FROM vr_training_records
+            WHERE user_id = ?
+            ORDER BY id DESC
+            LIMIT 5
+            `,
+            [userId]
+        );
+
+
+        const chronologicalScores =
+            [...historyScores].reverse();
+
+
+        // =========================================
+        // 9. 回傳 Web
+        //
+        // radarScores 順序一定要和前端雷達圖一致：
+        //
+        // 0 身分與門禁管理
+        // 1 設備與媒體防護
+        // 2 文件與敏感資訊保護
+        // 3 環境風險防護
+        // 4 機房與資產管理
+        // =========================================
+        const stats = {
+
+            radarScores: [
+                identityAccess,
+                deviceMedia,
+                documentInfo,
+                environmentRisk,
+                serverAsset
+            ],
+
+            totalScore: totalScore,
+
+            trainingHours: trainingHours,
+
+            // 暫時以答對題數作為成功辨識數
+            blocks: correctCount,
+
+            trendLabels:
+                chronologicalScores.map(
+                    (_, index) => `第 ${index + 1} 次`
+                ),
+
+            trendData:
+                chronologicalScores.map(
+                    item => Number(item.total_score)
+                ),
+
+            // 除錯用
+            answers: answers
+        };
+
+
+        console.log(
+            `📊 User=${userId} 雷達圖計算完成：`
+        );
+
+        console.log("十題結果：", answers);
+
+        console.log("五項能力：", {
+            身分與門禁管理: identityAccess,
+            設備與媒體防護: deviceMedia,
+            文件與敏感資訊保護: documentInfo,
+            環境風險防護: environmentRisk,
+            機房與資產管理: serverAsset
+        });
+
+        console.log("綜合分數：", totalScore);
+
+
+        return res.json({
+            success: true,
+            message: "成功取得最新 VR 學習成果",
+            data: stats
+        });
+
+
     } catch (error) {
-        console.error("獲取學習數據錯誤:", error);
-        res.status(500).json({ success: false, message: "伺服器發生內部錯誤" });
+
+        console.error(
+            "取得使用者學習成果失敗：",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "伺服器發生內部錯誤"
+        });
     }
 };
 // =========================================
@@ -536,25 +781,51 @@ const verifyLogin2FA = async (req, res) => {
 // 13. 接收並儲存 VR 訓練數據 (給 VR 端點呼叫)
 // =========================================
 const saveVRStats = async (req, res) => {
-    const { userId, physical, social, server, device, legal, duration, blocks } = req.body;
+    const { userId, duration, blocks } = req.body;
 
     if (!userId) {
         return res.status(400).json({ success: false, message: "缺少使用者 ID" });
     }
 
     try {
-        // 自動計算五項平均分作為本次訓練的綜合得分
-        const totalScore = Math.round((physical + social + server + device + legal) / 5);
+        // 1. 從 user_answers 抓取該用戶最新的作答紀錄
+        const [answers] = await db.query(
+            `SELECT question_id, is_correct 
+             FROM user_answers 
+             WHERE user_id = ? 
+             ORDER BY answered_at DESC 
+             LIMIT 100`, 
+            [userId]
+        );
 
+        // 將最新答題結果轉為 Map { 1: true, 2: false ... }
+        const correctMap = {};
+        answers.forEach(a => {
+            if (correctMap[a.question_id] === undefined) {
+                correctMap[a.question_id] = a.is_correct === 1;
+            }
+        });
+
+        // 2. 根據評分邏輯計算五大指標分數
+        const calc_physical = (correctMap[1] ? 60 : 0) + (correctMap[2] ? 40 : 0);
+        const calc_social = (correctMap[3] ? 60 : 0) + (correctMap[4] ? 40 : 0);
+        const calc_server = (correctMap[5] ? 30 : 0) + (correctMap[7] ? 30 : 0) + (correctMap[10] ? 40 : 0);
+        const calc_device = (correctMap[6] ? 50 : 0) + (correctMap[9] ? 50 : 0);
+        const calc_legal = (correctMap[8] ? 70 : 0) + (correctMap[9] ? 30 : 0);
+
+        // 3. 計算總分 (五項平均，四捨五入)
+        const totalScore = Math.round((calc_physical + calc_social + calc_server + calc_device + calc_legal) / 5);
+
+        // 4. 寫入 vr_training_records
         const sql = `INSERT INTO vr_training_records 
                      (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count) 
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
                      
-        await db.query(sql, [userId, physical, social, server, device, legal, totalScore, duration, blocks]);
+        await db.query(sql, [userId, calc_physical, calc_social, calc_server, calc_device, calc_legal, totalScore, duration || 0, blocks || 0]);
 
         res.json({ 
             success: true, 
-            message: "🎮 VR 訓練數據已成功同步至系統資料庫！" 
+            message: "🎮 VR 訓練數據已成功同步至系統資料庫！(後端計算評分版)" 
         });
 
     } catch (error) {
@@ -962,6 +1233,82 @@ const resendVerifyEmail = async (req, res) => {
     }
 };
 
+
+// =========================================
+// 儲存錯題本
+// =========================================
+const saveMistakes = async (req, res) => {
+    const { userId, mistakes } = req.body;
+    try {
+        const mistakesJson = JSON.stringify(mistakes || []);
+        await db.query('UPDATE users SET mistakes = ? WHERE id = ?', [mistakesJson, userId]);
+        res.json({ success: true, message: '錯題本已更新' });
+    } catch (error) {
+        console.error('儲存錯題本錯誤:', error);
+        res.status(500).json({ success: false, message: '儲存錯題本失敗' });
+    }
+};
+
+
+// =========================================
+// 接收來自 Unity 的自訂 POST 資料 (範例)
+// =========================================
+const handleUnityData = async (req, res) => {
+    const { userId, duration, blocks } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ success: false, message: '缺少使用者 ID' });
+    }
+
+    try {
+        console.log('✅ 收到來自 Unity 的資料，交由後端重新評分：', req.body);
+
+        // 1. 從 user_answers 抓取該用戶最新的作答紀錄
+        const [answers] = await db.query(
+            `SELECT question_id, is_correct 
+             FROM user_answers 
+             WHERE user_id = ? 
+             ORDER BY answered_at DESC 
+             LIMIT 100`, 
+            [userId]
+        );
+
+        // 將最新答題結果轉為 Map { 1: true, 2: false ... }
+        const correctMap = {};
+        answers.forEach(a => {
+            if (correctMap[a.question_id] === undefined) {
+                correctMap[a.question_id] = a.is_correct === 1;
+            }
+        });
+
+        // 2. 根據評分邏輯計算五大指標分數
+        const calc_physical = (correctMap[1] ? 60 : 0) + (correctMap[2] ? 40 : 0);
+        const calc_social = (correctMap[3] ? 60 : 0) + (correctMap[4] ? 40 : 0);
+        const calc_server = (correctMap[5] ? 30 : 0) + (correctMap[7] ? 30 : 0) + (correctMap[10] ? 40 : 0);
+        const calc_device = (correctMap[6] ? 50 : 0) + (correctMap[9] ? 50 : 0);
+        const calc_legal = (correctMap[8] ? 70 : 0) + (correctMap[9] ? 30 : 0);
+
+        // 3. 計算總分 (五項平均，四捨五入)
+        const totalScore = Math.round((calc_physical + calc_social + calc_server + calc_device + calc_legal) / 5);
+
+        // 4. 寫入學習成果分析所使用的資料表 (vr_training_records)
+        const sql = `INSERT INTO vr_training_records 
+                     (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                     
+        await db.query(sql, [userId, calc_physical, calc_social, calc_server, calc_device, calc_legal, totalScore, duration || 0, blocks || 0]);
+
+        res.status(200).json({ 
+            success: true, 
+            message: 'VR 訓練資料已成功儲存並在後端完成評分計算！',
+            totalScore: totalScore 
+        });
+    } catch (error) {
+        console.error('處理 Unity 資料時發生錯誤:', error);
+        res.status(500).json({ success: false, message: '伺服器內部錯誤' });
+    }
+};
+
 module.exports = {
     checkVerificationStatus,
     resendVerifyEmail,
@@ -983,5 +1330,7 @@ module.exports = {
     saveUnityAnswer  ,
     // Web → Unity 登入
     createVRTicket,
-    exchangeVRTicket
+    exchangeVRTicket,
+    saveMistakes,
+    handleUnityData
 };

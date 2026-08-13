@@ -1,1 +1,0 @@
-DESCRIBE vr_login_tickets;

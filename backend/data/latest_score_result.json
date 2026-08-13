@@ -1,0 +1,136 @@
+{
+  "userId": "S001",
+  "userName": "測試使用者",
+  "totalScore": 78,
+  "level": "良好",
+  "kpi": {
+    "auditScore": 78,
+    "trainingHours": 2.4,
+    "identifiedRisks": 7,
+    "accuracyRate": 78
+  },
+  "radar": {
+    "身分與門禁管理": 67,
+    "資產與設備保護": 100,
+    "文件與資訊保護": 100,
+    "作業區域安全": 100,
+    "機房與設施管理": 0
+  },
+  "history": [
+    {
+      "session": "第 1 次",
+      "score": 60
+    },
+    {
+      "session": "第 2 次",
+      "score": 72
+    },
+    {
+      "session": "本次",
+      "score": 78
+    }
+  ],
+  "summary": "整體表現良好，多數情境判斷正確，僅少數身分與聘用管理議題仍需加強。",
+  "suggestion": "建議複習聘用條款、背景調查與管理審查判讀，並持續強化身分與門禁相關觀念。",
+  "items": [
+    {
+      "questionId": "Q01",
+      "questionName": "主管識別證隨意放置",
+      "userAnswer": "O",
+      "correctAnswer": "O",
+      "score": 10,
+      "isoClause": "A.6.3 資訊安全認知、教育及訓練",
+      "abilityCategory": "身分與門禁管理",
+      "isCorrect": true,
+      "feedback": "判斷正確，符合識別證管理要求。"
+    },
+    {
+      "questionId": "Q02",
+      "questionName": "測試用 USB 無人看管",
+      "userAnswer": "O",
+      "correctAnswer": "O",
+      "score": 10,
+      "isoClause": "A.7.10 儲存媒體",
+      "abilityCategory": "資產與設備保護",
+      "isCorrect": true,
+      "feedback": "判斷正確，應妥善管控儲存媒體。"
+    },
+    {
+      "questionId": "Q03",
+      "questionName": "員工評核表缺少背景調查紀錄",
+      "userAnswer": "O",
+      "correctAnswer": "O",
+      "score": 10,
+      "isoClause": "A.6.1 篩選",
+      "abilityCategory": "身分與門禁管理",
+      "isCorrect": true,
+      "feedback": "判斷正確，背景調查屬必要控制。"
+    },
+    {
+      "questionId": "Q04",
+      "questionName": "年度管理審查報告風險判斷錯誤",
+      "userAnswer": "X",
+      "correctAnswer": "O",
+      "score": 0,
+      "isoClause": "A.6.3 資訊安全認知、教育及訓練",
+      "abilityCategory": "文件與資訊保護",
+      "isCorrect": false,
+      "feedback": "答案錯誤，需留意管理審查與風險判讀。"
+    },
+    {
+      "questionId": "Q05",
+      "questionName": "未上鎖平板",
+      "userAnswer": "O",
+      "correctAnswer": "O",
+      "score": 10,
+      "isoClause": "A.7.7 桌面淨空及螢幕淨空",
+      "abilityCategory": "資產與設備保護",
+      "isCorrect": true,
+      "feedback": "判斷正確，設備應於離席時鎖定。"
+    },
+    {
+      "questionId": "Q06",
+      "questionName": "未加蓋咖啡放在電腦與文件旁",
+      "userAnswer": "O",
+      "correctAnswer": "O",
+      "score": 10,
+      "isoClause": "A.7.7 桌面淨空及螢幕淨空",
+      "abilityCategory": "文件與資訊保護",
+      "isCorrect": true,
+      "feedback": "判斷正確，需避免文件與設備受損。"
+    },
+    {
+      "questionId": "Q07",
+      "questionName": "訪客名片無人看管",
+      "userAnswer": "O",
+      "correctAnswer": "O",
+      "score": 10,
+      "isoClause": "A.7.7 桌面淨空及螢幕淨空",
+      "abilityCategory": "作業區域安全",
+      "isCorrect": true,
+      "feedback": "判斷正確，訪客物件應妥善管理。"
+    },
+    {
+      "questionId": "Q08",
+      "questionName": "公司文件 Folder 隨意放置",
+      "userAnswer": "O",
+      "correctAnswer": "O",
+      "score": 10,
+      "isoClause": "A.7.7 桌面淨空及螢幕淨空",
+      "abilityCategory": "文件與資訊保護",
+      "isCorrect": true,
+      "feedback": "判斷正確，文件應避免外洩風險。"
+    },
+    {
+      "questionId": "Q09",
+      "questionName": "聘用合約缺少離職後保密條款",
+      "userAnswer": "X",
+      "correctAnswer": "O",
+      "score": 0,
+      "isoClause": "A.6.2 聘用條款及條件",
+      "abilityCategory": "身分與門禁管理",
+      "isCorrect": false,
+      "feedback": "答案錯誤，需補強聘用條款觀念。"
+    }
+  ]
+}

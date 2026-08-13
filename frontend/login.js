@@ -234,7 +234,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             if (verifyData.success) {
                                 Toast.fire({ icon: 'success', title: '驗證成功！正在載入頁面...' });
-                                localStorage.setItem('currentUser', JSON.stringify(verifyData.user));
+                                
+        if (verifyData.user.mistakes) {
+            verifyData.user.history = { mistakes: verifyData.user.mistakes };
+            delete verifyData.user.mistakes;
+        }
+        localStorage.setItem('currentUser', JSON.stringify(verifyData.user));
+    
                                 setTimeout(() => { window.location.href = "main.html"; }, 1500);
                             } else {
                                 Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: '#1c2638', color: '#fff' });
@@ -242,7 +248,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     } else {
                         Toast.fire({ icon: 'success', title: data.message });
-                        localStorage.setItem('currentUser', JSON.stringify(data.user)); 
+                        
+        if (data.user.mistakes) {
+            data.user.history = { mistakes: data.user.mistakes };
+            delete data.user.mistakes;
+        }
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+     
                         setTimeout(() => { window.location.href = "main.html"; }, 1500);
                     }
                 } else {

@@ -66,6 +66,15 @@ router.post('/vr/create-ticket', authController.createVRTicket);
 // Unity 使用 Ticket 登入
 router.post('/vr/exchange-ticket', authController.exchangeVRTicket);
 
+// 儲存錯題本
+router.post('/save-mistakes', authController.saveMistakes);
+
+// 儲存錯題本
+router.post('/save-mistakes', authController.saveMistakes);
+
+// 新增的 Unity API (範例)
+router.post('/unity/custom-data', authController.handleUnityData);
+
 // =========================================
 // 帳號管理
 // =========================================

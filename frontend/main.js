@@ -1,4 +1,4 @@
-
+﻿
 const API_BASE_URL = window.location.port === '5500' ? 'http://localhost:3000' : window.location.origin;
 document.addEventListener('DOMContentLoaded', () => {
     // =========================================
@@ -123,6 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (analysisSection) analysisSection.style.display = 'block';
                     if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '檢視您各項資安能力的綜合評估';
                     
+                    if (typeof loadLatestResult === 'function') {
+                        loadLatestResult();
+                    }
+
                     if (!window.radarChartCreated) {
                         if (typeof initRadarChart === 'function') initRadarChart();
                         window.radarChartCreated = true;
@@ -414,188 +418,427 @@ document.addEventListener('DOMContentLoaded', () => {
 // =========================================
 // 12. 連接後端 API 並動態繪製「能力雷達圖」
 // =========================================
-window.initRadarChart = async function() {
+window.initRadarChart = async function () {
+
     const userStr = localStorage.getItem('currentUser');
-    if (!userStr) return; // 防呆：沒登入就不執行
-    const user = JSON.parse(userStr);
 
-    let scores = [0, 0, 0, 0, 0]; // 預設雷達圖數值
-
-    try {
-        // 🌟 1. 向 Node.js 後端請求該用戶的成績數據
-        const response = await fetch(`${API_BASE_URL}/api/stats?userId=${user.id}`);
-        const resData = await response.json();
-
-        if (resData.success) {
-            const stats = resData.data;
-            scores = stats.radarScores; // 覆蓋為後端傳來的真實陣列
-
-            // 🌟 2. 動態更新右側三張數據卡片
-            const valScore = document.getElementById('valScore');
-            const valTime = document.getElementById('valTime');
-            const valBlock = document.getElementById('valBlock');
-
-            if (valScore) valScore.innerHTML = `${stats.totalScore}<small>分</small>`;
-            if (valTime) valTime.innerHTML = `${stats.trainingHours}<small>小時</small>`;
-            if (valBlock) valBlock.innerHTML = `${stats.blocks}<small>次</small>`;
-        }
-    } catch (error) {
-        console.error("讀取後端數據失敗:", error);
+    if (!userStr) {
+        console.warn("找不到 currentUser，無法取得雷達圖資料");
+        return;
     }
 
-    // 🌟 3. 繪製 Chart.js 雷達圖
-    const ctx = document.getElementById('securityRadarChart');
-    if (!ctx) return;
+    const user = JSON.parse(userStr);
 
-    // 配合你現有 CSS 的文字顏色設定
-    Chart.defaults.color = 'var(--text-light)'; 
+    console.log("目前登入使用者：", user);
+    console.log("目前使用者 ID：", user.id);
 
-    const langSelectElem = document.getElementById('langSelect');
-    const initLang = langSelectElem ? langSelectElem.value : 'zh-TW';
+    // 預設資料
+    let scores = [0, 0, 0, 0, 0];
+    let stats = null;
+
+    try {
+
+        // =========================================
+        // 1. 從 Node.js 取得最新真實成績
+        // =========================================
+        const response = await fetch(
+            `${API_BASE_URL}/api/stats?userId=${user.id}`
+        );
+
+        const resData = await response.json();
+
+        console.log("後端 /api/stats 回傳：", resData);
+
+        if (!response.ok || !resData.success) {
+
+            console.error(
+                "讀取學習成果失敗：",
+                resData.message
+            );
+
+            return;
+        }
+
+        stats = resData.data;
+
+
+        // =========================================
+        // 2. 雷達圖五項能力
+        // =========================================
+        if (
+            Array.isArray(stats.radarScores) &&
+            stats.radarScores.length === 5
+        ) {
+
+            scores = stats.radarScores.map(score =>
+                Number(score) || 0
+            );
+
+        } else {
+
+            console.warn(
+                "radarScores 格式錯誤：",
+                stats.radarScores
+            );
+        }
+
+
+        console.log("雷達圖實際使用分數：", scores);
+
+
+        // =========================================
+        // 3. 更新上方數據卡片
+        //
+        // totalScore 已經由 Node.js 正式計算，
+        // 前端不要再重新計算一次。
+        // =========================================
+        const valScore =
+            document.getElementById('valScore');
+
+        const valTime =
+            document.getElementById('valTime');
+
+        const valBlock =
+            document.getElementById('valBlock');
+
+
+        if (valScore) {
+
+            valScore.innerHTML =
+                `${stats.totalScore}<small>分</small>`;
+        }
+
+        if (valTime) {
+
+            valTime.innerHTML =
+                `${stats.trainingHours}<small>小時</small>`;
+        }
+
+        if (valBlock) {
+
+            valBlock.innerHTML =
+                `${stats.blocks}<small>次</small>`;
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "讀取後端數據失敗：",
+            error
+        );
+
+        return;
+    }
+
+
+    // =========================================
+    // 4. 繪製雷達圖
+    // =========================================
+    const ctx =
+        document.getElementById('securityRadarChart');
+
+    if (!ctx) {
+        console.warn("找不到 securityRadarChart");
+        return;
+    }
+
+
+    // 如果之前已經有雷達圖
+    // 先銷毀再重新建立
+    if (window.myRadarChart) {
+
+        window.myRadarChart.destroy();
+        window.myRadarChart = null;
+    }
+
+
+    Chart.defaults.color = 'var(--text-light)';
+
+
+    const langSelectElem =
+        document.getElementById('langSelect');
+
+    const initLang =
+        langSelectElem
+            ? langSelectElem.value
+            : 'zh-TW';
+
 
     window.myRadarChart = new Chart(ctx, {
+
         type: 'radar',
+
         data: {
-            // 配合你 ISO 27002 手冊的屬性標籤，加上多國語系
-            labels: initLang === 'en' 
-                ? ['Physical Protection', 'Anti-Social Engineering', 'Server Room Security', 'Device Control', 'Regulatory Awareness']
-                : ['實體防護', '社交工程防範', '機房安全', '設備管控', '法規認知'], 
+
+            labels:
+                initLang === 'en'
+
+                    ? [
+                        'Identity & Access Management',
+                        'Device & Media Protection',
+                        'Document & Info Security',
+                        'Environmental Risk',
+                        'Server Room & Asset Management'
+                    ]
+
+                    : [
+                        '身分與門禁管理',
+                        '設備與媒體防護',
+                        '文件與敏感資訊保護',
+                        '環境風險防護',
+                        '機房與資產管理'
+                    ],
+
             datasets: [{
-                label: initLang === 'en' ? 'Security Capability' : '資安防禦力',
+
+                label:
+                    initLang === 'en'
+                        ? 'Security Capability'
+                        : '資安防禦力',
+
                 data: scores,
-                backgroundColor: 'rgba(0, 168, 255, 0.2)', // 使用你的 --primary-cyan
-                borderColor: '#00a8ff',
+
+                backgroundColor:
+                    'rgba(0, 168, 255, 0.2)',
+
+                borderColor:
+                    '#00a8ff',
+
                 borderWidth: 2,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#00a8ff',
-                pointHoverBackgroundColor: '#00a8ff',
-                pointHoverBorderColor: '#fff'
+
+                pointBackgroundColor:
+                    '#fff',
+
+                pointBorderColor:
+                    '#00a8ff',
+
+                pointHoverBackgroundColor:
+                    '#00a8ff',
+
+                pointHoverBorderColor:
+                    '#fff'
             }]
         },
+
         options: {
+
             responsive: true,
+
             maintainAspectRatio: false,
+
             scales: {
+
                 r: {
-                    grid: { color: document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255, 255, 255, 0.1)' },
-                    angleLines: { color: document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255, 255, 255, 0.1)' },
+
+                    min: 0,
+                    max: 100,
+
+                    grid: {
+
+                        color:
+                            document.documentElement
+                                .getAttribute('data-theme') === 'light'
+
+                                ? 'rgba(0,0,0,0.1)'
+
+                                : 'rgba(255,255,255,0.1)'
+                    },
+
+                    angleLines: {
+
+                        color:
+                            document.documentElement
+                                .getAttribute('data-theme') === 'light'
+
+                                ? 'rgba(0,0,0,0.1)'
+
+                                : 'rgba(255,255,255,0.1)'
+                    },
+
                     pointLabels: {
+
                         font: {
                             size: 16,
                             weight: 'bold'
                         },
-                        color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : 'var(--text-color)' // 加亮標籤顏色使其更清晰
+
+                        color:
+                            document.documentElement
+                                .getAttribute('data-theme') === 'light'
+
+                                ? '#1a202c'
+
+                                : 'var(--text-color)'
                     },
-                    suggestedMin: 0,
-                    suggestedMax: 100,
-                    ticks: { display: false }
+
+                    ticks: {
+                        display: false,
+                        stepSize: 10
+                    }
                 }
             },
+
             plugins: {
-                legend: { display: false } // 隱藏多餘的圖例，保持畫面乾淨
+
+                legend: {
+                    display: false
+                }
             }
         }
     });
-    // 🌟 4. 繪製 Chart.js 歷史趨勢折線圖
-    const lineCtx = document.getElementById('trendLineChart');
-    if (lineCtx && resData.success && resData.data.trendData.length > 0) {
-        
-        // 防呆：如果之前畫過折線圖，先把它銷毀，避免畫面重疊閃爍
+
+
+    console.log(
+        "雷達圖建立完成，資料：",
+        window.myRadarChart.data.datasets[0].data
+    );
+
+
+    // =========================================
+    // 5. 繪製歷史趨勢折線圖
+    // =========================================
+    const lineCtx =
+        document.getElementById('trendLineChart');
+
+
+    if (
+        lineCtx &&
+        stats &&
+        Array.isArray(stats.trendData) &&
+        stats.trendData.length > 0
+    ) {
+
         if (window.myTrendChart) {
+
             window.myTrendChart.destroy();
+            window.myTrendChart = null;
         }
 
-        window.myTrendChart = new Chart(lineCtx, {
-            type: 'line',
-            data: {
-                labels: resData.data.trendLabels, // X軸：第1次、第2次...
-                datasets: [{
-                    label: initLang === 'en' ? 'Overall Security Score' : '資安防禦綜合分數',
-                    data: resData.data.trendData, // Y軸：總分
-                    borderColor: '#00a8ff',       // 科技感亮藍色線條
-                    backgroundColor: 'rgba(0, 168, 255, 0.1)', // 線條下方的半透明漸層
-                    borderWidth: 2,
-                    fill: true,                   // 填滿下方區域
-                    tension: 0.4,                 // 讓線條變成平滑曲線 (0 是折線，0.4 是曲線)
-                    pointBackgroundColor: '#1c2638',
-                    pointBorderColor: '#00a8ff',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }, // 隱藏上方圖例
-                    tooltip: {
-                        backgroundColor: 'rgba(28, 38, 56, 0.9)',
-                        titleColor: 'var(--text-light)',
-                        bodyColor: '#fff',
-                        borderColor: '#00a8ff',
-                        borderWidth: 1
-                    }
+
+        window.myTrendChart =
+            new Chart(lineCtx, {
+
+                type: 'line',
+
+                data: {
+
+                    labels:
+                        stats.trendLabels,
+
+                    datasets: [{
+
+                        label:
+                            initLang === 'en'
+                                ? 'Overall Security Score'
+                                : '資安防禦綜合分數',
+
+                        data:
+                            stats.trendData,
+
+                        borderColor:
+                            '#00a8ff',
+
+                        backgroundColor:
+                            'rgba(0, 168, 255, 0.1)',
+
+                        borderWidth: 2,
+
+                        fill: true,
+
+                        tension: 0.4,
+
+                        pointBackgroundColor:
+                            '#1c2638',
+
+                        pointBorderColor:
+                            '#00a8ff',
+
+                        pointBorderWidth: 2,
+
+                        pointRadius: 4,
+
+                        pointHoverRadius: 6
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100, // 分數最高 100
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : 'var(--text-light)' }
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+
+                            backgroundColor:
+                                'rgba(28, 38, 56, 0.9)',
+
+                            titleColor:
+                                'var(--text-light)',
+
+                            bodyColor:
+                                '#fff',
+
+                            borderColor:
+                                '#00a8ff',
+
+                            borderWidth: 1
+                        }
                     },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : 'var(--text-light)' }
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            max: 100,
+
+                            grid: {
+                                color:
+                                    'rgba(255,255,255,0.05)'
+                            },
+
+                            ticks: {
+
+                                color:
+                                    document.documentElement
+                                        .getAttribute('data-theme') === 'light'
+
+                                        ? '#718096'
+
+                                        : 'var(--text-light)'
+                            }
+                        },
+
+                        x: {
+
+                            grid: {
+                                display: false
+                            },
+
+                            ticks: {
+
+                                color:
+                                    document.documentElement
+                                        .getAttribute('data-theme') === 'light'
+
+                                        ? '#718096'
+
+                                        : 'var(--text-light)'
+                            }
+                        }
                     }
                 }
-            }
-        });
+            });
     }
 };
-// =========================================
-    // 12.5 圖表切換按鈕邏輯 (雷達圖 vs 折線圖)
-    // =========================================
-    const btnShowRadar = document.getElementById('btnShowRadar');
-    const btnShowLine = document.getElementById('btnShowLine');
-    const radarContainer = document.getElementById('radarContainer');
-    const lineContainer = document.getElementById('lineContainer');
-
-    if (btnShowRadar && btnShowLine) {
-        // 點擊「最新能力」
-        btnShowRadar.addEventListener('click', (e) => {
-            e.preventDefault();
-            btnShowRadar.style.backgroundColor = '#00a8ff';
-            btnShowRadar.style.color = '#000';
-            btnShowLine.style.backgroundColor = 'transparent';
-            btnShowLine.style.color = '#00a8ff';
-
-            radarContainer.style.display = 'block';
-            lineContainer.style.display = 'none';
-
-            //  叫雷達圖重新適應畫面大小
-            if (window.myRadarChart) {
-                window.myRadarChart.resize();
-            }
-        });
-
-        // 點擊「歷史趨勢」
-        btnShowLine.addEventListener('click', (e) => {
-            e.preventDefault();
-            btnShowLine.style.backgroundColor = '#00a8ff';
-            btnShowLine.style.color = '#000';
-            btnShowRadar.style.backgroundColor = 'transparent';
-            btnShowRadar.style.color = '#00a8ff';
-
-            lineContainer.style.display = 'block';
-            radarContainer.style.display = 'none';
-
-            // 叫折線圖重新計算並長出畫面！
-            if (window.myTrendChart) {
-                window.myTrendChart.resize();
-            }
-        });
-    }
 // =========================================
     // 13. 個人檔案設定邏輯 (頭像上傳與資料儲存)
     // =========================================
@@ -2479,10 +2722,10 @@ window.initRadarChart = async function() {
                 user.history.mistakes.push(qId);
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 if (typeof API_BASE_URL !== 'undefined') {
-                    fetch(`${API_BASE_URL}/api/update-user`, {
+                    fetch(`${API_BASE_URL}/api/save-mistakes`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(user)
+                        body: JSON.stringify({ userId: user.id, mistakes: user.history.mistakes })
                     }).catch(e => console.error('Mistake sync failed:', e));
                 }
             }
@@ -2498,6 +2741,20 @@ window.initRadarChart = async function() {
         window.currentMistakesPage = page;
         renderMistakes();
     };
+
+    
+async function saveMistakesToBackend() {
+    if (!user || !user.id) return;
+    try {
+        await fetch(API_BASE_URL + '/api/save-mistakes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: user.id, mistakes: user.history.mistakes })
+        });
+    } catch (e) {
+        console.error('Failed to save mistakes to backend', e);
+    }
+}
 
     window.renderMistakes = function() {
         const mistakesList = document.getElementById('mistakesList');
@@ -2612,10 +2869,10 @@ window.initRadarChart = async function() {
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 
                 if (typeof API_BASE_URL !== 'undefined') {
-                    fetch(`${API_BASE_URL}/api/update-user`, {
+                    fetch(`${API_BASE_URL}/api/save-mistakes`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(user)
+                        body: JSON.stringify({ userId: user.id, mistakes: user.history.mistakes })
                     }).catch(e => console.error('Mistake remove sync failed:', e));
                 }
                 
@@ -3383,3 +3640,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
+// --- Load Unity LLM Latest Result ---
+async function loadLatestResult() {
+    try {
+        const response = await fetch("/api/latest-result");
+        const data = await response.json();
+
+        console.log("最新 Unity LLM 成績：", data);
+
+        if (!data || data.success === false) {
+            console.warn("目前沒有 LLM 成績資料");
+            return;
+        }
+
+        const totalScoreEl = document.getElementById("totalScore");
+        const levelTextEl = document.getElementById("levelText");
+        const summaryTextEl = document.getElementById("summaryText");
+        const suggestionTextEl = document.getElementById("suggestionText");
+
+        if (totalScoreEl) totalScoreEl.textContent = data.totalScore ?? 0;
+        if (levelTextEl) levelTextEl.textContent = data.level ?? "未評分";
+        if (summaryTextEl) summaryTextEl.textContent = data.summary ?? "尚無總評";
+        if (suggestionTextEl) suggestionTextEl.textContent = data.suggestion ?? "尚無建議";
+
+    } catch (error) {
+        console.error("讀取 LLM 成績失敗：", error);
+    }
+}
