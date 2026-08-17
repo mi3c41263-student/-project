@@ -10,7 +10,10 @@ const authController = require('../controllers/authController');
 // =========================================
 router.post('/register', authController.registerUser);
 router.post('/login', authController.loginUser);
-
+router.post(
+    '/unity/answers',
+    authController.saveUnityAnswer
+);
 
 // =========================================
 // 學習成果 / 統計資料

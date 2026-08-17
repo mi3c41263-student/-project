@@ -899,77 +899,245 @@ const deleteAccount = async (req, res) => {
 };
 // =========================================
 // 16. 接收 Unity 單題作答並自動判分
+//
+// Unity 傳入：
+// userId
+// questionCode
+// selectedOption
+//
+// 例如：
+// {
+//     "userId": 64,
+//     "questionCode": "S1_USB",
+//     "selectedOption": "X"
+// }
+//
+// Node.js 負責：
+// 1. 找使用者
+// 2. 用 questionCode 找真正 question_id
+// 3. 判斷答案
+// 4. 寫入 user_answers
+// 5. 計算 3 站完成度
+// 6. 回傳 Unity
 // =========================================
 const saveUnityAnswer = async (req, res) => {
-    const { userId, questionId, selectedOption } = req.body;
 
-    // 1. 檢查 Unity 有沒有把必要資料傳過來
+    const {
+        userId,
+        questionCode,
+        selectedOption
+    } = req.body;
+
+
+    // =========================================
+    // 1. 檢查 userId
+    // =========================================
+    const parsedUserId = Number(userId);
+
     if (
-        userId === undefined ||
-        questionId === undefined ||
-        selectedOption === undefined
+        !Number.isInteger(parsedUserId) ||
+        parsedUserId <= 0
     ) {
         return res.status(400).json({
             success: false,
-            message: "缺少 userId、questionId 或 selectedOption"
+            message: "缺少或無效的 userId"
         });
     }
 
-    // 統一轉成大寫，避免 o / x / c 大小寫造成判斷錯誤
-    const option = String(selectedOption).trim().toUpperCase();
 
-    // Unity 目前只有三種合法值：
-    // O、X，以及 Q2 特殊題使用的 C（Completed）
+    // =========================================
+    // 2. 檢查 questionCode
+    // =========================================
+    if (
+        questionCode === undefined ||
+        String(questionCode).trim() === ""
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "缺少 questionCode"
+        });
+    }
+
+
+    // =========================================
+    // 3. 檢查 selectedOption
+    // =========================================
+    if (
+        selectedOption === undefined ||
+        String(selectedOption).trim() === ""
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "缺少 selectedOption"
+        });
+    }
+
+
+    // =========================================
+    // 4. 統一資料格式
+    // =========================================
+    const code =
+        String(questionCode)
+            .trim()
+            .toUpperCase();
+
+
+    const option =
+        String(selectedOption)
+            .trim()
+            .toUpperCase();
+
+
+    // O = 選 O
+    // X = 選 X
+    // C = Completed
     if (!["O", "X", "C"].includes(option)) {
+
         return res.status(400).json({
             success: false,
             message: "selectedOption 只能是 O、X 或 C"
         });
     }
 
+
     try {
-        // 2. 確認使用者存在
+
+        // =========================================
+        // 5. 確認使用者存在
+        // =========================================
         const [users] = await db.query(
-            "SELECT id FROM users WHERE id = ?",
-            [userId]
+            `
+            SELECT id
+            FROM users
+            WHERE id = ?
+            `,
+            [parsedUserId]
         );
 
+
         if (users.length === 0) {
+
             return res.status(404).json({
                 success: false,
                 message: "找不到此使用者"
             });
         }
 
-        // 3. 從 questions 查這一題真正的正確答案與配分
+
+        // =========================================
+        // 6. 使用 question_code 找正式題目
+        //
+        // Unity 完全不需要知道 questions.id
+        // =========================================
         const [questions] = await db.query(
-            `SELECT id, question_text, correct_option, score
-             FROM questions
-             WHERE id = ?`,
-            [questionId]
+            `
+            SELECT
+                id,
+                question_code,
+                scenario_id,
+                stage_no,
+                interaction_type,
+                question_text,
+                correct_option,
+                score
+            FROM questions
+            WHERE question_code = ?
+            LIMIT 1
+            `,
+            [code]
         );
 
+
         if (questions.length === 0) {
+
             return res.status(404).json({
                 success: false,
-                message: "找不到此題目"
+                message: `找不到 questionCode：${code}`
             });
         }
 
+
         const question = questions[0];
 
+
+        // =========================================
+        // 7. 取得題目資料
+        // =========================================
+        const questionId =
+            Number(question.id);
+
+
+        const stageNo =
+            Number(question.stage_no);
+
+
+        const interactionType =
+            String(
+                question.interaction_type || ""
+            )
+                .trim()
+                .toUpperCase();
+
+
         const correctOption =
-            String(question.correct_option).trim().toUpperCase();
+            String(
+                question.correct_option || ""
+            )
+                .trim()
+                .toUpperCase();
 
-        // 4. Node.js 自己判斷答案
-        const isCorrect = option === correctOption;
 
-        // 答對取得該題原始分數；答錯 0 分
-        const earnedScore = isCorrect
-            ? Number(question.score)
-            : 0;
+        // =========================================
+        // 8. 防止 Unity 傳錯類型
+        // =========================================
 
-        // 5. 寫入 user_answers
+        // 一般 O/X 題只能傳 O 或 X
+        if (
+            interactionType === "OX" &&
+            !["O", "X"].includes(option)
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    `${code} 是 O/X 題，不能傳 ${option}`
+            });
+        }
+
+
+        // 文件與完成型只能傳 C
+        if (
+            (
+                interactionType === "DOCUMENT" ||
+                interactionType === "COMPLETE"
+            ) &&
+            option !== "C"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    `${code} 是完成型支線，只能傳 C`
+            });
+        }
+
+
+        // =========================================
+        // 9. Node.js 判斷正確 / 錯誤
+        // =========================================
+        const isCorrect =
+            option === correctOption;
+
+
+        const earnedScore =
+            isCorrect
+                ? Number(question.score || 0)
+                : 0;
+
+
+        // =========================================
+        // 10. 寫入 user_answers
+        // =========================================
         const insertSql = `
             INSERT INTO user_answers
             (
@@ -982,44 +1150,318 @@ const saveUnityAnswer = async (req, res) => {
             VALUES (?, ?, ?, ?, ?)
         `;
 
-        const [result] = await db.query(insertSql, [
-            userId,
-            questionId,
-            option,
-            isCorrect ? 1 : 0,
-            earnedScore
-        ]);
 
-        console.log(
-            `[Unity作答] User=${userId}, ` +
-            `Question=${questionId}, ` +
-            `選擇=${option}, ` +
-            `正解=${correctOption}, ` +
-            `結果=${isCorrect ? "答對" : "答錯"}, ` +
-            `得分=${earnedScore}`
+        const [result] = await db.query(
+            insertSql,
+            [
+                parsedUserId,
+                questionId,
+                option,
+                isCorrect ? 1 : 0,
+                earnedScore
+            ]
         );
 
-        // 6. 回傳給 Unity
-        return res.status(201).json({
+
+        // =========================================
+        // 11. 從 MySQL 計算目前完成度
+        //
+        // DISTINCT question_id 很重要：
+        //
+        // 同一個 USB 就算回答 10 次，
+        // 完成度仍然只算 1 個支線。
+        //
+        // 第一站 = 5
+        // 第二站 = 5
+        // 第三站 = 5
+        // 總計 = 15
+        // =========================================
+        const [progressRows] = await db.query(
+            `
+            SELECT
+
+                COUNT(
+                    DISTINCT CASE
+                        WHEN q.stage_no = 1
+                        THEN ua.question_id
+                    END
+                ) AS stage1_completed,
+
+
+                COUNT(
+                    DISTINCT CASE
+                        WHEN q.stage_no = 2
+                        THEN ua.question_id
+                    END
+                ) AS stage2_completed,
+
+
+                COUNT(
+                    DISTINCT CASE
+                        WHEN q.stage_no = 3
+                        THEN ua.question_id
+                    END
+                ) AS stage3_completed,
+
+
+                COUNT(
+                    DISTINCT ua.question_id
+                ) AS total_completed
+
+            FROM user_answers ua
+
+            INNER JOIN questions q
+                ON ua.question_id = q.id
+
+            WHERE ua.user_id = ?
+              AND q.question_code IS NOT NULL
+              AND q.stage_no IN (1, 2, 3)
+            `,
+            [parsedUserId]
+        );
+
+
+        const progress =
+            progressRows[0] || {};
+
+
+        const stage1Completed =
+            Number(
+                progress.stage1_completed || 0
+            );
+
+
+        const stage2Completed =
+            Number(
+                progress.stage2_completed || 0
+            );
+
+
+        const stage3Completed =
+            Number(
+                progress.stage3_completed || 0
+            );
+
+
+        const totalCompleted =
+            Number(
+                progress.total_completed || 0
+            );
+
+
+        // =========================================
+        // 12. 目前這一站完成度
+        // =========================================
+        let currentStageCompleted = 0;
+
+        if (stageNo === 1) {
+            currentStageCompleted =
+                stage1Completed;
+        }
+
+        else if (stageNo === 2) {
+            currentStageCompleted =
+                stage2Completed;
+        }
+
+        else if (stageNo === 3) {
+            currentStageCompleted =
+                stage3Completed;
+        }
+
+
+        // =========================================
+        // 13. Node.js 終端機輸出
+        // =========================================
+        console.log("");
+        console.log(
+            "========================================"
+        );
+
+        console.log(
+            "🎮 收到 Unity 正式支線作答"
+        );
+
+        console.log(
+            "----------------------------------------"
+        );
+
+        console.log(
+            "User ID：",
+            parsedUserId
+        );
+
+        console.log(
+            "Question Code：",
+            code
+        );
+
+        console.log(
+            "Question ID：",
+            questionId
+        );
+
+        console.log(
+            "Stage：",
+            stageNo
+        );
+
+        console.log(
+            "互動類型：",
+            interactionType
+        );
+
+        console.log(
+            "題目：",
+            question.question_text
+        );
+
+        console.log(
+            "玩家答案：",
+            option
+        );
+
+        console.log(
+            "正確答案：",
+            correctOption
+        );
+
+        console.log(
+            "結果：",
+            isCorrect
+                ? "✅ 正確"
+                : "❌ 錯誤"
+        );
+
+        console.log(
+            "得分：",
+            earnedScore
+        );
+
+
+        // =========================================
+        // 完成度輸出
+        // =========================================
+        console.log(
+            "----------------------------------------"
+        );
+
+        console.log(
+            "📊 VR 支線完成度"
+        );
+
+        console.log(
+            `第一站：${stage1Completed}/5`
+        );
+
+        console.log(
+            `第二站：${stage2Completed}/5`
+        );
+
+        console.log(
+            `第三站：${stage3Completed}/5`
+        );
+
+        console.log(
+            `總完成度：${totalCompleted}/15`
+        );
+
+        console.log(
+            "========================================"
+        );
+
+        console.log("");
+
+
+        // =========================================
+        // 14. 回傳 Unity
+        // =========================================
+        return res.status(200).json({
+
             success: true,
-            message: "Unity 作答紀錄已成功儲存",
+
+            message:
+                isCorrect
+                    ? "作答成功，答案正確"
+                    : "作答成功，但答案錯誤",
+
             data: {
-                answerId: result.insertId,
-                userId: Number(userId),
-                questionId: Number(questionId),
-                selectedOption: option,
-                correctOption: correctOption,
-                isCorrect: isCorrect,
-                score: earnedScore
+
+                // =============================
+                // 本題
+                // =============================
+                answerId:
+                    result.insertId,
+
+                userId:
+                    parsedUserId,
+
+                questionId:
+                    questionId,
+
+                questionCode:
+                    question.question_code,
+
+                stageNo:
+                    stageNo,
+
+                interactionType:
+                    interactionType,
+
+                questionText:
+                    question.question_text,
+
+                selectedOption:
+                    option,
+
+                correctOption:
+                    correctOption,
+
+                isCorrect:
+                    isCorrect,
+
+                score:
+                    earnedScore,
+
+
+                // =============================
+                // 完成度
+                // =============================
+                stage1Completed:
+                    stage1Completed,
+
+                stage2Completed:
+                    stage2Completed,
+
+                stage3Completed:
+                    stage3Completed,
+
+                currentStageCompleted:
+                    currentStageCompleted,
+
+                stageTotal:
+                    5,
+
+                totalCompleted:
+                    totalCompleted,
+
+                totalQuestions:
+                    15
             }
         });
 
+
     } catch (error) {
-        console.error("儲存 Unity 作答紀錄失敗：", error);
+
+        console.error(
+            "❌ 儲存 Unity 作答失敗：",
+            error
+        );
+
 
         return res.status(500).json({
             success: false,
-            message: "伺服器發生錯誤，無法儲存 Unity 作答紀錄"
+            message: "伺服器發生內部錯誤"
         });
     }
 };
@@ -1051,7 +1493,7 @@ const createVRTicket = async (req, res) => {
         }
 
         // 產生一次性 Ticket
-        const ticket = crypto.randomBytes(32).toString('hex');
+        const ticket = Math.random().toString(36).substring(2, 8).toUpperCase();
 
         // 5 分鐘後失效
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000);

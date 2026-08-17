@@ -1,4 +1,4 @@
-﻿
+
 const API_BASE_URL = window.location.port === '5500' ? 'http://localhost:3000' : window.location.origin;
 document.addEventListener('DOMContentLoaded', () => {
     // =========================================
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================
     const menuItems = document.querySelectorAll('.menu-item');
     const breadcrumbTitle = document.querySelector('.breadcrumb h2');
-    const breadcrumbSubtitle = document.querySelector('.breadcrumb .subtitle');
+
     
     const notesSection = document.getElementById('notesSection');
     const manualSection = document.getElementById('manualSection');
@@ -112,16 +112,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const menuId = this.getAttribute('data-i18n');
                 if (menuId === 'nav-vr') {
                     if (vrSection) vrSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '開始您的沉浸式資安稽核訓練，或回顧過去的探索紀錄與正確解答。';
+
                 } else if (menuId === 'nav-manual') {
                     if (manualSection) manualSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = 'ISO 27002:2022 資訊安全控制指南';
+
                 } else if (menuId === 'nav-notes') {
                     if (notesSection) notesSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '沉澱並複習您的資安防禦實務';
+
                 } else if (menuId === 'nav-analysis') {
                     if (analysisSection) analysisSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '檢視您各項資安能力的綜合評估';
+
                     
                     if (typeof loadLatestResult === 'function') {
                         loadLatestResult();
@@ -134,11 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 } else if (menuId === 'nav-mistakes') {
                     if (mistakesSection) mistakesSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '集中火力消滅資安盲區';
+
                     if (typeof renderMistakes === 'function') renderMistakes();
                 } else if (menuId === 'nav-quiz') { 
                     if (quizSection) quizSection.style.display = 'block';
-                    if (breadcrumbSubtitle) breadcrumbSubtitle.textContent = '資安稽核情境模擬測驗';
+
                     
                     // 每次點進來就自動抽 10 題新的
                     if (typeof generateQuiz === 'function') {
@@ -148,20 +148,138 @@ document.addEventListener('DOMContentLoaded', () => {
             } 
         }); 
     });
+
+    // =========================================
+    // 3.5 載入並渲染自訂學習筆記
+    // =========================================
+    function loadCustomNotes() {
+        const userStr = localStorage.getItem('currentUser');
+        const user = userStr ? JSON.parse(userStr) : null;
+        const customNotesKey = user ? `customNotes_${user.id}` : 'customNotes_guest';
+        const customNotes = JSON.parse(localStorage.getItem(customNotesKey) || '[]');
+        
+        const notesGrid = document.querySelector('.notes-grid');
+        if (!notesGrid) return;
+
+        // Remove old dynamic notes first to prevent duplicates if re-rendering
+        document.querySelectorAll('.note-card.custom-note').forEach(el => el.remove());
+
+        customNotes.forEach(note => {
+            const newNote = document.createElement('div');
+            newNote.className = 'note-card glass-panel custom-note';
+            newNote.dataset.id = note.id;
+            newNote.innerHTML = `
+                <div class="note-header">
+                    <span class="note-category ${note.tagClass}">${note.tagLabel}</span>
+                </div>
+                <h3 class="note-title">${note.clauseText}</h3>
+                <p class="note-excerpt" style="white-space: pre-wrap;">${note.observationText}</p>
+                <div class="note-footer">
+                    <a href="#" class="read-more">檢視完整筆記 <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            `;
+            notesGrid.insertBefore(newNote, notesGrid.firstChild);
+        });
+    }
+    loadCustomNotes();
+
     // =========================================
     // 4. 學習筆記閱讀視窗 (Modal) 邏輯
     // =========================================
-    const readMoreBtns = document.querySelectorAll('.read-more');
     const noteModal = document.getElementById('noteDetailModal');
     const closeNoteModalBtn = document.getElementById('closeNoteModal');
 
     if (noteModal && closeNoteModalBtn) {
-        readMoreBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
+        let activeNoteCard = null;
+
+        document.body.addEventListener('click', function(e) {
+            const readMoreBtn = e.target.closest('.read-more');
+            if (readMoreBtn) {
                 e.preventDefault(); 
+                
+                const card = readMoreBtn.closest('.note-card');
+                if (card) {
+                    activeNoteCard = card;
+                    const title = card.querySelector('.note-title') ? card.querySelector('.note-title').textContent : '';
+                    const excerpt = card.querySelector('.note-excerpt') ? card.querySelector('.note-excerpt').innerHTML : '';
+                    
+                    const modalTitle = document.getElementById('modalTitle');
+                    if (modalTitle) modalTitle.textContent = title;
+                    
+                    const modalBody = noteModal.querySelector('.modal-body');
+                    if (modalBody) modalBody.innerHTML = '<p style="white-space: pre-wrap; line-height: 1.6;">' + excerpt + '</p>';
+                }
+                
                 noteModal.classList.add('show');
-            });
+            }
         });
+
+        const modalDeleteNoteBtn = document.getElementById('modalDeleteNoteBtn');
+        if (modalDeleteNoteBtn) {
+            modalDeleteNoteBtn.addEventListener('click', function() {
+                if (activeNoteCard && confirm("確定要刪除這則筆記嗎？")) {
+                    const noteId = activeNoteCard.dataset.id;
+                    if (noteId) {
+                        const userStr = localStorage.getItem('currentUser');
+                        const user = userStr ? JSON.parse(userStr) : null;
+                        const customNotesKey = user ? `customNotes_${user.id}` : 'customNotes_guest';
+                        let customNotes = JSON.parse(localStorage.getItem(customNotesKey) || '[]');
+                        customNotes = customNotes.filter(n => String(n.id) !== String(noteId));
+                        localStorage.setItem(customNotesKey, JSON.stringify(customNotes));
+                    }
+                    
+                    activeNoteCard.remove();
+                    noteModal.classList.remove('show');
+                    activeNoteCard = null;
+                }
+            });
+        }
+
+        const btnEdit = noteModal.querySelector('.btn-edit');
+        if (btnEdit) {
+            btnEdit.addEventListener('click', function() {
+                if (activeNoteCard) {
+                    const ncrModal = document.getElementById('ncrModal');
+                    const ncrForm = document.getElementById('ncrForm');
+                    if (ncrModal && ncrForm) {
+                        const categorySelect = ncrForm.querySelectorAll('select')[0];
+                        const clauseSelect = ncrForm.querySelectorAll('select')[1];
+                        const textarea = ncrForm.querySelector('textarea');
+                        
+                        const categoryText = activeNoteCard.querySelector('.note-category') ? activeNoteCard.querySelector('.note-category').textContent.trim() : '';
+                        const titleText = activeNoteCard.querySelector('.note-title') ? activeNoteCard.querySelector('.note-title').textContent.trim() : '';
+                        
+                        // Handle formatting of excerpt
+                        const excerptEl = activeNoteCard.querySelector('.note-excerpt');
+                        let excerptText = excerptEl ? excerptEl.textContent : '';
+                        
+                        // Determine Category
+                        if (categoryText.includes('人員') || categoryText.includes('事件') || categoryText.includes('social')) {
+                            categorySelect.value = 'people';
+                        } else {
+                            categorySelect.value = 'physical';
+                        }
+                        categorySelect.dispatchEvent(new Event('change'));
+                        
+                        // Find and select Clause
+                        Array.from(clauseSelect.options).forEach(opt => {
+                            if (opt.value && titleText.includes(opt.value)) {
+                                opt.selected = true;
+                            } else if (opt.text && opt.text === titleText) {
+                                opt.selected = true;
+                            }
+                        });
+                        
+                        textarea.value = excerptText;
+                        ncrForm.dataset.editId = activeNoteCard.dataset.id || '';
+                        
+                        noteModal.classList.remove('show');
+                        ncrModal.style.display = 'flex';
+                        ncrModal.classList.add('show');
+                    }
+                }
+            });
+        }
 
         closeNoteModalBtn.addEventListener('click', () => noteModal.classList.remove('show'));
         noteModal.addEventListener('click', (e) => {
@@ -169,51 +287,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     // =========================================
-    // 5. 學習筆記：關鍵字搜尋與標籤過濾功能
+    // 5. 學習筆記：關鍵字搜尋與標籤過濾功能 (已移除)
     // =========================================
-    const searchInput = document.querySelector('.search-box input');
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const noteCards = document.querySelectorAll('.note-card');
-
-    if (searchInput && noteCards.length > 0) {
-        function filterNotes() {
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            const activeTagBtn = document.querySelector('.filter-btn.active');
-            const activeTag = activeTagBtn ? activeTagBtn.textContent.trim() : '全部筆記';
-
-            noteCards.forEach(card => {
-                const titleElement = card.querySelector('.note-title');
-                const excerptElement = card.querySelector('.note-excerpt');
-                const titleText = titleElement ? titleElement.textContent.toLowerCase() : '';
-                const excerptText = excerptElement ? excerptElement.textContent.toLowerCase() : '';
-                const searchableText = titleText + " " + excerptText;
-                
-                const categoryElement = card.querySelector('.note-category');
-                const cardCategory = categoryElement ? categoryElement.textContent.trim() : '';
-
-                const matchesSearch = searchableText.includes(searchTerm);
-                const matchesTag = (activeTag === '全部筆記') || 
-                                   (cardCategory.includes(activeTag)) || 
-                                   (card.classList.contains('add-new-note') && activeTag === '全部筆記');
-
-                if (matchesSearch && matchesTag) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        searchInput.addEventListener('input', filterNotes);
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                filterNotes();
-            });
-        });
-    }
     // =========================================
     // 6. 系統設定視窗 (Settings Modal) 邏輯
     // =========================================
@@ -331,87 +406,95 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === ncrModal) closeNcr();
     });
 
-    // 處理表單提交與 PDF 匯出 (新報告)
+    // 處理表單提交 (僅顯示成功訊息)
     if (ncrForm) {
+        const categorySelect = ncrForm.querySelectorAll('select')[0];
+        const clauseSelect = ncrForm.querySelectorAll('select')[1];
+        
+        if (categorySelect && clauseSelect) {
+            const allClauseOptions = Array.from(clauseSelect.options).map(opt => ({
+                value: opt.value,
+                text: opt.text
+            }));
+            
+            categorySelect.addEventListener('change', function() {
+                const selectedCategory = this.value;
+                clauseSelect.innerHTML = '';
+                
+                allClauseOptions.forEach((opt, index) => {
+                    if (index === 0) {
+                        clauseSelect.add(new Option(opt.text, opt.value));
+                        return;
+                    }
+                    if (selectedCategory === 'people' && opt.value.startsWith('6.')) {
+                        clauseSelect.add(new Option(opt.text, opt.value));
+                    } else if (selectedCategory === 'physical' && opt.value.startsWith('7.')) {
+                        clauseSelect.add(new Option(opt.text, opt.value));
+                    } else if (!selectedCategory) {
+                        clauseSelect.add(new Option(opt.text, opt.value));
+                    }
+                });
+            });
+        }
+
         ncrForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             try {
-                const categorySelect = ncrForm.querySelectorAll('select')[0];
-                const clauseSelect = ncrForm.querySelectorAll('select')[1];
-                const severityRadio = ncrForm.querySelector('input[name="severity"]:checked');
-                const observationText = ncrForm.querySelectorAll('textarea')[0].value;
-                const actionText = ncrForm.querySelectorAll('textarea')[1].value;
-
-                const categoryText = categorySelect.options[categorySelect.selectedIndex].text;
-                const clauseText = clauseSelect.options[clauseSelect.selectedIndex].text;
-                
-                let severityText = '未標示';
-                let severityColor = '#000';
-                if (severityRadio) {
-                    if (severityRadio.value === 'high') { severityText = '高風險 (High)'; severityColor = '#e74c3c'; }
-                    if (severityRadio.value === 'medium') { severityText = '中風險 (Medium)'; severityColor = '#f39c12'; }
-                    if (severityRadio.value === 'low') { severityText = '低風險 (Low)'; severityColor = '#27ae60'; }
-                }
-
-                
+                const observationText = ncrForm.querySelector('textarea').value;
 
                 const submitBtn = ncrForm.querySelector('button[type="submit"]');
                 const originalBtnText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在生成 PDF...';
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在提交...';
                 submitBtn.disabled = true;
-//  終極修復：把模板拉回畫面，並強制解除隱藏！
-                const element = document.getElementById('pdfReportTemplate');
-                
-                const overlay = document.createElement('div');
-                overlay.style.position = 'fixed';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100vw';
-                overlay.style.height = '100vh';
-                overlay.style.background = 'rgba(28, 38, 56, 0.95)';
-                overlay.style.zIndex = '99999';
-                overlay.style.display = 'flex';
-                overlay.style.alignItems = 'center';
-                overlay.style.justifyContent = 'center';
-                overlay.style.color = 'white';
-                overlay.style.fontSize = '24px';
-                overlay.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 15px;"></i> 正在生成 PDF，請稍候...';
-                document.body.appendChild(overlay);
 
-                element.style.display = 'block'; 
-                element.style.position = 'absolute';
-                element.style.left = '0px';
-                element.style.top = '0px';
-                element.style.zIndex = '99998';
+                setTimeout(() => {
+                    const categoryText = categorySelect.options[categorySelect.selectedIndex].text;
+                    const clauseText = clauseSelect.options[clauseSelect.selectedIndex].text;
 
-                const opt = {
-                    margin: 0,
-                    filename: `ISO學習筆記_${new Date().getTime()}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, scrollY: 0, backgroundcolor: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : '#ffffff', useCORS: true },
-                    jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
-                };
+                    const tagClass = categorySelect.value === 'people' ? 'tag-social' : 'tag-device';
+                    const tagLabel = categorySelect.value === 'people' ? '人員控制' : '實體安全';
 
-                setTimeout(async () => {
-                    try {
-                        await html2pdf().set(opt).from(element).save();
-                    } catch(e) {
-                        console.error(e);
+                    const userStr = localStorage.getItem('currentUser');
+                    const user = userStr ? JSON.parse(userStr) : null;
+                    const customNotesKey = user ? `customNotes_${user.id}` : 'customNotes_guest';
+                    const customNotes = JSON.parse(localStorage.getItem(customNotesKey) || '[]');
+                    
+                    const newNoteData = {
+                        id: ncrForm.dataset.editId || Date.now().toString(),
+                        tagClass: tagClass,
+                        tagLabel: tagLabel,
+                        clauseText: clauseText,
+                        observationText: observationText.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                    };
+                    
+                    if (ncrForm.dataset.editId) {
+                        const noteIndex = customNotes.findIndex(n => String(n.id) === String(ncrForm.dataset.editId));
+                        if (noteIndex !== -1) {
+                            customNotes[noteIndex] = newNoteData;
+                        } else {
+                            customNotes.push(newNoteData);
+                        }
+                        delete ncrForm.dataset.editId;
+                    } else {
+                        customNotes.push(newNoteData);
                     }
                     
-                    element.style.display = 'none';
-                    element.style.left = '-9999px';
-                    if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                    localStorage.setItem(customNotesKey, JSON.stringify(customNotes));
 
-                    alert(" 歷史筆記已成功匯出為 PDF 稽核報告！");
+                    // 重新渲染筆記列表
+                    if (typeof loadCustomNotes === 'function') {
+                        loadCustomNotes();
+                    }
 
-                    this.innerHTML = originalText;
-                    this.disabled = false;
+                    alert("稽核發現報告已成功提交並新增至學習筆記！");
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                    closeNcr();
                 }, 500);
             } catch (error) {
-                console.error("PDF 匯出失敗:", error);
-                alert("匯出失敗，請重試！");
+                console.error("提交失敗:", error);
+                alert("提交失敗，請重試！");
             }
         });
     }
@@ -3598,9 +3681,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const startVrBtn = document.getElementById('startVrBtn');
-        if (startVrBtn) {
-            startVrBtn.addEventListener('click', () => {
-                alert('系統準備進入 VR 訓練... (此為示範按鈕，需與後端系統串接)');
+        const vrTicketModal = document.getElementById('vrTicketModal');
+        const closeVrTicketModal = document.getElementById('closeVrTicketModal');
+        const vrTicketCode = document.getElementById('vrTicketCode');
+
+        if (startVrBtn && vrTicketModal && closeVrTicketModal && vrTicketCode) {
+            startVrBtn.addEventListener('click', async () => {
+                const userStr = localStorage.getItem('currentUser');
+                if (!userStr) {
+                    alert('請先登入系統才能啟動 VR 訓練！');
+                    return;
+                }
+                const user = JSON.parse(userStr);
+                
+                // Show modal first with loading state
+                vrTicketCode.textContent = '載入中...';
+                vrTicketModal.style.display = 'flex';
+                setTimeout(() => vrTicketModal.classList.add('show'), 10);
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/vr/create-ticket`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ userId: user.id })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        vrTicketCode.textContent = data.ticket;
+                    } else {
+                        vrTicketCode.textContent = '連線失敗';
+                        alert('無法取得連線代碼：' + data.message);
+                    }
+                } catch (error) {
+                    console.error('Error fetching VR ticket:', error);
+                    vrTicketCode.textContent = '連線錯誤';
+                    alert('系統發生錯誤，無法取得連線代碼。');
+                }
+            });
+            
+            closeVrTicketModal.addEventListener('click', () => {
+                vrTicketModal.classList.remove('show');
+                setTimeout(() => vrTicketModal.style.display = 'none', 300);
+            });
+            
+            // Allow closing by clicking outside the modal
+            vrTicketModal.addEventListener('click', (e) => {
+                if (e.target === vrTicketModal) {
+                    vrTicketModal.classList.remove('show');
+                    setTimeout(() => vrTicketModal.style.display = 'none', 300);
+                }
             });
         }
         

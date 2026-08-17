@@ -54,7 +54,6 @@
                 
                 <div class="breadcrumb">
                     <h2 id="pageTitle" data-i18n="top-title">學習筆記</h2>
-                    <span id="pageSubtitle" class="subtitle" data-i18n="top-subtitle">複習您的資安防禦實務</span>
                 </div>
                 
                 <div class="topbar-actions">
@@ -132,18 +131,6 @@
                     </div>
                 </div>
                 <div id="notesSection" class="section-container">
-                    <div class="toolbar glass-panel">
-                        <div class="search-box">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" data-i18n-placeholder="search-ph" placeholder="搜尋筆記關鍵字 (例如: 門禁、釣魚)...">
-                        </div>
-                        <div class="filter-tags">
-                            <button class="filter-btn active" data-i18n="filter-all">全部筆記</button>
-                            <button class="filter-btn" data-i18n="filter-social">人員控制</button>
-                            <button class="filter-btn" data-i18n="filter-network">資安事件</button>
-                            <button class="filter-btn" data-i18n="filter-device">實體安全</button>
-                        </div>
-                    </div>
 
                     <div class="notes-grid">
                         <div class="note-card glass-panel">
@@ -197,7 +184,6 @@
                         <div class="note-card glass-panel add-new-note" id="addNcrBtn" style="cursor: pointer;">
                             <i class="fa-solid fa-circle-plus"></i>
                             <h3 data-i18n="c-add-title">新增稽核發現</h3>
-                            <p data-i18n="c-add-desc">上傳缺失照片與對應法規</p>
                         </div>
                     </div>
                 </div> 
@@ -364,17 +350,17 @@
                             <h3 style="color: var(--primary-cyan); margin-bottom: 15px; border-bottom: 1px solid rgba(0, 168, 255, 0.3); padding-bottom: 10px;"><i class="fa-solid fa-robot"></i> AI 綜合評估與建議</h3>
                             
                             <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                                <div style="flex: 1; text-align: center; background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary-cyan);">
+                                <div style="flex: 1; text-align: center; background: var(--bg-hover); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary-cyan);">
                                     <span style="display: block; color: var(--text-light); font-size: 0.9rem; margin-bottom: 5px;">綜合稽核得分</span>
-                                    <span id="totalScore" style="font-size: 2rem; font-weight: bold; color: #fff;">0</span><span style="font-size: 1rem; color: var(--text-light); margin-left: 5px;">分</span>
+                                    <span id="totalScore" style="font-size: 2rem; font-weight: bold; color: var(--text-main);">0</span><span style="font-size: 1rem; color: var(--text-light); margin-left: 5px;">分</span>
                                 </div>
-                                <div style="flex: 1; text-align: center; background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary-yellow);">
+                                <div style="flex: 1; text-align: center; background: var(--bg-hover); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary-yellow);">
                                     <span style="display: block; color: var(--text-light); font-size: 0.9rem; margin-bottom: 5px;">能力評估等級</span>
                                     <span id="levelText" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-yellow);">未評分</span>
                                 </div>
                             </div>
                             
-                            <div style="background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <div style="background: var(--bg-hover); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                                 <h4 style="color: var(--text-main); margin-bottom: 10px; font-size: 1rem;"><i class="fa-solid fa-comment-dots"></i> AI 總評</h4>
                                 <p id="summaryText" style="color: var(--text-light); line-height: 1.6; font-size: 0.95rem;">尚無總評</p>
                             </div>
@@ -425,7 +411,7 @@
             
             <div class="modal-footer-actions">
                 <button class="btn-edit" data-i18n="m-btn-edit"><i class="fa-solid fa-pen-to-square"></i> 編輯報告</button>
-                
+                <button id="modalDeleteNoteBtn" style="background:rgba(255, 71, 87, 0.1); border:1px solid #ff4757; color:#ff4757; padding:10px 20px; border-radius:6px; cursor:pointer; margin-left:10px;"><i class="fa-solid fa-trash"></i> 刪除筆記</button>
             </div>
         </div>
     </div>
@@ -527,23 +513,13 @@
     </div>
 
     <div id="ncrModal" class="note-modal-overlay" >
-        <div class="settings-modal-content glass-panel" style="max-width: 850px; height: auto; max-height: 90vh; overflow-y: auto;">
+        <div class="settings-modal-content glass-panel" style="max-width: 600px; height: auto; max-height: 90vh; overflow-y: auto;">
             <button class="close-modal-btn" id="closeNcrModal"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="modal-title" style="margin-bottom: 25px; color: var(--primary-cyan);">
                 <i class="fa-solid fa-file-shield"></i> 撰寫稽核發現報告 (NCR)
             </h2>
             
             <div class="ncr-layout">
-                <div class="ncr-evidence-panel">
-                    <div class="evidence-image-box">
-                        <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400" alt="VR 證據照片" class="evidence-img">
-                        <div class="evidence-tag">等待判定</div>
-                    </div>
-                    <p class="evidence-time"><i class="fa-regular fa-clock"></i> 拍攝時間：2026-03-25 10:06:30</p>
-                    <p class="evidence-desc" style="color: var(--text-light); font-size: 0.9rem; margin-top: 10px;">
-                        提示：請根據左側您在 VR 環境中拍下的現場畫面，於右側填寫對應的 ISO 規範與缺失描述。
-                    </p>
-                </div>
 
                 <div class="ncr-form-panel">
                     <form id="ncrForm">
@@ -560,35 +536,29 @@
                             <label style="color: var(--text-color); margin-bottom: 8px; display: block;">違反條文對應 (Clause Mapping)</label>
                             <select class="cyber-select" required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px;">
                                 <option value="">請選擇對應條文...</option>
-                                <option value="6.6">6.6 保密協議 (NDA) 流程疏漏</option>
-                                <option value="7.2">7.2 實體進入控制失效</option>
-                                <option value="7.7">7.7 桌面淨空及螢幕淨空違規</option>
+                                <option value="6.6">6.6 保密協議 (Confidentiality agreements)</option>
+                                <option value="7.1">7.1 實體安全邊界 (Physical security perimeters)</option>
+                                <option value="7.2">7.2 實體進入 (Physical entry)</option>
+                                <option value="7.4">7.4 實體安全監視 (Physical security monitoring)</option>
+                                <option value="7.7">7.7 桌面淨空及螢幕淨空 (Clear desk and clear screen)</option>
+                                <option value="7.8">7.8 設備安置及保護 (Equipment siting and protection)</option>
+                                <option value="7.14">7.14 設備之安全報廢或再利用 (Secure disposal or re-use of equipment)</option>
                             </select>
                         </div>
 
-                        <div class="form-group" style="margin-top: 15px;">
-                            <label style="color: var(--text-color); margin-bottom: 8px; display: block;">風險嚴重度 (Severity)</label>
-                            <div class="severity-options" style="display: flex; gap: 15px;">
-                                <label><input type="radio" name="severity" value="high" required> <span style="color: #ff4757;">高風險</span></label>
-                                <label><input type="radio" name="severity" value="medium"> <span style="color: #ffa502;">中風險</span></label>
-                                <label><input type="radio" name="severity" value="low"> <span style="color: #2ed573;">低風險</span></label>
-                            </div>
-                        </div>
+
 
                         <div class="form-group" style="margin-top: 15px;">
                             <label style="color: var(--text-color); margin-bottom: 8px; display: block;">客觀事實描述 (Observation)</label>
-                            <textarea rows="3" placeholder="請具體描述您在 VR 情境中觀察到的缺失狀況..." required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; resize: none;"></textarea>
+                            <textarea class="cyber-textarea" rows="3" placeholder="請具體描述您在 VR 情境中觀察到的缺失狀況..." required style="width: 100%; resize: none; margin-top: 10px;"></textarea>
                         </div>
 
-                        <div class="form-group" style="margin-top: 15px;">
-                            <label style="color: var(--text-color); margin-bottom: 8px; display: block;">改善建議 (Corrective Action)</label>
-                            <textarea rows="2" placeholder="請提出防範此漏洞的具體作法..." required style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 168, 255, 0.3); color: white; border-radius: 6px; resize: none;"></textarea>
-                        </div>
+
 
                         <div class="form-actions" style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 15px;">
                             <button type="button" id="cancelNcrBtn" style="padding: 10px 20px; background: transparent; border: 1px solid var(--text-light); color: var(--text-light); border-radius: 6px; cursor: pointer;">取消</button>
                             <button type="submit" style="padding: 10px 20px; background: var(--primary-cyan); border: none; color: #000; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 168, 255, 0.5);">
-                                <i class="fa-solid fa-paper-plane"></i> 提交審核
+                                <i class="fa-solid fa-paper-plane"></i> 提交筆記
                             </button>
                         </div>
                     </form>
@@ -625,6 +595,24 @@
             </div>
         </div>
     </div>
+    <!-- VR Ticket Modal -->
+    <div id="vrTicketModal" class="note-modal-overlay">
+        <div class="settings-modal-content glass-panel" style="max-width: 500px; text-align: center; padding: 40px 20px;">
+            <button class="close-modal-btn" id="closeVrTicketModal"><i class="fa-solid fa-xmark"></i></button>
+            <i class="fa-solid fa-vr-cardboard" style="font-size: 50px; color: var(--primary-cyan); margin-bottom: 20px;"></i>
+            <h2 class="modal-title" style="margin-bottom: 15px; color: var(--text-color);">準備進入 VR 訓練</h2>
+            <p style="color: var(--text-light); margin-bottom: 30px; font-size: 1.1rem;">
+                請戴上您的 VR 頭盔，並在登入畫面輸入以下連線代碼：
+            </p>
+            <div style="background: rgba(0, 168, 255, 0.1); border: 2px dashed var(--primary-cyan); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                <span id="vrTicketCode" style="font-size: 2.5rem; font-weight: bold; letter-spacing: 5px; color: var(--primary-cyan); word-break: break-all;">載入中...</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                <i class="fa-solid fa-circle-info"></i> 此代碼將於 5 分鐘後失效，請盡快完成連線。
+            </p>
+        </div>
+    </div>
+
     <div id="vrHistoryModal" class="note-modal-overlay">
         <div class="settings-modal-content glass-panel" style="max-width: 700px; height: auto; max-height: 85vh; overflow-y: auto;">
             <button class="close-modal-btn" id="closeVrHistoryModal"><i class="fa-solid fa-xmark"></i></button>
@@ -664,7 +652,7 @@
     <!-- 圖片放大檢視 Modal -->
     <div id="imageZoomModal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
         <span id="closeImageZoom" style="position: absolute; top: 20px; right: 30px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; transition: 0.3s;" onmouseover="this.style.color='#ff4757'" onmouseout="this.style.color='#f1f1f1'">&times;</span>
-        <img id="enlargedImage" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.3s ease;">
+        <img id="enlargedImage" style="width: 90vw; height: 90vh; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.3s ease;">
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
