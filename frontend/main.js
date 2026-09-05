@@ -3167,31 +3167,30 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (answers) {
                 const questionMap = {
-                    Q1: "主管隨意放置主管專用識別證",
-                    Q2: "提供已失效的稽核通行證",
-                    Q3: "存有重要檔案的 USB 硬碟隨意放在桌緣",
-                    Q4: "未上鎖的平板放置於辦公桌面上",
-                    Q5: "重要訪客名片隨意放置在辦公桌上",
-                    Q6: "未加蓋咖啡放在電腦旁",
-                    Q7: "公司內部文件隨意放置",
-                    Q8: "機房堆放報廢電子設備",
-                    Q9: "管制機房內放置食物",
-                    Q10: "帳號密碼寫在便利貼上",
-                    Q61: "管理審查報告缺失辨識",
-                    Q62: "員工評核表缺失辨識",
-                    Q63: "聘用合約缺失辨識",
-                    Q64: "資安海報缺失辨識",
-                    Q65: "機房設備維修與維護登記表缺失辨識"
+                    S1_BADGE: "主管隨意放置主管專用識別證",
+                    S1_EXPIRED_PASS: "提供已失效的稽核通行證",
+                    S1_USB: "存有重要檔案的 USB 硬碟隨意放在桌緣",
+                    S1_MANAGEMENT_REVIEW: "管理審查報告缺失辨識",
+                    S1_EMPLOYEE_EVALUATION: "員工評核表缺失辨識",
+                    S2_TABLET: "未上鎖的平板放置於辦公桌面上",
+                    S2_VISITOR_CARD: "重要訪客名片隨意放置在辦公桌上",
+                    S2_COFFEE: "未加蓋咖啡放在電腦旁",
+                    S2_INTERNAL_DOCUMENT: "公司內部文件隨意放置",
+                    S2_EMPLOYMENT_CONTRACT: "聘用合約缺失辨識",
+                    S3_PASSWORD_NOTE: "帳號密碼寫在便利貼上",
+                    S3_EWASTE: "機房堆放報廢電子設備",
+                    S3_CAKE: "管制機房內放置食物",
+                    S3_SECURITY_POSTER: "資安海報缺失辨識",
+                    S3_MAINTENANCE_RECORD: "機房設備維修與維護登記表缺失辨識"
                 };
                 
                 const newFound = [];
-                for (const [qId, isCorrect] of Object.entries(answers)) {
-                    if (questionMap[qId]) {
-                        if (isCorrect) {
-                            newFound.push(`<span style="color: #2ed573;">✔ 成功辨識：${questionMap[qId]}</span>`);
-                        } else {
-                            newFound.push(`<span style="color: #ff4757;">✖ 未能辨識：${questionMap[qId]}</span>`);
-                        }
+                for (const [qId, qDesc] of Object.entries(questionMap)) {
+                    const isCorrect = answers[qId];
+                    if (isCorrect) {
+                        newFound.push(`<span style="color: #2ed573;">✔ 成功辨識：${qDesc}</span>`);
+                    } else {
+                        newFound.push(`<span style="color: #ff4757;">✖ 未能辨識：${qDesc}</span>`);
                     }
                 }
                 if (newFound.length > 0) {
