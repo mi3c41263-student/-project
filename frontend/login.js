@@ -203,60 +203,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (data.success) {
-                    if (data.require2FA) {
-                        const { value: code, isConfirmed } = await Swal.fire({
-                            title: '<i class="fa-solid fa-shield-halved"></i> 雙重認證',
-                            html: `
-                                <p style="color: #8892b0; margin-bottom: 20px;">請輸入 <strong>Google Authenticator</strong> 上的 6 位數驗證碼</p>
-                                <input type="text" id="login-2fa-input" placeholder="000000" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-weight: bold; width: 80%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid #00a8ff; color: #fff; border-radius: 6px; outline: none;">
-                            `,
-                            background: '#1c2638', color: '#fff',
-                            showCancelButton: true, confirmButtonText: '驗證登入', cancelButtonText: '取消',
-                            confirmButtonColor: '#00a8ff', cancelButtonColor: 'transparent',
-                            customClass: { cancelButton: 'cyber-cancel-btn' },
-                            preConfirm: () => {
-                                const input = document.getElementById('login-2fa-input').value;
-                                if (!input || input.length !== 6 || isNaN(input)) {
-                                    Swal.showValidationMessage('請輸入有效的 6 位數字驗證碼！');
-                                    return false;
-                                }
-                                return input;
-                            }
-                        });
-
-                        if (isConfirmed) {
-                            const verifyRes = await fetch(`${API_BASE_URL}/api/login/2fa`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ userId: data.userId, token: code })
-                            });
-                            const verifyData = await verifyRes.json();
-
-                            if (verifyData.success) {
-                                Toast.fire({ icon: 'success', title: '驗證成功！正在載入頁面...' });
-                                
-        if (verifyData.user.mistakes) {
-            verifyData.user.history = { mistakes: verifyData.user.mistakes };
-            delete verifyData.user.mistakes;
-        }
-        localStorage.setItem('currentUser', JSON.stringify(verifyData.user));
-    
-                                setTimeout(() => { window.location.href = "main.html"; }, 1500);
-                            } else {
-                                Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: '#1c2638', color: '#fff' });
-                            }
-                        }
-                    } else {
-                        Toast.fire({ icon: 'success', title: data.message });
+                    Toast.fire({ icon: 'success', title: data.message });
                         
-        if (data.user.mistakes) {
-            data.user.history = { mistakes: data.user.mistakes };
-            delete data.user.mistakes;
-        }
-        localStorage.setItem('currentUser', JSON.stringify(data.user));
-     
-                        setTimeout(() => { window.location.href = "main.html"; }, 1500);
+                    if (data.user.mistakes) {
+                        data.user.history = { mistakes: data.user.mistakes };
+                        delete data.user.mistakes;
                     }
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                
+                    setTimeout(() => { window.location.href = "main.html"; }, 1500);
                 } else {
                     Toast.fire({ icon: 'error', title: data.message });
                 }

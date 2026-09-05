@@ -9,24 +9,269 @@ const crypto = require('crypto'); // 產生隨機 token 用
 
 // =========================================
 // 設定寄信機 (Transporter)
+// 正式版請把帳密放在 .env / 系統環境變數，不要寫死在程式碼。
+// MAIL_USER=your@gmail.com
+// MAIL_APP_PASSWORD=your_google_app_password
 // =========================================
+const mailUser = 'mi3c41263@gmail.com';
+const mailAppPassword = 'rwfiixewcpgzmzdn';
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'mi3c41263@gmail.com', // 你的 Gmail
-        pass: 'rwfiixewcpgzmzdn'  // 你的應用程式密碼
+        user: mailUser,
+        pass: mailAppPassword
     }
 });
-transporter.verify(function(error, success) {
-    if (error) {
-        console.log("寄信伺服器連線失敗: ", error);
-    } else {
-        console.log("寄信伺服器連線成功! 可以發信了。"); 
-    }
-});
+
+if (mailUser && mailAppPassword) {
+    transporter.verify(function(error) {
+        if (error) {
+            console.log("寄信伺服器連線失敗: ", error);
+        } else {
+            console.log("寄信伺服器連線成功! 可以發信了。");
+        }
+    });
+} else {
+    console.warn("⚠️ 尚未設定 MAIL_USER / MAIL_APP_PASSWORD；需要寄信的功能會失敗，VR/LLM 評分功能不受影響。");
+}
 // --- 驗證規則 ---
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+// ============================================================
+// VR 稽核 15 題：後端固定評分規則（唯一分數來源）
+//
+// 設計原則：
+// 1. Unity 只送 questionCode + selectedOption。
+// 2. saveUnityAnswer 由 questions.correct_option 判斷正誤並寫入 user_answers。
+// 3. 最終分數一律由這個 Node.js 後端依「本次 session_id」重新計算。
+// 4. LLM 只能撰寫文字總評 / 建議，不能更改任何數字分數。
+// ============================================================
+const AUDIT_CATEGORY = Object.freeze({
+    IDENTITY: "身分憑證與門禁管理",
+    DEVICE: "設備與儲存媒體防護",
+    DOCUMENT: "文件與敏感資訊保護",
+    ENVIRONMENT: "辦公環境安全管理",
+    SERVER: "機房與資產管理"
+});
+
+const AUDIT_RULES = Object.freeze({
+    S1_BADGE:               { category: AUDIT_CATEGORY.IDENTITY,    radarPoint: 5, isoClause: "A.6 / A.7 身分憑證與門禁管理" },
+    S1_EXPIRED_PASS:        { category: AUDIT_CATEGORY.IDENTITY,    radarPoint: 5, isoClause: "A.7 實體進出與門禁管理" },
+    S1_USB:                 { category: AUDIT_CATEGORY.DEVICE,      radarPoint: 5, isoClause: "A.7.10 儲存媒體" },
+    S1_MANAGEMENT_REVIEW:   { category: AUDIT_CATEGORY.DOCUMENT,    radarPoint: 2, isoClause: "文件與敏感資訊保護" },
+    S1_EMPLOYEE_EVALUATION: { category: AUDIT_CATEGORY.DOCUMENT,    radarPoint: 1, isoClause: "人員資料與文件保護" },
+
+    S2_TABLET:              { category: AUDIT_CATEGORY.DEVICE,      radarPoint: 5, isoClause: "A.7.7 桌面淨空及螢幕淨空" },
+    S2_VISITOR_CARD:        { category: AUDIT_CATEGORY.DOCUMENT,    radarPoint: 1, isoClause: "文件與個人資訊保護" },
+    S2_COFFEE:              { category: AUDIT_CATEGORY.ENVIRONMENT, radarPoint: 2, isoClause: "A.7.5 防範實體與環境威脅" },
+    S2_INTERNAL_DOCUMENT:   { category: AUDIT_CATEGORY.DOCUMENT,    radarPoint: 1, isoClause: "A.7.7 桌面淨空及螢幕淨空" },
+    S2_EMPLOYMENT_CONTRACT: { category: AUDIT_CATEGORY.DOCUMENT,    radarPoint: 4, isoClause: "A.6 人員控制 / 文件保護" },
+
+    S3_PASSWORD_NOTE:       { category: AUDIT_CATEGORY.DOCUMENT,    radarPoint: 1, isoClause: "A.5.17 鑑別資訊" },
+    S3_EWASTE:              { category: AUDIT_CATEGORY.SERVER,      radarPoint: 5, isoClause: "A.7.5 / 資產管理" },
+    S3_CAKE:                { category: AUDIT_CATEGORY.ENVIRONMENT, radarPoint: 2, isoClause: "A.7.5 防範實體與環境威脅" },
+    S3_SECURITY_POSTER:     { category: AUDIT_CATEGORY.ENVIRONMENT, radarPoint: 6, isoClause: "資訊安全認知與辦公環境安全" },
+    S3_MAINTENANCE_RECORD:  { category: AUDIT_CATEGORY.SERVER,      radarPoint: 5, isoClause: "機房維護與資產管理" }
+});
+
+const FORMAL_QUESTION_CODES = Object.freeze(Object.keys(AUDIT_RULES));
+const TOTAL_QUESTION_COUNT = FORMAL_QUESTION_CODES.length; // 15
+
+// 五項雷達都是 0~100；綜合分數使用專題目前採用的 30/30/40/20/30 權重。
+const RADAR_WEIGHT = Object.freeze({
+    [AUDIT_CATEGORY.IDENTITY]: 30,
+    [AUDIT_CATEGORY.DEVICE]: 30,
+    [AUDIT_CATEGORY.DOCUMENT]: 40,
+    [AUDIT_CATEGORY.ENVIRONMENT]: 20,
+    [AUDIT_CATEGORY.SERVER]: 30
+});
+
+const TOTAL_RADAR_WEIGHT = Object.values(RADAR_WEIGHT).reduce((sum, value) => sum + value, 0); // 150
+
+function clampScore(value) {
+    const n = Math.round(Number(value) || 0);
+    return Math.max(0, Math.min(100, n));
+}
+
+function getAuditLevel(totalScore) {
+    if (totalScore >= 90) return "優秀";
+    if (totalScore >= 80) return "良好";
+    if (totalScore >= 70) return "尚可";
+    if (totalScore >= 60) return "待加強";
+    return "需重新訓練";
+}
+
+function getLowestRadarCategory(radar) {
+    const entries = Object.entries(radar || {});
+    if (entries.length === 0) return "整體稽核能力";
+    entries.sort((a, b) => Number(a[1]) - Number(b[1]));
+    return entries[0][0];
+}
+
+function buildAuditScore(rows, userId, sessionId, trainingHours = 0) {
+    const byCode = new Map();
+
+    for (const row of rows || []) {
+        const code = String(row.questionCode || row.question_code || "").trim();
+        if (code && AUDIT_RULES[code]) {
+            byCode.set(code, row);
+        }
+    }
+
+    const raw = {
+        [AUDIT_CATEGORY.IDENTITY]: 0,
+        [AUDIT_CATEGORY.DEVICE]: 0,
+        [AUDIT_CATEGORY.DOCUMENT]: 0,
+        [AUDIT_CATEGORY.ENVIRONMENT]: 0,
+        [AUDIT_CATEGORY.SERVER]: 0
+    };
+
+    let answeredCount = 0;
+    let correctCount = 0;
+
+    const items = FORMAL_QUESTION_CODES.map(code => {
+        const rule = AUDIT_RULES[code];
+        const row = byCode.get(code) || {};
+
+        const userAnswer = row.userAnswer == null ? "" : String(row.userAnswer).trim().toUpperCase();
+        const correctAnswer = row.correctAnswer == null ? "" : String(row.correctAnswer).trim().toUpperCase();
+        const answered = userAnswer.length > 0;
+        const isCorrect = answered && (row.isCorrect === true || Number(row.isCorrect) === 1);
+
+        if (answered) answeredCount += 1;
+        if (isCorrect) {
+            correctCount += 1;
+            raw[rule.category] += Number(rule.radarPoint) || 0;
+        }
+
+        const earnedRadarPoint = isCorrect ? Number(rule.radarPoint) || 0 : 0;
+        const databaseScore = isCorrect ? Number(row.databaseScore ?? row.score ?? 0) || 0 : 0;
+
+        return {
+            questionId: code,
+            dbQuestionId: Number(row.dbQuestionId ?? row.questionId ?? 0) || 0,
+            stageNo: Number(row.stageNo || 0) || 0,
+            interactionType: String(row.interactionType || ""),
+            questionName: String(row.questionName || code),
+            userAnswer,
+            correctAnswer,
+            score: earnedRadarPoint,
+            databaseScore,
+            radarPoint: Number(rule.radarPoint) || 0,
+            isoClause: rule.isoClause,
+            abilityCategory: rule.category,
+            isCorrect,
+            feedback: answered
+                ? (isCorrect ? "判斷正確。" : "判斷錯誤，建議重新檢視此項控制要求。")
+                : "尚未完成此項稽核。"
+        };
+    });
+
+    const radar = {
+        [AUDIT_CATEGORY.IDENTITY]: clampScore(raw[AUDIT_CATEGORY.IDENTITY] * 10),
+        [AUDIT_CATEGORY.DEVICE]: clampScore(raw[AUDIT_CATEGORY.DEVICE] * 10),
+        [AUDIT_CATEGORY.DOCUMENT]: clampScore(raw[AUDIT_CATEGORY.DOCUMENT] * 10),
+        [AUDIT_CATEGORY.ENVIRONMENT]: clampScore(raw[AUDIT_CATEGORY.ENVIRONMENT] * 10),
+        [AUDIT_CATEGORY.SERVER]: clampScore(raw[AUDIT_CATEGORY.SERVER] * 10)
+    };
+
+    const weightedTotal = Object.entries(RADAR_WEIGHT).reduce(
+        (sum, [category, weight]) => sum + Number(radar[category] || 0) * Number(weight),
+        0
+    );
+
+    const totalScore = clampScore(weightedTotal / TOTAL_RADAR_WEIGHT);
+    const accuracyRate = Math.round((correctCount / TOTAL_QUESTION_COUNT) * 100);
+    const lowestCategory = getLowestRadarCategory(radar);
+
+    return {
+        userId: Number(userId) || 0,
+        sessionId: Number(sessionId) || 0,
+        totalScore,
+        radarTotalScore: totalScore,
+        level: getAuditLevel(totalScore),
+        answeredCount,
+        correctCount,
+        accuracyRate,
+        kpi: {
+            auditScore: totalScore,
+            trainingHours: Number(trainingHours) || 0,
+            identifiedRisks: correctCount,
+            accuracyRate
+        },
+        radar,
+        radarScores: [
+            radar[AUDIT_CATEGORY.IDENTITY],
+            radar[AUDIT_CATEGORY.DEVICE],
+            radar[AUDIT_CATEGORY.DOCUMENT],
+            radar[AUDIT_CATEGORY.ENVIRONMENT],
+            radar[AUDIT_CATEGORY.SERVER]
+        ],
+        items,
+        summary: `本次稽核總分 ${totalScore} 分；目前較需加強「${lowestCategory}」。`,
+        suggestion: `建議優先複習「${lowestCategory}」相關題目的判斷依據，再重新進行情境稽核。`
+    };
+}
+
+async function loadSessionAuditRows(userId, sessionId, executor = db) {
+    const placeholders = FORMAL_QUESTION_CODES.map(() => "?").join(", ");
+    const orderPlaceholders = FORMAL_QUESTION_CODES.map(() => "?").join(", ");
+
+    const [rows] = await executor.query(
+        `
+        SELECT
+            q.id AS dbQuestionId,
+            q.question_code AS questionCode,
+            q.stage_no AS stageNo,
+            q.interaction_type AS interactionType,
+            q.question_text AS questionName,
+            q.correct_option AS correctAnswer,
+            q.score AS maxDatabaseScore,
+            ua.selected_option AS userAnswer,
+            ua.is_correct AS isCorrect,
+            ua.score AS databaseScore,
+            ua.answered_at AS answeredAt
+        FROM questions q
+        LEFT JOIN (
+            SELECT ua1.*
+            FROM user_answers ua1
+            INNER JOIN (
+                SELECT question_id, MAX(id) AS latestAnswerId
+                FROM user_answers
+                WHERE user_id = ? AND session_id = ?
+                GROUP BY question_id
+            ) latest
+                ON latest.latestAnswerId = ua1.id
+        ) ua
+            ON ua.question_id = q.id
+        WHERE q.question_code IN (${placeholders})
+        ORDER BY FIELD(q.question_code, ${orderPlaceholders})
+        `,
+        [
+            userId,
+            sessionId,
+            ...FORMAL_QUESTION_CODES,
+            ...FORMAL_QUESTION_CODES
+        ]
+    );
+
+    return rows;
+}
+
+async function verifySessionOwnership(userId, sessionId, executor = db, forUpdate = false) {
+    const lock = forUpdate ? " FOR UPDATE" : "";
+    const [sessions] = await executor.query(
+        `SELECT id, user_id, started_at, completed_at, status
+         FROM training_sessions
+         WHERE id = ? AND user_id = ?
+         LIMIT 1${lock}`,
+        [sessionId, userId]
+    );
+    return sessions.length > 0 ? sessions[0] : null;
+}
 
 // =========================================
 // 1. 處理註冊邏輯 (Register)
@@ -75,7 +320,7 @@ const registerUser = async (req, res) => {
         const verificationUrl = `${apiOrigin}/api/verify?token=${verificationToken}`;
         
         const mailOptions = {
-            from: 'mi3c41263@gmail.com',
+            from: mailUser,
             to: email,
             subject: '【系統通知】請驗證您的電子郵件',
             html: `
@@ -185,16 +430,6 @@ const loginUser = async (req, res) => {
                     return res.status(403).json({ success: false, message: " 您的帳號尚未驗證！請至信箱點擊驗證連結。" });
                 }
 
-                // 4. 檢查是否有開啟 2FA 攔截
-                if (user.is_2fa_enabled) {
-                    return res.json({ 
-                        success: true, 
-                        require2FA: true, 
-                        message: "請輸入雙重認證碼",
-                        userId: user.id   
-                    });
-                }
-
                 // 5. 沒開啟 2FA，正常放行登入
                 console.log(`使用者成功登入：${email}`);
                 const responseData = {
@@ -231,294 +466,112 @@ const getUserStats = async (req, res) => {
     }
 
     try {
-        // =========================================
-        // 1. 取得每一題「最新一次」作答
-        //
-        // 因為玩家可以重新選 O / X，
-        // 所以同一題如果有多筆紀錄，只取最後一筆。
-        // =========================================
-        const [latestAnswers] = await db.query(
-            `
-            SELECT
-                ua.id,
-                ua.question_id,
-                ua.selected_option,
-                ua.is_correct,
-                ua.score,
-                q.question_text,
-                q.correct_option
-            FROM user_answers ua
+        // Web 儀表板只讀「已完成訓練」留下的 vr_training_records，
+        // 不再把不同 session 的 user_answers 混在一起重新算一次。
+        const [latestRows] = await db.query(
+            `SELECT
+                score_physical,
+                score_social,
+                score_server,
+                score_device,
+                score_legal,
+                total_score,
+                duration_hours,
+                blocks_count,
+                created_at
+             FROM vr_training_records
+             WHERE user_id = ?
+             ORDER BY id DESC
+             LIMIT 1`,
+            [userId]
+        );
 
-            INNER JOIN questions q
-                ON ua.question_id = q.id
+        const latest = latestRows.length > 0 ? latestRows[0] : null;
 
-            INNER JOIN (
-                SELECT
-                    question_id,
-                    MAX(id) AS latest_answer_id
+        const [totals] = await db.query(
+            `SELECT COALESCE(SUM(duration_hours), 0) AS totalHours
+             FROM vr_training_records
+             WHERE user_id = ?`,
+            [userId]
+        );
+
+        const [historyScores] = await db.query(
+            `SELECT total_score
+             FROM vr_training_records
+             WHERE user_id = ?
+             ORDER BY id DESC
+             LIMIT 50`,
+            [userId]
+        );
+
+        const chronologicalScores = [...historyScores].reverse();
+
+        // 資料庫欄位沿用既有命名，但 Web 雷達順序固定為：
+        // 1 身分門禁、2 設備媒體、3 文件資訊、4 辦公環境、5 機房資產。
+        const radarScores = latest
+            ? [
+                Number(latest.score_physical) || 0,
+                Number(latest.score_device) || 0,
+                Number(latest.score_legal) || 0,
+                Number(latest.score_social) || 0,
+                Number(latest.score_server) || 0
+              ]
+            : [0, 0, 0, 0, 0];
+
+        let formattedDate = null;
+        if (latest && latest.created_at) {
+            const d = new Date(latest.created_at);
+            formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        const placeholders = FORMAL_QUESTION_CODES.map(() => "?").join(", ");
+        const [answerRows] = await db.query(
+            `SELECT
+                q.question_code AS questionCode,
+                ua.is_correct AS isCorrect
+             FROM user_answers ua
+             INNER JOIN questions q ON ua.question_id = q.id
+             INNER JOIN (
+                SELECT question_id, MAX(id) AS latestAnswerId
                 FROM user_answers
                 WHERE user_id = ?
                 GROUP BY question_id
-            ) latest
-                ON ua.id = latest.latest_answer_id
-
-            WHERE ua.user_id = ?
-            `,
-            [userId, userId]
+             ) latest ON latest.latestAnswerId = ua.id
+             WHERE ua.user_id = ?
+               AND q.question_code IN (${placeholders})`,
+            [userId, userId, ...FORMAL_QUESTION_CODES]
         );
 
+        const answers = {};
+        for (const row of answerRows) {
+            answers[row.questionCode] = row.isCorrect === 1 || row.isCorrect === true;
+        }
 
-        // =========================================
-        // 2. 預設十題都是 0 分
-        //
-        // 1 = 答對
-        // 0 = 答錯 / 尚未作答
-        // =========================================
-        const answers = {
-            Q1: 0,
-            Q2: 0,
-            Q3: 0,
-            Q4: 0,
-            Q5: 0,
-            Q6: 0,
-            Q7: 0,
-            Q8: 0,
-            Q9: 0,
-            Q10: 0
-        };
-
-
-        // =========================================
-        // 3. 使用 question_text 對應正式 Q1～Q10
-        //
-        // 不直接假設 questions.id = 1~10，
-        // 因為資料庫 AUTO_INCREMENT 曾經有刪除資料。
-        // =========================================
-        const questionMap = {
-            "主管隨意放置主管專用識別證": "Q1",
-
-            "提供已失效的稽核通行證": "Q2",
-
-            "存有重要檔案的 USB 硬碟隨意放在桌緣": "Q3",
-
-            "未上鎖的平板放置於辦公桌面上": "Q4",
-
-            "重要訪客名片隨意放置在辦公桌上": "Q5",
-
-            "未加蓋咖啡放在電腦旁": "Q6",
-
-            "公司內部文件隨意放置": "Q7",
-
-            "機房堆放報廢電子設備": "Q8",
-
-            "管制機房內放置食物": "Q9",
-
-            "帳號密碼寫在便利貼上": "Q10"
-        };
-
-
-        // 把資料庫最新答案放進 Q1～Q10
-        latestAnswers.forEach(row => {
-
-            const questionNumber =
-                questionMap[String(row.question_text).trim()];
-
-            if (!questionNumber) {
-                console.warn(
-                    "⚠️ 找不到題目對應：",
-                    row.question_text
-                );
-
-                return;
-            }
-
-            answers[questionNumber] =
-                Number(row.is_correct) === 1 ? 1 : 0;
-        });
-
-
-        // =========================================
-        // 4. 五大雷達能力正式評分公式
-        // =========================================
-
-        // A：身分與門禁管理
-        // Q1 60% + Q2 40%
-        const identityAccess =
-            answers.Q1 * 60 +
-            answers.Q2 * 40;
-
-
-        // B：設備與媒體防護
-        // Q3 60% + Q4 40%
-        const deviceMedia =
-            answers.Q3 * 60 +
-            answers.Q4 * 40;
-
-
-        // C：文件與敏感資訊保護
-        // Q5 30% + Q7 30% + Q10 40%
-        const documentInfo =
-            answers.Q5 * 30 +
-            answers.Q7 * 30 +
-            answers.Q10 * 40;
-
-
-        // D：環境風險防護
-        // Q6 50% + Q9 50%
-        const environmentRisk =
-            answers.Q6 * 50 +
-            answers.Q9 * 50;
-
-
-        // E：機房與資產管理
-        // Q8 70% + Q9 30%
-        const serverAsset =
-            answers.Q8 * 70 +
-            answers.Q9 * 30;
-
-
-        // =========================================
-        // 5. 五項平均 = 綜合總分
-        // =========================================
-        const totalScore = Math.round(
-            (
-                identityAccess +
-                deviceMedia +
-                documentInfo +
-                environmentRisk +
-                serverAsset
-            ) / 5
-        );
-
-
-        // =========================================
-        // 6. 計算目前答對題數
-        // =========================================
-        const correctCount =
-            Object.values(answers)
-                .filter(value => value === 1)
-                .length;
-
-
-        // =========================================
-        // 7. 保留原本 VR 訓練總時數
-        // =========================================
-        const [totals] = await db.query(
-            `
-            SELECT
-                COALESCE(SUM(duration_hours), 0) AS totalHours
-            FROM vr_training_records
-            WHERE user_id = ?
-            `,
-            [userId]
-        );
-
-
-        const trainingHours =
-            totals.length > 0
-                ? Number(totals[0].totalHours)
-                : 0;
-
-
-        // =========================================
-        // 8. 保留原本歷史趨勢資料
-        // =========================================
-        const [historyScores] = await db.query(
-            `
-            SELECT total_score
-            FROM vr_training_records
-            WHERE user_id = ?
-            ORDER BY id DESC
-            LIMIT 5
-            `,
-            [userId]
-        );
-
-
-        const chronologicalScores =
-            [...historyScores].reverse();
-
-
-        // =========================================
-        // 9. 回傳 Web
-        //
-        // radarScores 順序一定要和前端雷達圖一致：
-        //
-        // 0 身分與門禁管理
-        // 1 設備與媒體防護
-        // 2 文件與敏感資訊保護
-        // 3 環境風險防護
-        // 4 機房與資產管理
-        // =========================================
         const stats = {
-
-            radarScores: [
-                identityAccess,
-                deviceMedia,
-                documentInfo,
-                environmentRisk,
-                serverAsset
-            ],
-
-            totalScore: totalScore,
-
-            trainingHours: trainingHours,
-
-            // 暫時以答對題數作為成功辨識數
-            blocks: correctCount,
-
-            trendLabels:
-                chronologicalScores.map(
-                    (_, index) => `第 ${index + 1} 次`
-                ),
-
-            trendData:
-                chronologicalScores.map(
-                    item => Number(item.total_score)
-                ),
-
-            // 除錯用
+            radarScores,
+            totalScore: latest ? Number(latest.total_score) || 0 : 0,
+            trainingHours: totals.length > 0 ? Number(totals[0].totalHours) || 0 : 0,
+            blocks: latest ? Number(latest.blocks_count) || 0 : 0,
+            trendLabels: chronologicalScores.map((_, index) => `第 ${index + 1} 次`),
+            trendData: chronologicalScores.map(item => Number(item.total_score) || 0),
+            createdAt: formattedDate,
             answers: answers
         };
-
-
-        console.log(
-            `📊 User=${userId} 雷達圖計算完成：`
-        );
-
-        console.log("十題結果：", answers);
-
-        console.log("五項能力：", {
-            身分與門禁管理: identityAccess,
-            設備與媒體防護: deviceMedia,
-            文件與敏感資訊保護: documentInfo,
-            環境風險防護: environmentRisk,
-            機房與資產管理: serverAsset
-        });
-
-        console.log("綜合分數：", totalScore);
-
 
         return res.json({
             success: true,
             message: "成功取得最新 VR 學習成果",
             data: stats
         });
-
-
     } catch (error) {
-
-        console.error(
-            "取得使用者學習成果失敗：",
-            error
-        );
-
+        console.error("取得使用者學習成果失敗：", error);
         return res.status(500).json({
             success: false,
             message: "伺服器發生內部錯誤"
         });
     }
 };
+
 // =========================================
 // 5. 忘記密碼：寄出重置信 (Forgot Password)
 // =========================================
@@ -550,7 +603,7 @@ const forgotPassword = async (req, res) => {
         const resetUrl = `${origin}/reset-password.html?token=${resetToken}`;
         
         const mailOptions = {
-            from: 'mi3c41263@gmail.com',
+            from: mailUser,
             to: email,
             subject: '【系統通知】密碼重設要求',
             html: `
@@ -781,58 +834,78 @@ const verifyLogin2FA = async (req, res) => {
 // 13. 接收並儲存 VR 訓練數據 (給 VR 端點呼叫)
 // =========================================
 const saveVRStats = async (req, res) => {
-    const { userId, duration, blocks } = req.body;
+    const userId = Number(req.body.userId);
+    const sessionId = Number(req.body.sessionId || 0);
 
-    if (!userId) {
-        return res.status(400).json({ success: false, message: "缺少使用者 ID" });
+    if (!Number.isInteger(userId) || userId <= 0) {
+        return res.status(400).json({ success: false, message: "缺少或無效的使用者 ID" });
     }
 
+    // 正式新版：有 sessionId 時，直接走同一個 completeUnitySession，
+    // 確保 Unity、MySQL、Web、LLM 都使用同一套最終分數。
+    if (Number.isInteger(sessionId) && sessionId > 0) {
+        return completeUnitySession(req, res);
+    }
+
+    // 舊版相容：若舊前端還沒傳 sessionId，仍可用「每題最新答案」產生一次成績。
+    // 新版 Unity 不應使用這個 fallback。
     try {
-        // 1. 從 user_answers 抓取該用戶最新的作答紀錄
-        const [answers] = await db.query(
-            `SELECT question_id, is_correct 
-             FROM user_answers 
-             WHERE user_id = ? 
-             ORDER BY answered_at DESC 
-             LIMIT 100`, 
-            [userId]
+        const placeholders = FORMAL_QUESTION_CODES.map(() => "?").join(", ");
+        const [rows] = await db.query(
+            `SELECT
+                q.id AS dbQuestionId,
+                q.question_code AS questionCode,
+                q.stage_no AS stageNo,
+                q.interaction_type AS interactionType,
+                q.question_text AS questionName,
+                q.correct_option AS correctAnswer,
+                ua.selected_option AS userAnswer,
+                ua.is_correct AS isCorrect,
+                ua.score AS databaseScore,
+                ua.answered_at AS answeredAt
+             FROM user_answers ua
+             INNER JOIN questions q ON ua.question_id = q.id
+             INNER JOIN (
+                SELECT question_id, MAX(id) AS latestAnswerId
+                FROM user_answers
+                WHERE user_id = ?
+                GROUP BY question_id
+             ) latest ON latest.latestAnswerId = ua.id
+             WHERE ua.user_id = ?
+               AND q.question_code IN (${placeholders})`,
+            [userId, userId, ...FORMAL_QUESTION_CODES]
         );
 
-        // 將最新答題結果轉為 Map { 1: true, 2: false ... }
-        const correctMap = {};
-        answers.forEach(a => {
-            if (correctMap[a.question_id] === undefined) {
-                correctMap[a.question_id] = a.is_correct === 1;
-            }
+        const result = buildAuditScore(rows, userId, 0, Number(req.body.duration) || 0);
+
+        await db.query(
+            `INSERT INTO vr_training_records
+             (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                userId,
+                result.radar[AUDIT_CATEGORY.IDENTITY],
+                result.radar[AUDIT_CATEGORY.ENVIRONMENT],
+                result.radar[AUDIT_CATEGORY.SERVER],
+                result.radar[AUDIT_CATEGORY.DEVICE],
+                result.radar[AUDIT_CATEGORY.DOCUMENT],
+                result.totalScore,
+                Number(req.body.duration) || 0,
+                Number(req.body.blocks) || result.correctCount
+            ]
+        );
+
+        return res.json({
+            success: true,
+            message: "VR 訓練數據已儲存（舊版無 session 相容模式）",
+            data: result
         });
-
-        // 2. 根據評分邏輯計算五大指標分數
-        const calc_physical = (correctMap[1] ? 60 : 0) + (correctMap[2] ? 40 : 0);
-        const calc_social = (correctMap[3] ? 60 : 0) + (correctMap[4] ? 40 : 0);
-        const calc_server = (correctMap[5] ? 30 : 0) + (correctMap[7] ? 30 : 0) + (correctMap[10] ? 40 : 0);
-        const calc_device = (correctMap[6] ? 50 : 0) + (correctMap[9] ? 50 : 0);
-        const calc_legal = (correctMap[8] ? 70 : 0) + (correctMap[9] ? 30 : 0);
-
-        // 3. 計算總分 (五項平均，四捨五入)
-        const totalScore = Math.round((calc_physical + calc_social + calc_server + calc_device + calc_legal) / 5);
-
-        // 4. 寫入 vr_training_records
-        const sql = `INSERT INTO vr_training_records 
-                     (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-                     
-        await db.query(sql, [userId, calc_physical, calc_social, calc_server, calc_device, calc_legal, totalScore, duration || 0, blocks || 0]);
-
-        res.json({ 
-            success: true, 
-            message: "🎮 VR 訓練數據已成功同步至系統資料庫！(後端計算評分版)" 
-        });
-
     } catch (error) {
         console.error("儲存 VR 數據發生錯誤:", error);
-        res.status(500).json({ success: false, message: "伺服器發生錯誤，無法儲存數據" });
+        return res.status(500).json({ success: false, message: "伺服器發生錯誤，無法儲存數據" });
     }
 };
+
 // =========================================
 // 14. 登入後更改密碼 (Change Password)
 // =========================================
@@ -920,155 +993,250 @@ const deleteAccount = async (req, res) => {
 // 5. 計算 3 站完成度
 // 6. 回傳 Unity
 // =========================================
+// Unity 儲存 VR 支線作答
+// 正式版：綁定 userId + sessionId
+// =========================================
 const saveUnityAnswer = async (req, res) => {
-
-    const {
-        userId,
-        questionCode,
-        selectedOption
-    } = req.body;
-
-
-    // =========================================
-    // 1. 檢查 userId
-    // =========================================
-    const parsedUserId = Number(userId);
-
-    if (
-        !Number.isInteger(parsedUserId) ||
-        parsedUserId <= 0
-    ) {
-        return res.status(400).json({
-            success: false,
-            message: "缺少或無效的 userId"
-        });
-    }
-
-
-    // =========================================
-    // 2. 檢查 questionCode
-    // =========================================
-    if (
-        questionCode === undefined ||
-        String(questionCode).trim() === ""
-    ) {
-        return res.status(400).json({
-            success: false,
-            message: "缺少 questionCode"
-        });
-    }
-
-
-    // =========================================
-    // 3. 檢查 selectedOption
-    // =========================================
-    if (
-        selectedOption === undefined ||
-        String(selectedOption).trim() === ""
-    ) {
-        return res.status(400).json({
-            success: false,
-            message: "缺少 selectedOption"
-        });
-    }
-
-
-    // =========================================
-    // 4. 統一資料格式
-    // =========================================
-    const code =
-        String(questionCode)
-            .trim()
-            .toUpperCase();
-
-
-    const option =
-        String(selectedOption)
-            .trim()
-            .toUpperCase();
-
-
-    // O = 選 O
-    // X = 選 X
-    // C = Completed
-    if (!["O", "X", "C"].includes(option)) {
-
-        return res.status(400).json({
-            success: false,
-            message: "selectedOption 只能是 O、X 或 C"
-        });
-    }
-
 
     try {
 
-        // =========================================
-        // 5. 確認使用者存在
-        // =========================================
-        const [users] = await db.query(
-            `
-            SELECT id
-            FROM users
-            WHERE id = ?
-            `,
-            [parsedUserId]
+        // =====================================
+        // 1. 接收 Unity 資料
+        // =====================================
+        const {
+            userId,
+            sessionId,
+            questionCode,
+            selectedOption
+        } = req.body;
+
+
+        const parsedUserId =
+            Number(userId);
+
+        const parsedSessionId =
+            Number(sessionId);
+
+
+        const code =
+            String(
+                questionCode || ""
+            ).trim();
+
+
+        const option =
+            String(
+                selectedOption || ""
+            )
+                .trim()
+                .toUpperCase();
+
+
+        console.log(
+            "===================================="
         );
+
+        console.log(
+            "📥 Unity 作答資料"
+        );
+
+        console.log(
+            "User ID：",
+            parsedUserId
+        );
+
+        console.log(
+            "Session ID：",
+            parsedSessionId
+        );
+
+        console.log(
+            "Question Code：",
+            code
+        );
+
+        console.log(
+            "Selected Option：",
+            option
+        );
+
+        console.log(
+            "===================================="
+        );
+
+
+        // =====================================
+        // 2. 檢查 User ID
+        // =====================================
+        if (
+            !Number.isInteger(parsedUserId) ||
+            parsedUserId <= 0
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message: "userId 不正確"
+            });
+        }
+
+
+        // =====================================
+        // 3. 檢查 Session ID
+        // =====================================
+        if (
+            !Number.isInteger(parsedSessionId) ||
+            parsedSessionId <= 0
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message: "sessionId 不正確"
+            });
+        }
+
+
+        // =====================================
+        // 4. 檢查 questionCode
+        // =====================================
+        if (!code) {
+
+            return res.status(400).json({
+                success: false,
+                message: "questionCode 不可為空"
+            });
+        }
+
+
+        // =====================================
+        // 5. 檢查答案格式
+        // =====================================
+        if (
+            option !== "O" &&
+            option !== "X" &&
+            option !== "C"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message: "selectedOption 只能是 O、X 或 C"
+            });
+        }
+
+
+        // =====================================
+        // 6. 確認使用者存在
+        // =====================================
+        const [users] =
+            await db.query(
+                `
+                SELECT id
+                FROM users
+                WHERE id = ?
+                LIMIT 1
+                `,
+                [
+                    parsedUserId
+                ]
+            );
 
 
         if (users.length === 0) {
 
             return res.status(404).json({
                 success: false,
-                message: "找不到此使用者"
+                message: "找不到使用者"
             });
         }
 
 
-        // =========================================
-        // 6. 使用 question_code 找正式題目
-        //
-        // Unity 完全不需要知道 questions.id
-        // =========================================
-        const [questions] = await db.query(
-            `
-            SELECT
-                id,
-                question_code,
-                scenario_id,
-                stage_no,
-                interaction_type,
-                question_text,
-                correct_option,
-                score
-            FROM questions
-            WHERE question_code = ?
-            LIMIT 1
-            `,
-            [code]
-        );
+        // =====================================
+        // 7. 確認 Session 存在
+        // 而且真的屬於目前使用者
+        // =====================================
+        const [sessions] =
+            await db.query(
+                `
+                SELECT
+                    id,
+                    user_id,
+                    status
+
+                FROM training_sessions
+
+                WHERE id = ?
+                  AND user_id = ?
+
+                LIMIT 1
+                `,
+                [
+                    parsedSessionId,
+                    parsedUserId
+                ]
+            );
+
+
+        if (sessions.length === 0) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "找不到屬於目前使用者的 VR Session"
+            });
+        }
+
+
+        // =====================================
+        // 8. 找 question_code
+        // =====================================
+        const [questions] =
+            await db.query(
+                `
+                SELECT
+                    id,
+                    question_code,
+                    stage_no,
+                    interaction_type,
+                    question_text,
+                    correct_option,
+                    score
+
+                FROM questions
+
+                WHERE question_code = ?
+
+                LIMIT 1
+                `,
+                [
+                    code
+                ]
+            );
 
 
         if (questions.length === 0) {
 
             return res.status(404).json({
                 success: false,
-                message: `找不到 questionCode：${code}`
+                message:
+                    "找不到 questionCode：" +
+                    code
             });
         }
 
 
-        const question = questions[0];
+        const question =
+            questions[0];
 
 
-        // =========================================
-        // 7. 取得題目資料
-        // =========================================
         const questionId =
-            Number(question.id);
+            Number(
+                question.id
+            );
 
 
         const stageNo =
-            Number(question.stage_no);
+            Number(
+                question.stage_no
+            );
 
 
         const interactionType =
@@ -1087,25 +1255,26 @@ const saveUnityAnswer = async (req, res) => {
                 .toUpperCase();
 
 
-        // =========================================
-        // 8. 防止 Unity 傳錯類型
-        // =========================================
+        // =====================================
+        // 9. 按題型檢查答案
+        // =====================================
 
-        // 一般 O/X 題只能傳 O 或 X
+        // O/X 題
         if (
             interactionType === "OX" &&
-            !["O", "X"].includes(option)
+            option !== "O" &&
+            option !== "X"
         ) {
 
             return res.status(400).json({
                 success: false,
                 message:
-                    `${code} 是 O/X 題，不能傳 ${option}`
+                    "OX 題只能回答 O 或 X"
             });
         }
 
 
-        // 文件與完成型只能傳 C
+        // 文件 / 完成型
         if (
             (
                 interactionType === "DOCUMENT" ||
@@ -1117,173 +1286,169 @@ const saveUnityAnswer = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message:
-                    `${code} 是完成型支線，只能傳 C`
+                    "DOCUMENT / COMPLETE 題必須使用 C"
             });
         }
 
 
-        // =========================================
-        // 9. Node.js 判斷正確 / 錯誤
-        // =========================================
+        // =====================================
+        // 10. 後端判定正確與否
+        // =====================================
         const isCorrect =
-            option === correctOption;
+            option ===
+            correctOption;
 
 
         const earnedScore =
             isCorrect
-                ? Number(question.score || 0)
+                ? Number(
+                    question.score || 0
+                )
                 : 0;
 
 
-        // =========================================
-        // 10. 寫入 user_answers
-        // =========================================
-        const insertSql = `
-            INSERT INTO user_answers
-            (
-                user_id,
-                question_id,
-                selected_option,
-                is_correct,
-                score
-            )
-            VALUES (?, ?, ?, ?, ?)
-        `;
+        // =====================================
+        // 11. ★ 最重要
+        // 寫入 user_answers 時
+        // 一定包含 session_id
+        // =====================================
+        const [insertResult] =
+            await db.query(
+                `
+                INSERT INTO user_answers
+                (
+                    user_id,
+                    session_id,
+                    question_id,
+                    selected_option,
+                    is_correct,
+                    score
+                )
+
+                VALUES (?, ?, ?, ?, ?, ?)
+                `,
+                [
+                    parsedUserId,
+                    parsedSessionId,
+                    questionId,
+                    option,
+                    isCorrect ? 1 : 0,
+                    earnedScore
+                ]
+            );
 
 
-        const [result] = await db.query(
-            insertSql,
-            [
-                parsedUserId,
-                questionId,
-                option,
-                isCorrect ? 1 : 0,
-                earnedScore
-            ]
-        );
+        // =====================================
+        // 12. 計算「本 Session」完成度
+        // 不再把以前測試資料算進來
+        // =====================================
+        const [progressRows] =
+            await db.query(
+                `
+                SELECT
 
+                    COUNT(
+                        DISTINCT CASE
+                            WHEN q.stage_no = 1
+                            THEN ua.question_id
+                        END
+                    ) AS stage1Completed,
 
-        // =========================================
-        // 11. 從 MySQL 計算目前完成度
-        //
-        // DISTINCT question_id 很重要：
-        //
-        // 同一個 USB 就算回答 10 次，
-        // 完成度仍然只算 1 個支線。
-        //
-        // 第一站 = 5
-        // 第二站 = 5
-        // 第三站 = 5
-        // 總計 = 15
-        // =========================================
-        const [progressRows] = await db.query(
-            `
-            SELECT
+                    COUNT(
+                        DISTINCT CASE
+                            WHEN q.stage_no = 2
+                            THEN ua.question_id
+                        END
+                    ) AS stage2Completed,
 
-                COUNT(
-                    DISTINCT CASE
-                        WHEN q.stage_no = 1
-                        THEN ua.question_id
-                    END
-                ) AS stage1_completed,
+                    COUNT(
+                        DISTINCT CASE
+                            WHEN q.stage_no = 3
+                            THEN ua.question_id
+                        END
+                    ) AS stage3Completed,
 
+                    COUNT(
+                        DISTINCT ua.question_id
+                    ) AS totalCompleted
 
-                COUNT(
-                    DISTINCT CASE
-                        WHEN q.stage_no = 2
-                        THEN ua.question_id
-                    END
-                ) AS stage2_completed,
+                FROM user_answers ua
 
+                INNER JOIN questions q
+                    ON ua.question_id = q.id
 
-                COUNT(
-                    DISTINCT CASE
-                        WHEN q.stage_no = 3
-                        THEN ua.question_id
-                    END
-                ) AS stage3_completed,
-
-
-                COUNT(
-                    DISTINCT ua.question_id
-                ) AS total_completed
-
-            FROM user_answers ua
-
-            INNER JOIN questions q
-                ON ua.question_id = q.id
-
-            WHERE ua.user_id = ?
-              AND q.question_code IS NOT NULL
-              AND q.stage_no IN (1, 2, 3)
-            `,
-            [parsedUserId]
-        );
+                WHERE ua.user_id = ?
+                  AND ua.session_id = ?
+                  AND q.question_code IS NOT NULL
+                  AND q.stage_no IN (1, 2, 3)
+                `,
+                [
+                    parsedUserId,
+                    parsedSessionId
+                ]
+            );
 
 
         const progress =
-            progressRows[0] || {};
+            progressRows[0];
 
 
         const stage1Completed =
             Number(
-                progress.stage1_completed || 0
+                progress.stage1Completed || 0
             );
 
 
         const stage2Completed =
             Number(
-                progress.stage2_completed || 0
+                progress.stage2Completed || 0
             );
 
 
         const stage3Completed =
             Number(
-                progress.stage3_completed || 0
+                progress.stage3Completed || 0
             );
 
 
         const totalCompleted =
             Number(
-                progress.total_completed || 0
+                progress.totalCompleted || 0
             );
 
 
-        // =========================================
-        // 12. 目前這一站完成度
-        // =========================================
-        let currentStageCompleted = 0;
+        let currentStageCompleted =
+            0;
+
 
         if (stageNo === 1) {
+
             currentStageCompleted =
                 stage1Completed;
         }
-
         else if (stageNo === 2) {
+
             currentStageCompleted =
                 stage2Completed;
         }
-
         else if (stageNo === 3) {
+
             currentStageCompleted =
                 stage3Completed;
         }
 
 
-        // =========================================
-        // 13. Node.js 終端機輸出
-        // =========================================
-        console.log("");
         console.log(
-            "========================================"
+            "===================================="
         );
 
         console.log(
-            "🎮 收到 Unity 正式支線作答"
+            "✅ Unity 作答已寫入 MySQL"
         );
 
         console.log(
-            "----------------------------------------"
+            "Answer ID：",
+            insertResult.insertId
         );
 
         console.log(
@@ -1292,62 +1457,28 @@ const saveUnityAnswer = async (req, res) => {
         );
 
         console.log(
-            "Question Code：",
+            "Session ID：",
+            parsedSessionId
+        );
+
+        console.log(
+            "Question：",
             code
         );
 
         console.log(
-            "Question ID：",
-            questionId
-        );
-
-        console.log(
-            "Stage：",
-            stageNo
-        );
-
-        console.log(
-            "互動類型：",
-            interactionType
-        );
-
-        console.log(
-            "題目：",
-            question.question_text
-        );
-
-        console.log(
-            "玩家答案：",
+            "Answer：",
             option
         );
 
         console.log(
-            "正確答案：",
-            correctOption
-        );
-
-        console.log(
-            "結果：",
+            "Correct：",
             isCorrect
-                ? "✅ 正確"
-                : "❌ 錯誤"
         );
 
         console.log(
-            "得分：",
+            "Score：",
             earnedScore
-        );
-
-
-        // =========================================
-        // 完成度輸出
-        // =========================================
-        console.log(
-            "----------------------------------------"
-        );
-
-        console.log(
-            "📊 VR 支線完成度"
         );
 
         console.log(
@@ -1363,38 +1494,35 @@ const saveUnityAnswer = async (req, res) => {
         );
 
         console.log(
-            `總完成度：${totalCompleted}/15`
+            `總進度：${totalCompleted}/15`
         );
 
         console.log(
-            "========================================"
+            "===================================="
         );
 
-        console.log("");
 
-
-        // =========================================
-        // 14. 回傳 Unity
-        // =========================================
+        // =====================================
+        // 13. 回傳 Unity
+        // =====================================
         return res.status(200).json({
 
             success: true,
 
             message:
-                isCorrect
-                    ? "作答成功，答案正確"
-                    : "作答成功，但答案錯誤",
+                "Unity 作答已成功儲存",
 
             data: {
 
-                // =============================
-                // 本題
-                // =============================
                 answerId:
-                    result.insertId,
+                    insertResult.insertId,
 
                 userId:
                     parsedUserId,
+
+                // ★ 回傳 Session 給 Unity Debug
+                sessionId:
+                    parsedSessionId,
 
                 questionId:
                     questionId,
@@ -1406,7 +1534,7 @@ const saveUnityAnswer = async (req, res) => {
                     stageNo,
 
                 interactionType:
-                    interactionType,
+                    question.interaction_type,
 
                 questionText:
                     question.question_text,
@@ -1423,10 +1551,6 @@ const saveUnityAnswer = async (req, res) => {
                 score:
                     earnedScore,
 
-
-                // =============================
-                // 完成度
-                // =============================
                 stage1Completed:
                     stage1Completed,
 
@@ -1450,78 +1574,396 @@ const saveUnityAnswer = async (req, res) => {
             }
         });
 
-
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
-            "❌ 儲存 Unity 作答失敗：",
+            "❌ saveUnityAnswer 發生錯誤：",
             error
         );
 
 
         return res.status(500).json({
+
             success: false,
-            message: "伺服器發生內部錯誤"
+
+            message:
+                "儲存 Unity 作答失敗"
         });
     }
 };
-// =========================================
-// 17. Web 產生 Unity VR 一次性登入 Ticket
-// =========================================
-const createVRTicket = async (req, res) => {
-    const { userId } = req.body;
 
-    if (!userId) {
+// ============================================================
+// Unity / LLM：取得「本次 Session」的權威評分結果（不寫入歷史）
+// GET /api/unity/session-result?userId=...&sessionId=...
+// ============================================================
+const getUnitySessionResult = async (req, res) => {
+    const userId = Number(req.query.userId ?? req.body?.userId);
+    const sessionId = Number(req.query.sessionId ?? req.body?.sessionId);
+
+    if (!Number.isInteger(userId) || userId <= 0 ||
+        !Number.isInteger(sessionId) || sessionId <= 0) {
         return res.status(400).json({
             success: false,
-            message: "缺少使用者 ID"
+            message: "userId 或 sessionId 不正確"
         });
     }
 
     try {
-        // 確認使用者存在
+        const session = await verifySessionOwnership(userId, sessionId);
+        if (!session) {
+            return res.status(404).json({
+                success: false,
+                message: "找不到屬於目前使用者的 VR Session"
+            });
+        }
+
+        const rows = await loadSessionAuditRows(userId, sessionId);
+        const result = buildAuditScore(rows, userId, sessionId, 0);
+
+        return res.json({
+            success: true,
+            message: "成功取得本次 VR Session 評分",
+            data: result
+        });
+    } catch (error) {
+        console.error("❌ getUnitySessionResult 發生錯誤：", error);
+        return res.status(500).json({ success: false, message: "無法取得本次評分" });
+    }
+};
+
+// ============================================================
+// Unity 最終完成訓練：
+// POST /api/unity/complete-session
+// Body: { userId, sessionId, duration, blocks }
+//
+// 此 API 是最終分數唯一入口：
+// - 只讀本次 session_id 的 15 題最新答案
+// - 後端固定公式計算雷達與總分
+// - 寫入 vr_training_records
+// - 將 training_sessions 標記 COMPLETED
+// - 重複呼叫同一 session 不會重複新增歷史紀錄
+// ============================================================
+const completeUnitySession = async (req, res) => {
+    const userId = Number(req.body.userId);
+    const sessionId = Number(req.body.sessionId);
+    const duration = Number(req.body.duration) || 0;
+    const requestedBlocks = Number(req.body.blocks) || 0;
+
+    if (!Number.isInteger(userId) || userId <= 0 ||
+        !Number.isInteger(sessionId) || sessionId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "userId 或 sessionId 不正確"
+        });
+    }
+
+    const connection = await db.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        const session = await verifySessionOwnership(userId, sessionId, connection, true);
+        if (!session) {
+            await connection.rollback();
+            return res.status(404).json({
+                success: false,
+                message: "找不到屬於目前使用者的 VR Session"
+            });
+        }
+
+        const rows = await loadSessionAuditRows(userId, sessionId, connection);
+        const result = buildAuditScore(rows, userId, sessionId, duration);
+
+        // 正式完成必須 15 題都有作答；未作答不能偷偷當成一次完成紀錄。
+        if (result.answeredCount < TOTAL_QUESTION_COUNT) {
+            await connection.rollback();
+            return res.status(409).json({
+                success: false,
+                message: `本次訓練尚未完成：${result.answeredCount}/${TOTAL_QUESTION_COUNT}`,
+                progress: result
+            });
+        }
+
+        let persisted = false;
+        const alreadyCompleted = String(session.status || "").toUpperCase() === "COMPLETED";
+
+        if (!alreadyCompleted) {
+            await connection.query(
+                `INSERT INTO vr_training_records
+                 (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    userId,
+                    result.radar[AUDIT_CATEGORY.IDENTITY],
+                    result.radar[AUDIT_CATEGORY.ENVIRONMENT],
+                    result.radar[AUDIT_CATEGORY.SERVER],
+                    result.radar[AUDIT_CATEGORY.DEVICE],
+                    result.radar[AUDIT_CATEGORY.DOCUMENT],
+                    result.totalScore,
+                    duration,
+                    requestedBlocks > 0 ? requestedBlocks : result.correctCount
+                ]
+            );
+
+            await connection.query(
+                `UPDATE training_sessions
+                 SET status = 'COMPLETED',
+                     completed_at = COALESCE(completed_at, NOW())
+                 WHERE id = ? AND user_id = ?`,
+                [sessionId, userId]
+            );
+
+            persisted = true;
+        }
+
+        await connection.commit();
+
+        return res.status(200).json({
+            success: true,
+            message: persisted
+                ? "本次 VR 訓練已完成並寫入學習紀錄"
+                : "本次 VR 訓練先前已完成，回傳既有 Session 的評分結果",
+            finalized: true,
+            persisted,
+            data: result
+        });
+    } catch (error) {
+        try { await connection.rollback(); } catch (_) {}
+        console.error("❌ completeUnitySession 發生錯誤：", error);
+        return res.status(500).json({
+            success: false,
+            message: "完成 VR 訓練失敗"
+        });
+    } finally {
+        connection.release();
+    }
+};
+
+// ============================================================
+// 相容舊版 / 除錯：取得本次 Session 已作答資料
+// GET /api/unity/session-answers?userId=...&sessionId=...
+// ============================================================
+const getUnitySessionAnswers = async (req, res) => {
+    const userId = Number(req.query.userId);
+    const sessionId = Number(req.query.sessionId);
+
+    if (!Number.isInteger(userId) || userId <= 0 ||
+        !Number.isInteger(sessionId) || sessionId <= 0) {
+        return res.status(400).json({ success: false, message: "userId 或 sessionId 不正確" });
+    }
+
+    try {
+        const session = await verifySessionOwnership(userId, sessionId);
+        if (!session) {
+            return res.status(404).json({ success: false, message: "找不到本次 VR 訓練 Session" });
+        }
+
+        const allRows = await loadSessionAuditRows(userId, sessionId);
+        const answers = allRows.filter(row => row.userAnswer != null && String(row.userAnswer).trim() !== "");
+        const correctCount = answers.filter(row => row.isCorrect === true || Number(row.isCorrect) === 1).length;
+
+        return res.json({
+            success: true,
+            userId,
+            sessionId,
+            answeredCount: answers.length,
+            correctCount,
+            accuracyRate: TOTAL_QUESTION_COUNT > 0 ? Math.round((correctCount / TOTAL_QUESTION_COUNT) * 100) : 0,
+            answers
+        });
+    } catch (error) {
+        console.error("❌ getUnitySessionAnswers 發生錯誤：", error);
+        return res.status(500).json({ success: false, message: "無法取得本次作答資料" });
+    }
+};
+
+// =========================================
+// 產生 VR 6 碼登入代碼
+//
+// 可使用：
+// 0~9
+// @
+// #
+// =========================================
+function generateVRCode(length = 6) {
+
+    const chars = "0123456789@#";
+
+    let code = "";
+
+    for (let i = 0; i < length; i++) {
+
+        const randomIndex =
+            crypto.randomInt(
+                0,
+                chars.length
+            );
+
+        code += chars[randomIndex];
+    }
+
+    return code;
+}
+// =========================================
+// Web 產生 VR 6 位數一次性登入代碼
+// =========================================
+const createVRTicket = async (req, res) => {
+
+    const userId = Number(req.body.userId);
+
+    if (
+        !Number.isInteger(userId) ||
+        userId <= 0
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "缺少或無效的使用者 ID"
+        });
+    }
+
+    try {
+
+        // =====================================
+        // 1. 確認使用者存在
+        // =====================================
         const [users] = await db.query(
-            "SELECT id, username, email FROM users WHERE id = ?",
+            `
+            SELECT
+                id,
+                username,
+                email
+            FROM users
+            WHERE id = ?
+            `,
             [userId]
         );
 
         if (users.length === 0) {
+
             return res.status(404).json({
                 success: false,
                 message: "找不到此使用者"
             });
         }
 
-        // 產生一次性 Ticket
-        const ticket = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-        // 5 分鐘後失效
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-
+        // =====================================
+        // 2. 舊的未使用代碼直接作廢
+        // =====================================
         await db.query(
-            `INSERT INTO vr_login_tickets
-             (user_id, ticket, expires_at)
-             VALUES (?, ?, ?)`,
-            [userId, ticket, expiresAt]
+            `
+            UPDATE vr_login_tickets
+            SET is_used = 1
+            WHERE user_id = ?
+              AND is_used = 0
+            `,
+            [userId]
         );
+
+
+        // =====================================
+        // 3. 產生 6 位數代碼
+        // =====================================
+        let ticket = null;
+
+        for (let attempt = 0; attempt < 10; attempt++) {
+
+            const candidate = generateVRCode();
+
+            // 確認目前沒有另一個仍有效的相同代碼
+            const [existing] = await db.query(
+                `
+                SELECT id
+                FROM vr_login_tickets
+                WHERE ticket = ?
+                  AND is_used = 0
+                  AND expires_at > NOW()
+                LIMIT 1
+                `,
+                [candidate]
+            );
+
+            if (existing.length === 0) {
+
+                ticket = candidate;
+
+                break;
+            }
+        }
+
+
+        if (!ticket) {
+
+            throw new Error(
+                "無法產生唯一 VR 登入代碼"
+            );
+        }
+
+
+        // =====================================
+        // 4. 5 分鐘後失效
+        // =====================================
+        const expiresAt =
+            new Date(
+                Date.now() +
+                5 * 60 * 1000
+            );
+
+
+        // =====================================
+        // 5. 寫入 MySQL
+        // =====================================
+        await db.query(
+            `
+            INSERT INTO vr_login_tickets
+            (
+                user_id,
+                ticket,
+                expires_at,
+                is_used
+            )
+            VALUES (?, ?, ?, 0)
+            `,
+            [
+                userId,
+                ticket,
+                expiresAt
+            ]
+        );
+
 
         console.log(
-            `[VR Ticket] 已為 User=${userId} 建立登入 Ticket`
+            `🔑 User=${userId} VR 登入代碼：${ticket}`
         );
 
+
         return res.json({
+
             success: true,
-            message: "VR 登入 Ticket 建立成功",
-            ticket: ticket,
-            expiresAt: expiresAt
+
+            message:
+                "VR 登入代碼建立成功",
+
+            ticket:
+                ticket,
+
+            expiresAt:
+                expiresAt
         });
 
+
     } catch (error) {
-        console.error("建立 VR Ticket 失敗：", error);
+
+        console.error(
+            "建立 VR 登入代碼失敗：",
+            error
+        );
 
         return res.status(500).json({
             success: false,
-            message: "無法建立 VR 登入 Ticket"
+            message:
+                "無法建立 VR 登入代碼"
         });
     }
 };
@@ -1529,6 +1971,11 @@ const createVRTicket = async (req, res) => {
 // 18. Unity 使用 Ticket 取得登入使用者
 // =========================================
 const exchangeVRTicket = async (req, res) => {
+    console.log("====================================");
+    console.log(" exchangeVRTicket 被呼叫了");
+    console.log("Unity 傳來的 body：", req.body);
+    console.log("Unity 傳來的 ticket：", req.body?.ticket);
+    console.log("====================================");
     const { ticket } = req.body;
 
     if (!ticket) {
@@ -1588,7 +2035,27 @@ const exchangeVRTicket = async (req, res) => {
         console.log(
             `[VR Login] Unity 登入成功 User=${loginTicket.user_id}`
         );
+// =========================================
+// 建立本次 VR 訓練 Session
+// =========================================
+const [sessionResult] = await db.query(
+    `
+    INSERT INTO training_sessions
+    (
+        user_id,
+        status
+    )
+    VALUES (?, 'IN_PROGRESS')
+    `,
+    [loginTicket.user_id]
+);
 
+const sessionId = sessionResult.insertId;
+
+console.log(
+    "✅ 建立 VR Session，Session ID：",
+    sessionId
+);
         return res.json({
             success: true,
             message: "Unity VR 登入成功",
@@ -1596,7 +2063,8 @@ const exchangeVRTicket = async (req, res) => {
                 id: loginTicket.user_id,
                 username: loginTicket.username,
                 email: loginTicket.email
-            }
+            },
+            sessionId: sessionId
         });
 
     } catch (error) {
@@ -1654,7 +2122,7 @@ const resendVerifyEmail = async (req, res) => {
         const verificationUrl = `${apiOrigin}/api/verify?token=${user.verification_token}`;
 
         const mailOptions = {
-            from: 'mi3c41263@gmail.com',
+            from: mailUser,
             to: email,
             subject: '【系統通知】請驗證您的電子郵件（補發）',
             html: `
@@ -1696,60 +2164,10 @@ const saveMistakes = async (req, res) => {
 // 接收來自 Unity 的自訂 POST 資料 (範例)
 // =========================================
 const handleUnityData = async (req, res) => {
-    const { userId, duration, blocks } = req.body;
-
-    if (!userId) {
-        return res.status(400).json({ success: false, message: '缺少使用者 ID' });
-    }
-
-    try {
-        console.log('✅ 收到來自 Unity 的資料，交由後端重新評分：', req.body);
-
-        // 1. 從 user_answers 抓取該用戶最新的作答紀錄
-        const [answers] = await db.query(
-            `SELECT question_id, is_correct 
-             FROM user_answers 
-             WHERE user_id = ? 
-             ORDER BY answered_at DESC 
-             LIMIT 100`, 
-            [userId]
-        );
-
-        // 將最新答題結果轉為 Map { 1: true, 2: false ... }
-        const correctMap = {};
-        answers.forEach(a => {
-            if (correctMap[a.question_id] === undefined) {
-                correctMap[a.question_id] = a.is_correct === 1;
-            }
-        });
-
-        // 2. 根據評分邏輯計算五大指標分數
-        const calc_physical = (correctMap[1] ? 60 : 0) + (correctMap[2] ? 40 : 0);
-        const calc_social = (correctMap[3] ? 60 : 0) + (correctMap[4] ? 40 : 0);
-        const calc_server = (correctMap[5] ? 30 : 0) + (correctMap[7] ? 30 : 0) + (correctMap[10] ? 40 : 0);
-        const calc_device = (correctMap[6] ? 50 : 0) + (correctMap[9] ? 50 : 0);
-        const calc_legal = (correctMap[8] ? 70 : 0) + (correctMap[9] ? 30 : 0);
-
-        // 3. 計算總分 (五項平均，四捨五入)
-        const totalScore = Math.round((calc_physical + calc_social + calc_server + calc_device + calc_legal) / 5);
-
-        // 4. 寫入學習成果分析所使用的資料表 (vr_training_records)
-        const sql = `INSERT INTO vr_training_records 
-                     (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-                     
-        await db.query(sql, [userId, calc_physical, calc_social, calc_server, calc_device, calc_legal, totalScore, duration || 0, blocks || 0]);
-
-        res.status(200).json({ 
-            success: true, 
-            message: 'VR 訓練資料已成功儲存並在後端完成評分計算！',
-            totalScore: totalScore 
-        });
-    } catch (error) {
-        console.error('處理 Unity 資料時發生錯誤:', error);
-        res.status(500).json({ success: false, message: '伺服器內部錯誤' });
-    }
+    // 舊 API 統一轉給正式評分流程，避免另一套分數公式繼續存在。
+    return saveVRStats(req, res);
 };
+
 
 module.exports = {
     checkVerificationStatus,
@@ -1769,7 +2187,10 @@ module.exports = {
     saveVRStats ,
     changePassword,
     deleteAccount ,
-    saveUnityAnswer  ,
+    saveUnityAnswer,
+    getUnitySessionAnswers,
+    getUnitySessionResult,
+    completeUnitySession,
     // Web → Unity 登入
     createVRTicket,
     exchangeVRTicket,

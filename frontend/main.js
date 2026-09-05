@@ -116,9 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (menuId === 'nav-manual') {
                     if (manualSection) manualSection.style.display = 'block';
 
-                } else if (menuId === 'nav-notes') {
-                    if (notesSection) notesSection.style.display = 'block';
-
                 } else if (menuId === 'nav-analysis') {
                     if (analysisSection) analysisSection.style.display = 'block';
 
@@ -149,146 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }); 
     });
 
-    // =========================================
-    // 3.5 載入並渲染自訂學習筆記
-    // =========================================
-    function loadCustomNotes() {
-        const userStr = localStorage.getItem('currentUser');
-        const user = userStr ? JSON.parse(userStr) : null;
-        const customNotesKey = user ? `customNotes_${user.id}` : 'customNotes_guest';
-        const customNotes = JSON.parse(localStorage.getItem(customNotesKey) || '[]');
-        
-        const notesGrid = document.querySelector('.notes-grid');
-        if (!notesGrid) return;
-
-        // Remove old dynamic notes first to prevent duplicates if re-rendering
-        document.querySelectorAll('.note-card.custom-note').forEach(el => el.remove());
-
-        customNotes.forEach(note => {
-            const newNote = document.createElement('div');
-            newNote.className = 'note-card glass-panel custom-note';
-            newNote.dataset.id = note.id;
-            newNote.innerHTML = `
-                <div class="note-header">
-                    <span class="note-category ${note.tagClass}">${note.tagLabel}</span>
-                </div>
-                <h3 class="note-title">${note.clauseText}</h3>
-                <p class="note-excerpt" style="white-space: pre-wrap;">${note.observationText}</p>
-                <div class="note-footer">
-                    <a href="#" class="read-more">檢視完整筆記 <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-            `;
-            notesGrid.insertBefore(newNote, notesGrid.firstChild);
-        });
-    }
-    loadCustomNotes();
-
-    // =========================================
-    // 4. 學習筆記閱讀視窗 (Modal) 邏輯
-    // =========================================
-    const noteModal = document.getElementById('noteDetailModal');
-    const closeNoteModalBtn = document.getElementById('closeNoteModal');
-
-    if (noteModal && closeNoteModalBtn) {
-        let activeNoteCard = null;
-
-        document.body.addEventListener('click', function(e) {
-            const readMoreBtn = e.target.closest('.read-more');
-            if (readMoreBtn) {
-                e.preventDefault(); 
-                
-                const card = readMoreBtn.closest('.note-card');
-                if (card) {
-                    activeNoteCard = card;
-                    const title = card.querySelector('.note-title') ? card.querySelector('.note-title').textContent : '';
-                    const excerpt = card.querySelector('.note-excerpt') ? card.querySelector('.note-excerpt').innerHTML : '';
-                    
-                    const modalTitle = document.getElementById('modalTitle');
-                    if (modalTitle) modalTitle.textContent = title;
-                    
-                    const modalBody = noteModal.querySelector('.modal-body');
-                    if (modalBody) modalBody.innerHTML = '<p style="white-space: pre-wrap; line-height: 1.6;">' + excerpt + '</p>';
-                }
-                
-                noteModal.classList.add('show');
-            }
-        });
-
-        const modalDeleteNoteBtn = document.getElementById('modalDeleteNoteBtn');
-        if (modalDeleteNoteBtn) {
-            modalDeleteNoteBtn.addEventListener('click', function() {
-                if (activeNoteCard && confirm("確定要刪除這則筆記嗎？")) {
-                    const noteId = activeNoteCard.dataset.id;
-                    if (noteId) {
-                        const userStr = localStorage.getItem('currentUser');
-                        const user = userStr ? JSON.parse(userStr) : null;
-                        const customNotesKey = user ? `customNotes_${user.id}` : 'customNotes_guest';
-                        let customNotes = JSON.parse(localStorage.getItem(customNotesKey) || '[]');
-                        customNotes = customNotes.filter(n => String(n.id) !== String(noteId));
-                        localStorage.setItem(customNotesKey, JSON.stringify(customNotes));
-                    }
-                    
-                    activeNoteCard.remove();
-                    noteModal.classList.remove('show');
-                    activeNoteCard = null;
-                }
-            });
-        }
-
-        const btnEdit = noteModal.querySelector('.btn-edit');
-        if (btnEdit) {
-            btnEdit.addEventListener('click', function() {
-                if (activeNoteCard) {
-                    const ncrModal = document.getElementById('ncrModal');
-                    const ncrForm = document.getElementById('ncrForm');
-                    if (ncrModal && ncrForm) {
-                        const categorySelect = ncrForm.querySelectorAll('select')[0];
-                        const clauseSelect = ncrForm.querySelectorAll('select')[1];
-                        const textarea = ncrForm.querySelector('textarea');
-                        
-                        const categoryText = activeNoteCard.querySelector('.note-category') ? activeNoteCard.querySelector('.note-category').textContent.trim() : '';
-                        const titleText = activeNoteCard.querySelector('.note-title') ? activeNoteCard.querySelector('.note-title').textContent.trim() : '';
-                        
-                        // Handle formatting of excerpt
-                        const excerptEl = activeNoteCard.querySelector('.note-excerpt');
-                        let excerptText = excerptEl ? excerptEl.textContent : '';
-                        
-                        // Determine Category
-                        if (categoryText.includes('人員') || categoryText.includes('事件') || categoryText.includes('social')) {
-                            categorySelect.value = 'people';
-                        } else {
-                            categorySelect.value = 'physical';
-                        }
-                        categorySelect.dispatchEvent(new Event('change'));
-                        
-                        // Find and select Clause
-                        Array.from(clauseSelect.options).forEach(opt => {
-                            if (opt.value && titleText.includes(opt.value)) {
-                                opt.selected = true;
-                            } else if (opt.text && opt.text === titleText) {
-                                opt.selected = true;
-                            }
-                        });
-                        
-                        textarea.value = excerptText;
-                        ncrForm.dataset.editId = activeNoteCard.dataset.id || '';
-                        
-                        noteModal.classList.remove('show');
-                        ncrModal.style.display = 'flex';
-                        ncrModal.classList.add('show');
-                    }
-                }
-            });
-        }
-
-        closeNoteModalBtn.addEventListener('click', () => noteModal.classList.remove('show'));
-        noteModal.addEventListener('click', (e) => {
-            if (e.target === noteModal) noteModal.classList.remove('show');
-        });
-    }
-    // =========================================
-    // 5. 學習筆記：關鍵字搜尋與標籤過濾功能 (已移除)
-    // =========================================
     // =========================================
     // 6. 系統設定視窗 (Settings Modal) 邏輯
     // =========================================
@@ -373,131 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-// =========================================
-    // 10. NCR 稽核發現報告彈窗控制與 PDF 匯出
-    // =========================================
-    const addNcrBtn = document.getElementById('addNcrBtn');
-    const ncrModal = document.getElementById('ncrModal');
-    const closeNcrModalBtn = document.getElementById('closeNcrModal');
-    const cancelNcrBtn = document.getElementById('cancelNcrBtn');
-    const ncrForm = document.getElementById('ncrForm');
-    // 開啟按鈕
-    if (addNcrBtn) {
-        addNcrBtn.addEventListener('click', () => {
-            if (ncrModal) {
-                ncrModal.style.display = 'flex'; 
-                ncrModal.classList.add('show');  
-            }
-        });
-    }
 
-    // 關閉邏輯
-    const closeNcr = () => {
-        if (ncrModal) {
-            ncrModal.classList.remove('show'); 
-            setTimeout(() => { ncrModal.style.display = 'none'; }, 300);
-        }
-        if (ncrForm) ncrForm.reset(); 
-    };
-
-    if (closeNcrModalBtn) closeNcrModalBtn.addEventListener('click', closeNcr);
-    if (cancelNcrBtn) cancelNcrBtn.addEventListener('click', closeNcr);
-    window.addEventListener('click', (e) => {
-        if (e.target === ncrModal) closeNcr();
-    });
-
-    // 處理表單提交 (僅顯示成功訊息)
-    if (ncrForm) {
-        const categorySelect = ncrForm.querySelectorAll('select')[0];
-        const clauseSelect = ncrForm.querySelectorAll('select')[1];
-        
-        if (categorySelect && clauseSelect) {
-            const allClauseOptions = Array.from(clauseSelect.options).map(opt => ({
-                value: opt.value,
-                text: opt.text
-            }));
-            
-            categorySelect.addEventListener('change', function() {
-                const selectedCategory = this.value;
-                clauseSelect.innerHTML = '';
-                
-                allClauseOptions.forEach((opt, index) => {
-                    if (index === 0) {
-                        clauseSelect.add(new Option(opt.text, opt.value));
-                        return;
-                    }
-                    if (selectedCategory === 'people' && opt.value.startsWith('6.')) {
-                        clauseSelect.add(new Option(opt.text, opt.value));
-                    } else if (selectedCategory === 'physical' && opt.value.startsWith('7.')) {
-                        clauseSelect.add(new Option(opt.text, opt.value));
-                    } else if (!selectedCategory) {
-                        clauseSelect.add(new Option(opt.text, opt.value));
-                    }
-                });
-            });
-        }
-
-        ncrForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            try {
-                const observationText = ncrForm.querySelector('textarea').value;
-
-                const submitBtn = ncrForm.querySelector('button[type="submit"]');
-                const originalBtnText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在提交...';
-                submitBtn.disabled = true;
-
-                setTimeout(() => {
-                    const categoryText = categorySelect.options[categorySelect.selectedIndex].text;
-                    const clauseText = clauseSelect.options[clauseSelect.selectedIndex].text;
-
-                    const tagClass = categorySelect.value === 'people' ? 'tag-social' : 'tag-device';
-                    const tagLabel = categorySelect.value === 'people' ? '人員控制' : '實體安全';
-
-                    const userStr = localStorage.getItem('currentUser');
-                    const user = userStr ? JSON.parse(userStr) : null;
-                    const customNotesKey = user ? `customNotes_${user.id}` : 'customNotes_guest';
-                    const customNotes = JSON.parse(localStorage.getItem(customNotesKey) || '[]');
-                    
-                    const newNoteData = {
-                        id: ncrForm.dataset.editId || Date.now().toString(),
-                        tagClass: tagClass,
-                        tagLabel: tagLabel,
-                        clauseText: clauseText,
-                        observationText: observationText.replace(/</g, "&lt;").replace(/>/g, "&gt;")
-                    };
-                    
-                    if (ncrForm.dataset.editId) {
-                        const noteIndex = customNotes.findIndex(n => String(n.id) === String(ncrForm.dataset.editId));
-                        if (noteIndex !== -1) {
-                            customNotes[noteIndex] = newNoteData;
-                        } else {
-                            customNotes.push(newNoteData);
-                        }
-                        delete ncrForm.dataset.editId;
-                    } else {
-                        customNotes.push(newNoteData);
-                    }
-                    
-                    localStorage.setItem(customNotesKey, JSON.stringify(customNotes));
-
-                    // 重新渲染筆記列表
-                    if (typeof loadCustomNotes === 'function') {
-                        loadCustomNotes();
-                    }
-
-                    alert("稽核發現報告已成功提交並新增至學習筆記！");
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                    closeNcr();
-                }, 500);
-            } catch (error) {
-                console.error("提交失敗:", error);
-                alert("提交失敗，請重試！");
-            }
-        });
-    }
 // =========================================
 // 12. 連接後端 API 並動態繪製「能力雷達圖」
 // =========================================
@@ -603,6 +336,9 @@ window.initRadarChart = async function () {
                 `${stats.blocks}<small>次</small>`;
         }
 
+        if (window.renderVrHistoryCard) {
+            window.renderVrHistoryCard(stats.totalScore, stats.trainingHours, stats.createdAt, stats.answers);
+        }
 
     } catch (error) {
 
@@ -1030,142 +766,7 @@ window.initRadarChart = async function () {
             }
         });
     }
-   // =========================================
-    // 14. 雙重認證 (2FA) 開關介面邏輯 
-    // =========================================
-    const toggle2FA = document.getElementById('toggle2FA');
-    
-    if (toggle2FA) {
-        // 🌟 頁面載入時，先抓取 LocalStorage 裡的登入者資料
-        const currentUserStr = localStorage.getItem('currentUser');
-        let user = null;
-        
-        if (currentUserStr) {
-            user = JSON.parse(currentUserStr);
-            console.log("目前登入者的狀態：", user);
-            // 根據資料庫狀態，決定開關一開始要不要打開
-            if (user.is_2fa_enabled) {
-                toggle2FA.checked = true;
-            }
-        }
-
-        toggle2FA.addEventListener('change', async function(e) {
-            if (!user) {
-                alert("找不到使用者資料，請重新登入！");
-                e.target.checked = !e.target.checked;
-                return;
-            }
-
-            const isChecked = e.target.checked;
-
-            if (isChecked) {
-                // 狀態：使用者想「開啟」2FA
-                try {
-                    // 1. 顯示載入中動畫
-                    Swal.fire({
-                        title: '產生專屬金鑰中...',
-                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
-                        didOpen: () => Swal.showLoading()
-                    });
-
-                    // 2. 向 Node.js 請求真實的 QR Code
-                    const res = await fetch(`${API_BASE_URL}/api/2fa/generate?userId=${user.id}&email=${user.email}`);
-                    const data = await res.json();
-
-                    if (!data.success) throw new Error(data.message);
-
-                    // 3. 顯示真實的 QR Code 讓使用者掃描
-                    const { value: verificationCode, isConfirmed } = await Swal.fire({
-                        title: '<i class="fa-solid fa-qrcode"></i> 設定雙重認證',
-                        html: `
-                            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">請打開 <strong>Google Authenticator</strong> 掃描下方條碼</p>
-                            <img src="${data.qrCodeUrl}" style="border: 5px solid white; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 0 15px rgba(0, 168, 255, 0.4);">
-                            <br>
-                            <input type="text" id="swal-input-2fa" class="cyber-input" placeholder="請輸入 6 位數驗證碼" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-weight: bold; width: 80%;">
-                        `,
-                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff',
-                        showCancelButton: true,
-                        confirmButtonColor: 'var(--primary-cyan)',
-                        cancelButtonColor: 'transparent',
-                        confirmButtonText: '驗證並啟用',
-                        cancelButtonText: '取消',
-                        customClass: { cancelButton: 'cyber-cancel-btn' },
-                        preConfirm: () => {
-                            const input = document.getElementById('swal-input-2fa').value;
-                            if (!input || input.length !== 6 || isNaN(input)) {
-                                Swal.showValidationMessage(' 請輸入有效的 6 位數字驗證碼！');
-                                return false;
-                            }
-                            return input;
-                        }
-                    });
-
-                    if (isConfirmed) {
-                        // 4. 把使用者輸入的 6 位數，丟給 Node.js 進行嚴格比對
-                        const verifyRes = await fetch(`${API_BASE_URL}/api/2fa/verify`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ userId: user.id, token: verificationCode })
-                        });
-                        const verifyData = await verifyRes.json();
-
-                        if (verifyData.success) {
-                            Swal.fire({
-                                icon: 'success', title: '2FA 已成功啟用！', text: '您的帳號防禦等級已提升。',
-                                background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', timer: 2500, showConfirmButton: false
-                            });
-                            // 更新前端記憶體，讓開關保持打開
-                            user.is_2fa_enabled = true;
-                            localStorage.setItem('currentUser', JSON.stringify(user));
-                        } else {
-                            Swal.fire({ icon: 'error', title: '驗證失敗', text: verifyData.message, background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
-                            e.target.checked = false; // 驗證失敗，開關退回關閉
-                        }
-                    } else {
-                        e.target.checked = false; // 使用者按取消，開關退回關閉
-                    }
-                } catch (error) {
-                    console.error(error);
-                    Swal.fire({ icon: 'error', title: '錯誤', text: '無法連線到伺服器產生 QR Code', background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff' });
-                    e.target.checked = false;
-                }
-            } else {
-                // 🔘 狀態：使用者想「關閉」2FA
-                const { isConfirmed } = await Swal.fire({
-                    title: '確定要停用 2FA 嗎？', text: '停用後，您的帳號容易遭受惡意攻擊！', icon: 'warning',
-                    background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', showCancelButton: true,
-                    confirmButtonColor: '#ff4757', cancelButtonColor: 'transparent', confirmButtonText: '強制停用', cancelButtonText: '保持啟用'
-                });
-
-                if (isConfirmed) {
-                    // 向 Node.js 發送停用請求
-                    try {
-                        const disableRes = await fetch(`${API_BASE_URL}/api/2fa/disable`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ userId: user.id })
-                        });
-                        const disableData = await disableRes.json();
-
-                        if (disableData.success) {
-                            Swal.fire({ icon: 'info', title: '2FA 已停用', background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#2d3748' : '#ffffff', timer: 2000, showConfirmButton: false });
-                            user.is_2fa_enabled = false;
-                            localStorage.setItem('currentUser', JSON.stringify(user));
-                        } else {
-                            alert("停用失敗：" + disableData.message);
-                            e.target.checked = true;
-                        }
-                    } catch (err) {
-                        alert("連線失敗");
-                        e.target.checked = true;
-                    }
-                } else {
-                    e.target.checked = true; 
-                }
-            }
-        });
-    }
-  // =========================================
+// =========================================
     // 15. 登入後更改密碼 
     // =========================================
     const openChangePwdBtn = document.getElementById('openChangePwdBtn');
@@ -3445,15 +3046,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Trigger chart update if radar exists
-            if(window.radarChart) {
+            if(window.myRadarChart) {
                 const isLight = localStorage.getItem('theme') === 'light';
                 const gridColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
-                const pointLabelColor = isLight ? '#718096' : 'var(--text-light)';
+                const pointLabelColor = isLight ? '#1a202c' : 'var(--text-color)';
                 
-                window.radarChart.options.scales.r.grid.color = gridColor;
-                window.radarChart.options.scales.r.angleLines.color = gridColor;
-                window.radarChart.options.scales.r.pointLabels.color = pointLabelColor;
-                window.radarChart.update();
+                window.myRadarChart.options.scales.r.grid.color = gridColor;
+                window.myRadarChart.options.scales.r.angleLines.color = gridColor;
+                window.myRadarChart.options.scales.r.pointLabels.color = pointLabelColor;
+                window.myRadarChart.update();
             }
         });
         // ================= VR 專區重構邏輯 =================
@@ -3509,13 +3110,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 score: 72,
                 suggestion: '第二站辦公區巡檢表現尚可，但漏看了幾個隱蔽的缺失。請特別注意員工螢幕上的便利貼，以及未鎖定的電腦畫面。',
                 levelName: '第二站【條文檢查 Session 1】',
-                imageUrl: 'vr-ans-2.png',
+                images: [
+                    'vr-ans-2-5.png',
+                    'vr-ans-2-6.png',
+                    'vr-ans-2-7.png',
+                    'vr-ans-2-8.png',
+                    'vr-ans-2-9.png'
+                ],
                 found: [],
                 correctAnswers: [
-                    'A6.1 清潔桌面與淨空螢幕 (螢幕貼密碼)',
-                    'A6.2 可攜式媒體管理 (未上鎖的USB)',
-                    'A6.3 資訊與通訊設備安全 (電腦未登出)',
-                    'A6.4 軟體安裝限制 (安裝未授權軟體)'
+                    `A7.7 桌面淨空及螢幕淨空 (打開的平板)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：桌上有一台未上鎖的平板，在無人看管的情況下，任何人皆能輕易操作並存取內部資料。此狀況仍應記錄為缺失行為。</div>\n                    </div>`,
+                    `訪客名片：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #2ed573; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-check"></i> 說明：辦公區桌上留有一張訪客名片，由於其姓名與電話屬於訪客主動提供的公開社交資訊，在無人看管時被他人檢視，不需記錄為缺失行為。</div>\n                    </div>`,
+                    `A7.7 桌面淨空及螢幕淨空 (未加蓋的咖啡)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：辦公桌上放置一杯未加蓋的咖啡且鄰近電腦硬體與重要文件，因存在液體打翻導致損壞的環境風險，應記錄為缺失行為。</div>\n                    </div>`,
+                    `A7.7 桌面淨空及螢幕淨空 (未收妥的內部文件)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：辦公桌上隨意放置了數份公司內部文件，處於無人看管且任何人皆可輕易翻閱或取得之狀態，此行為違反桌面淨空政策，應記錄為缺失行為。</div>\n                    </div>`,
+                    `A6.2 聘用條款及條件 (缺少離職後保密條款)：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：聘用合約中的保密協議(NDA)僅寫明「在職期間」須履行保密義務，實則應該要求員工離職後亦須永久（或特定年限內）達成保密義務，此合約內容不符規範，應記錄為缺失行為。</div>\n                    </div>`
                 ]
             },
             {
@@ -3542,29 +3150,98 @@ document.addEventListener('DOMContentLoaded', () => {
         const vrHistoryModal = document.getElementById('vrHistoryModal');
         const closeVrHistoryModalBtn = document.getElementById('closeVrHistoryModal');
         
-        if (vrHistoryList) {
-            vrHistoryList.innerHTML = vrRecords.map(record => `
-                <div class="note-card glass-panel vr-history-card" data-id="` + record.id + `" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 20px; transition: transform 0.2s, box-shadow 0.2s;">
-                    <div>
-                        <h3 style="color: var(--primary-cyan); margin: 0 0 5px 0;"><i class="fa-solid fa-vr-cardboard"></i> 模擬探索 #${record.id} - ${record.levelName}</h3>
-                        <p style="color: var(--text-light); margin: 0; font-size: 0.9rem;">${record.date} | 耗時: ${record.duration}</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="font-size: 1.5rem; font-weight: bold; color: ${record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757')};">${record.score} 分</span>
-                        <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
-                    </div>
-                </div>
-            `).join('');
+        const combinedVrRecord = [{
+            id: 'ALL',
+            date: '2023-11-22 16:45',
+            duration: '56:22',
+            score: 84,
+            suggestion: '您在所有站點的探索中表現良好，具備高度的資安敏銳度。請繼續保持並留意未看管的設備與環境安全。',
+            levelName: '完整模擬探索紀錄 (全部站點)',
+            images: vrRecords.flatMap(r => r.images || (r.imageUrl ? [r.imageUrl] : [])),
+            found: vrRecords.flatMap(r => r.found || []),
+            correctAnswers: vrRecords.flatMap(r => r.correctAnswers || [])
+        }];
 
-            const historyCards = document.querySelectorAll('.vr-history-card');
-            historyCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const recordId = parseInt(this.getAttribute('data-id'));
-                    const record = vrRecords.find(r => r.id === recordId);
-                    
-                    if (record) {
-                        document.getElementById('vrModalDate').textContent = record.date;
-                        document.getElementById('vrModalDuration').innerHTML = '<i class="fa-regular fa-clock"></i> 探索耗時: ' + record.duration;
+        window.renderVrHistoryCard = (score, duration, date, answers) => {
+            if (score !== undefined) combinedVrRecord[0].score = score;
+            
+            if (answers) {
+                const questionMap = {
+                    Q1: "主管隨意放置主管專用識別證",
+                    Q2: "提供已失效的稽核通行證",
+                    Q3: "存有重要檔案的 USB 硬碟隨意放在桌緣",
+                    Q4: "未上鎖的平板放置於辦公桌面上",
+                    Q5: "重要訪客名片隨意放置在辦公桌上",
+                    Q6: "未加蓋咖啡放在電腦旁",
+                    Q7: "公司內部文件隨意放置",
+                    Q8: "機房堆放報廢電子設備",
+                    Q9: "管制機房內放置食物",
+                    Q10: "帳號密碼寫在便利貼上",
+                    Q61: "管理審查報告缺失辨識",
+                    Q62: "員工評核表缺失辨識",
+                    Q63: "聘用合約缺失辨識",
+                    Q64: "資安海報缺失辨識",
+                    Q65: "機房設備維修與維護登記表缺失辨識"
+                };
+                
+                const newFound = [];
+                for (const [qId, isCorrect] of Object.entries(answers)) {
+                    if (questionMap[qId]) {
+                        if (isCorrect) {
+                            newFound.push(`<span style="color: #2ed573;">✔ 成功辨識：${questionMap[qId]}</span>`);
+                        } else {
+                            newFound.push(`<span style="color: #ff4757;">✖ 未能辨識：${questionMap[qId]}</span>`);
+                        }
+                    }
+                }
+                if (newFound.length > 0) {
+                    combinedVrRecord[0].found = newFound;
+                }
+            }
+            
+            if (date) {
+                combinedVrRecord[0].date = date;
+            } else if (score !== undefined) {
+                // If a new score was provided but no date, use current date
+                const now = new Date();
+                combinedVrRecord[0].date = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            }
+
+            if (duration !== undefined) {
+                // format duration to HH:MM if it's a number (hours)
+                if (!isNaN(duration)) {
+                    const totalMins = Math.round(Number(duration) * 60);
+                    const hrs = Math.floor(totalMins / 60);
+                    const mins = totalMins % 60;
+                    combinedVrRecord[0].duration = `${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}`;
+                } else {
+                    combinedVrRecord[0].duration = duration;
+                }
+            }
+
+            if (vrHistoryList) {
+                vrHistoryList.innerHTML = combinedVrRecord.map(record => `
+                    <div class="note-card glass-panel vr-history-card" data-id="` + record.id + `" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; transition: transform 0.2s, box-shadow 0.2s; gap: 10px;">
+                        <div>
+                            <h3 style="color: var(--primary-cyan); margin: 0 0 5px 0;"><i class="fa-solid fa-vr-cardboard"></i> 模擬探索 - ${record.levelName}</h3>
+                            <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; text-align: center;">${record.date}</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <span style="font-size: 1.5rem; font-weight: bold; color: ${record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757')};">${record.score} 分</span>
+                            <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
+                        </div>
+                    </div>
+                `).join('');
+
+                const historyCards = document.querySelectorAll('.vr-history-card');
+                historyCards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        const recordId = this.getAttribute('data-id');
+                        const record = combinedVrRecord.find(r => String(r.id) === String(recordId));
+                        
+                        if (record) {
+                            document.getElementById('vrModalDate').textContent = record.date;
+
                         
                         const scoreElem = document.getElementById('vrModalScore');
                         if (scoreElem) {
@@ -3574,7 +3251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         const foundList = document.getElementById('vrModalFoundList');
                         if (foundList) {
-                            foundList.innerHTML = record.found.map(item => '<li style="margin-bottom: 8px;"><i class="fa-solid fa-crosshairs" style="color: #2ed573; margin-right: 8px;"></i>' + item + '</li>').join('');
+                            foundList.innerHTML = record.found.map(item => '<li style="margin-bottom: 8px;">' + item + '</li>').join('');
                         }
                         
                         document.getElementById('vrModalSuggestion').textContent = record.suggestion;
@@ -3582,6 +3259,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             });
+        }
+        }; // End of renderVrHistoryCard
+
+        // Call it initially
+        window.renderVrHistoryCard();
+
+        const currentUserStr = localStorage.getItem('currentUser');
+        if (currentUserStr) {
+            try {
+                const userObj = JSON.parse(currentUserStr);
+                fetch(`${API_BASE_URL}/api/stats?userId=${userObj.id}`)
+                    .then(res => res.json())
+                    .then(resData => {
+                        if (resData.success && resData.data) {
+                            window.renderVrHistoryCard(resData.data.totalScore, resData.data.trainingHours, resData.data.createdAt, resData.data.answers);
+                        }
+                    })
+                    .catch(e => console.error("Error fetching VR stats on load:", e));
+            } catch(e) {}
         }
 
         if (closeVrHistoryModalBtn) {
@@ -3766,6 +3462,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e.target === imageZoomModal) {
                     hideZoomModal();
                 }
+            });
+        }
+
+        // Toggle logic for Radar and Line chart
+        const btnShowRadar = document.getElementById('btnShowRadar');
+        const btnShowLine = document.getElementById('btnShowLine');
+        const radarContainer = document.getElementById('radarContainer');
+        const lineContainer = document.getElementById('lineContainer');
+
+        if (btnShowRadar && btnShowLine && radarContainer && lineContainer) {
+            btnShowRadar.addEventListener('click', () => {
+                radarContainer.style.display = 'block';
+                lineContainer.style.display = 'none';
+                btnShowRadar.style.backgroundColor = '#00a8ff';
+                btnShowRadar.style.color = '#000';
+                btnShowLine.style.backgroundColor = 'transparent';
+                btnShowLine.style.color = '#00a8ff';
+            });
+
+            btnShowLine.addEventListener('click', () => {
+                radarContainer.style.display = 'none';
+                lineContainer.style.display = 'block';
+                btnShowLine.style.backgroundColor = '#00a8ff';
+                btnShowLine.style.color = '#000';
+                btnShowRadar.style.backgroundColor = 'transparent';
+                btnShowRadar.style.color = '#00a8ff';
             });
         }
 

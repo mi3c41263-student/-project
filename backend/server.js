@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const db = require("./db"); // 引入資料庫連線
-
 const app = express();
 
 app.use(cors());
