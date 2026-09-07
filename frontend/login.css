@@ -149,7 +149,7 @@ body {
 .toggle-eye { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); color: #fff; cursor: pointer; z-index: 2; background-color: transparent;}
 .input-line:focus-within .toggle-eye { color: #3b82f6; }
 
-.form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; font-size: 0.95rem; }
+.form-options { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; font-size: 0.95rem; }
 .remember-me { display: flex; align-items: center; color: #8892b0; cursor: pointer; }
 .remember-me input { margin-right: 8px; }
 .forgot-link { color: #3b82f6; text-decoration: none; }
