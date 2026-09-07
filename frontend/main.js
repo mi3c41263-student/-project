@@ -918,1446 +918,910 @@ window.initRadarChart = async function () {
     // =========================================
         const bigQuestionBank = [
     {
+        "id": 1,
+        "type": "MC",
+        "q": "當一家跨國企業的核心研發主管無預警離職並轉投競爭對手時，下列何項處置程序最符合高階資安稽核的合規與風險管控要求？",
+        "en_q": "當一家跨國企業的核心研發主管無預警離職並轉投競爭對手時，下列何項處置程序最符合高階資安稽核的合規與風險管控要求？",
+        "options": {
+            "A": "A. 立即通知人事部門啟動離職面談，並要求該主管在離職前完成所有專案交接，待交接完成後再關閉帳號。",
+            "B": "B. 由直屬主管口頭警告該員工不得洩漏機密，並要求資訊部門在下週一上班前停用其電子郵件信箱。",
+            "C": "C. 同步且即時地全面撤銷其邏輯與實體存取權限，同時封存其個人工作站與雲端硬碟，並啟動強制交接與離職後合規審查。",
+            "D": "D. 撤銷其對核心研發系統的存取權，保留一般辦公室網路權限，以便其在最後工作日整理個人物品。"
+        },
+        "en_options": {
+            "A": "A. 立即通知人事部門啟動離職面談，並要求該主管在離職前完成所有專案交接，待交接完成後再關閉帳號。",
+            "B": "B. 由直屬主管口頭警告該員工不得洩漏機密，並要求資訊部門在下週一上班前停用其電子郵件信箱。",
+            "C": "C. 同步且即時地全面撤銷其邏輯與實體存取權限，同時封存其個人工作站與雲端硬碟，並啟動強制交接與離職後合規審查。",
+            "D": "D. 撤銷其對核心研發系統的存取權，保留一般辦公室網路權限，以便其在最後工作日整理個人物品。"
+        },
+        "ans": "C",
+        "explanation": "面對高風險離職（尤其是核心人員轉投競爭對手），首要任務是「立即止血」。ISO 27002 強調在僱用終止或變更時，必須立即撤銷所有相關的實體與邏輯存取權限。封存設備和雲端空間是為了保全證據，以防機密外洩或破壞，後續的合規審查則能確認是否有違規行為發生。單純的交接或延遲撤銷權限都會帶來極高的風險。",
+        "en_explanation": "面對高風險離職（尤其是核心人員轉投競爭對手），首要任務是「立即止血」。ISO 27002 強調在僱用終止或變更時，必須立即撤銷所有相關的實體與邏輯存取權限。封存設備和雲端空間是為了保全證據，以防機密外洩或破壞，後續的合規審查則能確認是否有違規行為發生。單純的交接或延遲撤銷權限都會帶來極高的風險。"
+    },
+    {
         "id": 2,
-        "type": "TF",
-        "q": "依據實體環境控制原則，交貨與裝卸貨區域（Delivery and loading areas）應與資訊處理設施嚴格隔離，以避免外部送貨員直接看見或進入安全區域。",
-        "en_q": "According to physical environment control principles, delivery and loading areas should be strictly isolated from information processing facilities to prevent external delivery personnel from viewing or entering secure areas.",
-        "ans": "true",
-        "explanation": "根據 ISO 27001/27002 實體與環境安全原則，交貨與裝卸貨區域是外部人員與物資進入的緩衝區。為了防止未經授權的實體存取與機密資訊外洩，這些區域必須與資訊處理設施（如機房、辦公區）嚴格隔離，確保外部送貨員無法直接進入內部安全區域或看見敏感資訊。",
-        "en_explanation": "According to the physical and environmental security principles of ISO 27001/27002, delivery and loading areas serve as buffer zones for external personnel and materials. To prevent unauthorized physical access and information leakage, these areas must be strictly isolated from information processing facilities (e.g., server rooms, office areas), ensuring that external delivery personnel cannot directly enter secure internal areas or view sensitive information."
+        "type": "MC",
+        "q": "某企業總部將伺服器機房設置於大樓二樓，且該樓層緊鄰公共戶外景觀平台。下列哪一項複合式控制措施組合最能有效防範透過景觀平台的實體入侵與高階滲透測試？",
+        "en_q": "某企業總部將伺服器機房設置於大樓二樓，且該樓層緊鄰公共戶外景觀平台。下列哪一項複合式控制措施組合最能有效防範透過景觀平台的實體入侵與高階滲透測試？",
+        "options": {
+            "A": "A. 在景觀平台設置警告標語，並要求保全人員每兩小時巡邏一次。",
+            "B": "B. 在機房內部安裝一般監視器（CCTV），並將錄影資料保留 30 天。",
+            "C": "C. 採用雙層防彈玻璃、加裝震動感測器、設置紅外線入侵偵測網格，並將機房對外窗全面封死或改為無對外開口的無窗設計。",
+            "D": "D. 在窗戶貼上單向透光隔熱紙，並在景觀平台與機房窗戶之間種植帶刺的灌木叢作為物理屏障。"
+        },
+        "en_options": {
+            "A": "A. 在景觀平台設置警告標語，並要求保全人員每兩小時巡邏一次。",
+            "B": "B. 在機房內部安裝一般監視器（CCTV），並將錄影資料保留 30 天。",
+            "C": "C. 採用雙層防彈玻璃、加裝震動感測器、設置紅外線入侵偵測網格，並將機房對外窗全面封死或改為無對外開口的無窗設計。",
+            "D": "D. 在窗戶貼上單向透光隔熱紙，並在景觀平台與機房窗戶之間種植帶刺的灌木叢作為物理屏障。"
+        },
+        "ans": "C",
+        "explanation": "機房（核心資訊處理設施）緊鄰公共區域是極大的實體安全漏洞（控制項 7.1）。最佳實務是機房不應有對外窗，若建築結構無法更改，則必須採用最高強度的實體防護（如防彈玻璃）加上多重感測器（震動、紅外線）來建立縱深防禦。只有複合式的物理屏障加上電子偵測，才能有效應對專業的實體滲透測試或入侵。",
+        "en_explanation": "機房（核心資訊處理設施）緊鄰公共區域是極大的實體安全漏洞（控制項 7.1）。最佳實務是機房不應有對外窗，若建築結構無法更改，則必須採用最高強度的實體防護（如防彈玻璃）加上多重感測器（震動、紅外線）來建立縱深防禦。只有複合式的物理屏障加上電子偵測，才能有效應對專業的實體滲透測試或入侵。"
     },
     {
         "id": 3,
-        "type": "TF",
-        "q": "員工離職時，僅需由 IT 部門撤銷其邏輯存取權限（如 VPN、Email），實體門禁卡因屬人資管轄，待其下週回公司辦手續時再收回即可。",
-        "en_q": "When an employee resigns, only the IT department needs to revoke logical access (e.g., VPN, Email). Since physical access cards are managed by HR, they can be collected next week when the employee returns for paperwork.",
-        "ans": "false",
-        "explanation": "員工離職或終止聘用時，邏輯存取權限（系統、網路）與實體存取權限（門禁卡、鑰匙）必須「同時且立即」撤銷。若延遲收回實體門禁卡，離職員工可能在空窗期內惡意進入辦公室竊取資產或破壞設備，帶來巨大的實體安全風險。",
-        "en_explanation": "When an employee resigns or their employment is terminated, both logical access (systems, network) and physical access (access cards, keys) must be revoked simultaneously and immediately. Delaying the collection of physical access cards leaves a vulnerability window where the former employee could maliciously enter the office to steal assets or damage equipment, posing a significant physical security risk."
+        "type": "MC",
+        "q": "企業若需將存有客戶加密資料的備份磁帶委由外部物流運送至異地備援中心，下列哪一項作業流程最符合進階稽核的最高防護標準？",
+        "en_q": "企業若需將存有客戶加密資料的備份磁帶委由外部物流運送至異地備援中心，下列哪一項作業流程最符合進階稽核的最高防護標準？",
+        "options": {
+            "A": "A. 將磁帶放入一般紙箱密封，交由知名快遞公司運送，並索取寄件收據。",
+            "B": "B. 由資訊部門新進員工自行開車將磁帶送至異地備援中心，以節省成本。",
+            "C": "C. 使用硬體級加密（如 AES-256）、放入具備 GPS 定位與防破壞機制的特製保險箱，並由兩名保全隨行且全程簽署交接清單。",
+            "D": "D. 在磁帶外殼貼上「機密」標籤，並要求物流司機承諾會小心保管。"
+        },
+        "en_options": {
+            "A": "A. 將磁帶放入一般紙箱密封，交由知名快遞公司運送，並索取寄件收據。",
+            "B": "B. 由資訊部門新進員工自行開車將磁帶送至異地備援中心，以節省成本。",
+            "C": "C. 使用硬體級加密（如 AES-256）、放入具備 GPS 定位與防破壞機制的特製保險箱，並由兩名保全隨行且全程簽署交接清單。",
+            "D": "D. 在磁帶外殼貼上「機密」標籤，並要求物流司機承諾會小心保管。"
+        },
+        "ans": "C",
+        "explanation": "雖然資料已加密，但實體資產（備份磁帶）在場外運送期間風險最高（控制項 7.10）。最高防護標準不僅要求資料本身的加密（邏輯安全），更要求實體運送過程的極致安全。包含：強固的實體容器（防破壞保險箱）、即時追蹤（GPS）、雙人護送原則（兩名保全）以及嚴格的監管鏈（全程簽署交接清單）。",
+        "en_explanation": "雖然資料已加密，但實體資產（備份磁帶）在場外運送期間風險最高（控制項 7.10）。最高防護標準不僅要求資料本身的加密（邏輯安全），更要求實體運送過程的極致安全。包含：強固的實體容器（防破壞保險箱）、即時追蹤（GPS）、雙人護送原則（兩名保全）以及嚴格的監管鏈（全程簽署交接清單）。"
     },
     {
         "id": 4,
-        "type": "TF",
-        "q": "在規劃實體周界時，即便機房已設置刷卡門禁，仍應考量防尾隨（Anti-tailgating）機制，避免未授權者緊跟授權者進入。",
-        "en_q": "When planning physical perimeters, even if the server room has card access control, anti-tailgating mechanisms should still be considered to prevent unauthorized persons from following authorized personnel inside.",
-        "ans": "true",
-        "explanation": "刷卡門禁只能驗證持有卡片的人員身分，但無法防止「尾隨（Tailgating）」攻擊。未授權人員可能緊跟在合法授權員工身後進入機房，因此實體周界規劃必須考量防尾隨機制（如人員定員管制門、十字轉門或保全監控），以確保每次開門僅限一人通過。",
-        "en_explanation": "Card access systems can only verify the identity of the cardholder but cannot prevent \"tailgating\" attacks. Unauthorized individuals could slip into the server room by closely following an authorized employee. Therefore, physical perimeter planning must include anti-tailgating mechanisms (such as mantrap doors, turnstiles, or security guard monitoring) to ensure only one person enters per door opening."
+        "type": "MC",
+        "q": "在執行「人員背景查核」時，某金融科技公司針對將負責核心交易系統架構的資深軟體工程師進行招募。下列關於背景查核範圍與深度的敘述，何者最為正確？",
+        "en_q": "在執行「人員背景查核」時，某金融科技公司針對將負責核心交易系統架構的資深軟體工程師進行招募。下列關於背景查核範圍與深度的敘述，何者最為正確？",
+        "options": {
+            "A": "A. 只要確認應徵者提供的大學畢業證書為真，即可完成查核。",
+            "B": "B. 查核深度應與職位風險成正比，除了一般學經歷與信用紀錄外，還需針對其過往技術背景、潛在利益衝突及法律訴訟紀錄進行合規查核。",
+            "C": "C. 背景查核會侵犯個人隱私，因此企業不應對任何職位進行背景查核。",
+            "D": "D. 僅需透過社交媒體（如 Facebook、Instagram）觀察應徵者的日常發文，以評估其品行。"
+        },
+        "en_options": {
+            "A": "A. 只要確認應徵者提供的大學畢業證書為真，即可完成查核。",
+            "B": "B. 查核深度應與職位風險成正比，除了一般學經歷與信用紀錄外，還需針對其過往技術背景、潛在利益衝突及法律訴訟紀錄進行合規查核。",
+            "C": "C. 背景查核會侵犯個人隱私，因此企業不應對任何職位進行背景查核。",
+            "D": "D. 僅需透過社交媒體（如 Facebook、Instagram）觀察應徵者的日常發文，以評估其品行。"
+        },
+        "ans": "B",
+        "explanation": "背景查核的程度應與業務需求、職務分類及預期的風險相稱。對於接觸核心系統的高權限/高風險職位，標準的查核（學經歷）是不夠的，必須進行更深度的盡職調查，包括財務狀況（信用紀錄，防範經濟壓力導致的舞弊）、利益衝突及犯罪或訴訟紀錄，以確保人員的誠信與可靠度。",
+        "en_explanation": "背景查核的程度應與業務需求、職務分類及預期的風險相稱。對於接觸核心系統的高權限/高風險職位，標準的查核（學經歷）是不夠的，必須進行更深度的盡職調查，包括財務狀況（信用紀錄，防範經濟壓力導致的舞弊）、利益衝突及犯罪或訴訟紀錄，以確保人員的誠信與可靠度。"
+    },
+    {
+        "id": 5,
+        "type": "MA",
+        "q": "稽核員在進行實體機房稽核時，發現機房內部的高架地板下方佈滿了電力線路與網路通訊纜線，且兩者緊密交錯綑綁在一起。從實體與環境安全的角度來看，這會帶來哪些潛在風險？（多選）",
+        "en_q": "稽核員在進行實體機房稽核時，發現機房內部的高架地板下方佈滿了電力線路與網路通訊纜線，且兩者緊密交錯綑綁在一起。從實體與環境安全的角度來看，這會帶來哪些潛在風險？（多選）",
+        "options": {
+            "A": "A. 高壓電力線路產生的電磁干擾（EMI）可能嚴重影響網路通訊纜線的資料傳輸品質與封包完整性。",
+            "B": "B. 增加纜線過熱引發短路與火災的風險。",
+            "C": "C. 方便工程師同時維護電力與網路設備，提高工作效率。",
+            "D": "D. 增加未來維修或擴充線路時，誤觸或誤拔線路的風險，導致服務中斷。"
+        },
+        "en_options": {
+            "A": "A. 高壓電力線路產生的電磁干擾（EMI）可能嚴重影響網路通訊纜線的資料傳輸品質與封包完整性。",
+            "B": "B. 增加纜線過熱引發短路與火災的風險。",
+            "C": "C. 方便工程師同時維護電力與網路設備，提高工作效率。",
+            "D": "D. 增加未來維修或擴充線路時，誤觸或誤拔線路的風險，導致服務中斷。"
+        },
+        "ans": [
+            "A",
+            "B",
+            "D"
+        ],
+        "explanation": "佈線安全（Cabling security，控制項 7.12）要求電力纜線和通訊纜線必須實體隔離。電力線路（尤其是高壓或大電流）會產生電磁干擾（EMI），若與網路線緊密相鄰，會造成訊號衰減、資料錯誤甚至網路中斷。此外，未隔離的纜線散熱不良易引發火災，且雜亂的佈線極易在維護時造成人為疏失（誤拔線路）引發服務中斷。",
+        "en_explanation": "佈線安全（Cabling security，控制項 7.12）要求電力纜線和通訊纜線必須實體隔離。電力線路（尤其是高壓或大電流）會產生電磁干擾（EMI），若與網路線緊密相鄰，會造成訊號衰減、資料錯誤甚至網路中斷。此外，未隔離的纜線散熱不良易引發火災，且雜亂的佈線極易在維護時造成人為疏失（誤拔線路）引發服務中斷。"
     },
     {
         "id": 6,
-        "type": "TF",
-        "q": "存取權限的定期審查（Access review）不僅包含應用程式的帳號密碼，也必須包含「實體機房門禁卡」的核准名單清查。",
-        "en_q": "Periodic access reviews must include not only application accounts and passwords but also the approved list for physical server room access cards.",
-        "ans": "true",
-        "explanation": "存取權限審查（Access review）的核心目的是確保「最小權限原則」。隨著人員調動或離職，實體機房的存取需求會改變。因此，不僅是系統邏輯權限，實體門禁卡的授權名單也必須定期清查，以註銷不再需要進出機房人員的權限。",
-        "en_explanation": "The core purpose of access reviews is to ensure the \"principle of least privilege.\" As personnel transfer or leave, their need for physical server room access changes. Therefore, in addition to logical system privileges, the authorization lists for physical access cards must be periodically reviewed and audited to revoke access for those who no longer need to enter the server room."
+        "type": "MA",
+        "q": "針對 ISO 27002 規範中之「桌面淨空及螢幕淨空（Clear Desk and Clear Screen）」，某科技公司實施了全面無紙化與開放式隨機座位辦公環境。下列哪些管理與技術控制措施是落實該政策不可或缺的關鍵？（多選）",
+        "en_q": "針對 ISO 27002 規範中之「桌面淨空及螢幕淨空（Clear Desk and Clear Screen）」，某科技公司實施了全面無紙化與開放式隨機座位辦公環境。下列哪些管理與技術控制措施是落實該政策不可或缺的關鍵？（多選）",
+        "options": {
+            "A": "A. 實施自動螢幕鎖定機制，防止員工短暫離開座位時遭受旁窺。",
+            "B": "B. 要求員工每天下班時必須清空桌面所有物品，並將筆記型電腦鎖入個人置物櫃。",
+            "C": "C. 依賴員工自律，口頭宣導離開座位時要手動鎖定螢幕即可。",
+            "D": "D. 在開放辦公區廣設碎紙機與機密文件回收箱。"
+        },
+        "en_options": {
+            "A": "A. 實施自動螢幕鎖定機制，防止員工短暫離開座位時遭受旁窺。",
+            "B": "B. 要求員工每天下班時必須清空桌面所有物品，並將筆記型電腦鎖入個人置物櫃。",
+            "C": "C. 依賴員工自律，口頭宣導離開座位時要手動鎖定螢幕即可。",
+            "D": "D. 在開放辦公區廣設碎紙機與機密文件回收箱。"
+        },
+        "ans": [
+            "A",
+            "B",
+            "D"
+        ],
+        "explanation": "桌面與螢幕淨空（控制項 7.7）的目的是減少機密資訊被未授權存取的機會。在隨機座位的環境中，技術面強制實施自動螢幕鎖定（A）是基礎。實體面上，要求下班清空桌面並妥善鎖好設備（B）能防範非辦公時間的竊取。此外，即使是無紙化辦公室，偶爾仍有列印需求，因此提供安全的機密文件銷毀管道（D）也是落實淨空政策的必要配套措施。僅依賴員工自律（C）是不可靠的。",
+        "en_explanation": "桌面與螢幕淨空（控制項 7.7）的目的是減少機密資訊被未授權存取的機會。在隨機座位的環境中，技術面強制實施自動螢幕鎖定（A）是基礎。實體面上，要求下班清空桌面並妥善鎖好設備（B）能防範非辦公時間的竊取。此外，即使是無紙化辦公室，偶爾仍有列印需求，因此提供安全的機密文件銷毀管道（D）也是落實淨空政策的必要配套措施。僅依賴員工自律（C）是不可靠的。"
     },
     {
         "id": 7,
-        "type": "TF",
-        "q": "伺服器設備如需移出辦公室進行外部維修，只要該設備的管理負責人當下口頭同意即可，為求效率無須填寫設備攜出單。",
-        "en_q": "If server equipment needs to be moved out of the office for external repair, verbal consent from the equipment manager is sufficient; to ensure efficiency, no equipment removal form is required.",
-        "ans": "false",
-        "explanation": "根據 ISO 資產與實體安全管理規範，任何資訊設備（特別是伺服器）移出組織實體周界前，都必須經過正式的授權與記錄程序（如填寫設備攜出單）。口頭同意無法留下稽核軌跡，若設備遺失或資料外洩，將無法追溯責任與確認設備狀態。",
-        "en_explanation": "According to ISO asset and physical security management standards, any information equipment (especially servers) moved outside the organization's physical perimeter must undergo a formal authorization and recording process (such as an equipment removal form). Verbal consent leaves no audit trail; if the equipment is lost or data is breached, it becomes impossible to trace accountability or verify the equipment's status."
+        "type": "MA",
+        "q": "依據 ISO 27002 關於「防範實體及環境威脅（Protecting Against Physical and Environmental Threats）」之要求，企業在評估資料中心選址與機房內部防護時，下列哪些防範措施屬於標準且必要的合規項目？（多選）",
+        "en_q": "依據 ISO 27002 關於「防範實體及環境威脅（Protecting Against Physical and Environmental Threats）」之要求，企業在評估資料中心選址與機房內部防護時，下列哪些防範措施屬於標準且必要的合規項目？（多選）",
+        "options": {
+            "A": "A. 評估選址是否位於已知的天災高風險區域（如斷層帶、易淹水區）。",
+            "B": "B. 於高架地板下方安裝具備聯動警報機制的漏水偵測感知線纜，以防範空調系統或地下管線滲漏。",
+            "C": "C. 盡量將電子設備及紙本檔案堆疊放置以節省及預留空間。",
+            "D": "D. 配備合適的滅火系統（如 FM-200 或無毒氣體滅火系統），且須避免使用會損壞電子設備的灑水系統。"
+        },
+        "en_options": {
+            "A": "A. 評估選址是否位於已知的天災高風險區域（如斷層帶、易淹水區）。",
+            "B": "B. 於高架地板下方安裝具備聯動警報機制的漏水偵測感知線纜，以防範空調系統或地下管線滲漏。",
+            "C": "C. 盡量將電子設備及紙本檔案堆疊放置以節省及預留空間。",
+            "D": "D. 配備合適的滅火系統（如 FM-200 或無毒氣體滅火系統），且須避免使用會損壞電子設備的灑水系統。"
+        },
+        "ans": [
+            "A",
+            "B",
+            "D"
+        ],
+        "explanation": "防範實體及環境威脅（控制項 7.5）要求必須考慮自然災害（地震、火災、水災）及人為威脅。選址避開高風險區（A）是首要原則。機房內漏水偵測（B）能及早發現空調漏水等隱患。合適的氣體滅火系統（D）能確保滅火時不破壞昂貴的 IT 設備。將易燃物存放於機房（C）則嚴重違反了消防與環境安全規定，會大幅增加火災風險。",
+        "en_explanation": "防範實體及環境威脅（控制項 7.5）要求必須考慮自然災害（地震、火災、水災）及人為威脅。選址避開高風險區（A）是首要原則。機房內漏水偵測（B）能及早發現空調漏水等隱患。合適的氣體滅火系統（D）能確保滅火時不破壞昂貴的 IT 設備。將易燃物存放於機房（C）則嚴重違反了消防與環境安全規定，會大幅增加火災風險。"
     },
     {
         "id": 8,
-        "type": "TF",
-        "q": "針對高度機密的安全區域（如核心資料中心），即使是編制內的清潔人員，也必須在授權技術人員的監督下才能進入打鎖。",
-        "en_q": "For highly confidential secure areas (like core data centers), even internal cleaning staff must be supervised by authorized technical personnel when entering to perform duties.",
-        "ans": "true",
-        "explanation": "核心資料中心存放企業關鍵系統與機敏數據，實體安全要求極高。清潔人員通常不具備高權限的資安查核背景，若允許其單獨進入，可能有誤觸設備或遭受社交工程利用的風險。因此，非授權技術人員進入時，必須由授權人員全程監督。",
-        "en_explanation": "Core data centers house critical enterprise systems and sensitive data, requiring the highest level of physical security. Cleaning staff typically do not have high-level security clearance. Allowing them to enter unaccompanied poses risks of accidental equipment disruption or vulnerability to social engineering. Therefore, any non-authorized technical personnel must be fully supervised by authorized staff while inside."
+        "type": "MC",
+        "q": "在人員安全與意識培訓的實務稽核中，下列敘述何者正確？",
+        "en_q": "在人員安全與意識培訓的實務稽核中，下列敘述何者正確？",
+        "options": {
+            "A": "A. 員工報到時簽署過一次資訊安全承諾書，即視同已具備足夠的資安意識。",
+            "B": "B. 培訓內容應針對所有層級員工統一且固定不變，以確保標準化。",
+            "C": "C. 資安教育訓練不應僅流於形式，其成效必須透過量化指標進行定期評估與改善。",
+            "D": "D. 高階主管工作繁忙，可以免除參加定期的資安意識培訓。"
+        },
+        "en_options": {
+            "A": "A. 員工報到時簽署過一次資訊安全承諾書，即視同已具備足夠的資安意識。",
+            "B": "B. 培訓內容應針對所有層級員工統一且固定不變，以確保標準化。",
+            "C": "C. 資安教育訓練不應僅流於形式，其成效必須透過量化指標進行定期評估與改善。",
+            "D": "D. 高階主管工作繁忙，可以免除參加定期的資安意識培訓。"
+        },
+        "ans": "C",
+        "explanation": "資安意識培訓（控制項 6.3）不是一次性的活動，必須是持續且具針對性的過程。稽核的重點在於「有效性」。單純發送教材或簽署文件是不夠的。有效的培訓應透過社交工程演練結果（如釣魚點擊率降低）、員工主動通報次數等量化指標來證明其成效（C），並據此調整未來的培訓內容。高階主管往往是定向釣魚攻擊（Spear Phishing）的首要目標，更不能免除培訓。",
+        "en_explanation": "資安意識培訓（控制項 6.3）不是一次性的活動，必須是持續且具針對性的過程。稽核的重點在於「有效性」。單純發送教材或簽署文件是不夠的。有效的培訓應透過社交工程演練結果（如釣魚點擊率降低）、員工主動通報次數等量化指標來證明其成效（C），並據此調整未來的培訓內容。高階主管往往是定向釣魚攻擊（Spear Phishing）的首要目標，更不能免除培訓。"
+    },
+    {
+        "id": 9,
+        "type": "MA",
+        "q": "某外包軟體開發商的工程師因專案需求需進入客戶端機房進行系統維護。依據 ISO 27002 實體與人員存取控制原則，下列哪些作業流程是客戶端必須落實的必要防護措施？（多選）",
+        "en_q": "某外包軟體開發商的工程師因專案需求需進入客戶端機房進行系統維護。依據 ISO 27002 實體與人員存取控制原則，下列哪些作業流程是客戶端必須落實的必要防護措施？（多選）",
+        "options": {
+            "A": "A. 外包工程師在進入機房前，必須完成背景查核並已簽署具法律效力的保密協議（NDA）。",
+            "B": "B. 工程師出示外包公司識別證後，可讓其自行刷卡進入機房。",
+            "C": "C. 進入機房後，必須由客戶端內部授權人員全程陪同與監督，限制其只能接觸相關維護區域。",
+            "D": "D. 詳細記錄該外包工程師的進出時間、目的及授權核准紀錄。"
+        },
+        "en_options": {
+            "A": "A. 外包工程師在進入機房前，必須完成背景查核並已簽署具法律效力的保密協議（NDA）。",
+            "B": "B. 工程師出示外包公司識別證後，可讓其自行刷卡進入機房。",
+            "C": "C. 進入機房後，必須由客戶端內部授權人員全程陪同與監督，限制其只能接觸相關維護區域。",
+            "D": "D. 詳細記錄該外包工程師的進出時間、目的及授權核准紀錄。"
+        },
+        "ans": [
+            "A",
+            "C",
+            "D"
+        ],
+        "explanation": "針對外部供應商或訪客進入安全區域（Physical Entry，控制項 7.2），控制要求更為嚴格。必須確保合約與保密義務已落實（A）。訪客/外包商絕對不可在無人陪同下單獨留在核心安全區域（如機房），必須由內部授權人員全程監督（C）。同時，必須留下完整的稽核軌跡，這次包括進出紀錄與授權證明（D），以備日後追查。",
+        "en_explanation": "針對外部供應商或訪客進入安全區域（Physical Entry，控制項 7.2），控制要求更為嚴格。必須確保合約與保密義務已落實（A）。訪客/外包商絕對不可在無人陪同下單獨留在核心安全區域（如機房），必須由內部授權人員全程監督（C）。同時，必須留下完整的稽核軌跡，這次包括進出紀錄與授權證明（D），以備日後追查。"
     },
     {
         "id": 10,
-        "type": "TF",
-        "q": "資訊安全認知教育訓練的內容，應明確包含員工若違反公司資安政策時，公司將依法或依規採取的懲處程序（Disciplinary process）。",
-        "en_q": "Information security awareness training should explicitly cover the disciplinary process the company will take according to laws or regulations if an employee violates security policies.",
-        "ans": "true",
-        "explanation": "ISO 27001 要求人員安全控制措施必須包含懲戒程序（Disciplinary process）。在資安教育訓練中宣導懲處程序，能有效提高員工對資安規定的重視程度，達到嚇阻違規行為的作用，並在實際發生違規時具備正當的處置依據。",
-        "en_explanation": "ISO 27001 requires personnel security controls to include a disciplinary process. Communicating these disciplinary procedures during security awareness training effectively emphasizes the importance of security policies, deters violations, and provides a justified basis for action if a breach occurs."
+        "type": "MC",
+        "q": "依據「資訊安全事件通報（Information Security Event Reporting）」之人員控制規範，當基層員工在辦公室座位上發現一封高度可疑的釣魚郵件，且附帶了聲稱是公司最新考績辦法的壓縮檔時，下列哪一項處置流程完全符合資安標準？",
+        "en_q": "依據「資訊安全事件通報（Information Security Event Reporting）」之人員控制規範，當基層員工在辦公室座位上發現一封高度可疑的釣魚郵件，且附帶了聲稱是公司最新考績辦法的壓縮檔時，下列哪一項處置流程完全符合資安標準？",
+        "options": {
+            "A": "A. 將該郵件轉發給同部門所有同事，並提醒大家注意防範。",
+            "B": "B. 立即停止操作，不點擊壓縮檔亦不解壓縮，並透過公司規定的資安事件通報管道呈報該郵件。",
+            "C": "C. 為求檢查，先將壓縮檔下載到個人隨身碟中，帶回家用自己的電腦開啟查看。",
+            "D": "D. 直接將該郵件刪除，並清空垃圾桶。"
+        },
+        "en_options": {
+            "A": "A. 將該郵件轉發給同部門所有同事，並提醒大家注意防範。",
+            "B": "B. 立即停止操作，不點擊壓縮檔亦不解壓縮，並透過公司規定的資安事件通報管道呈報該郵件。",
+            "C": "C. 為求檢查，先將壓縮檔下載到個人隨身碟中，帶回家用自己的電腦開啟查看。",
+            "D": "D. 直接將該郵件刪除，並清空垃圾桶。"
+        },
+        "ans": "B",
+        "explanation": "資安事件通報（控制項 6.8）要求員工必須知悉並使用既定的管道，盡速通報觀察到的或懷疑的資訊安全事件。最正確的反應是「不接觸（不點擊附件）、即時通報」（B），讓專業的資安團隊接手分析。轉發郵件（A）可能造成二次傳播風險；私自下載（C）會擴大感染面；直接刪除（D）則剝奪了資安團隊獲取早期威脅情報（Threat Intelligence）的機會，不利於聯防。",
+        "en_explanation": "資安事件通報（控制項 6.8）要求員工必須知悉並使用既定的管道，盡速通報觀察到的或懷疑的資訊安全事件。最正確的反應是「不接觸（不點擊附件）、即時通報」（B），讓專業的資安團隊接手分析。轉發郵件（A）可能造成二次傳播風險；私自下載（C）會擴大感染面；直接刪除（D）則剝奪了資安團隊獲取早期威脅情報（Threat Intelligence）的機會，不利於聯防。"
     },
     {
         "id": 11,
-        "type": "TF",
-        "q": "為彰顯管理階層的彈性，總經理與副總級別的辦公室可以完全豁免「實體安全防護」與「桌面螢幕淨空」的稽核要求。",
-        "en_q": "To demonstrate management flexibility, the offices of the General Manager and Vice Presidents can be completely exempted from \"physical security\" and \"clear desk/screen\" audit requirements.",
-        "ans": "false",
-        "explanation": "資訊安全政策必須一體適用，高階主管通常接觸並掌握公司最高機密（如財務報表、併購計畫），其辦公室若缺乏實體防護或未落實桌面/螢幕淨空，機密外洩的風險與衝擊反而更大。因此，管理階層絕不可豁免資安稽核要求。",
-        "en_explanation": "Information security policies must apply universally. Senior executives typically access the company's highest secrets (e.g., financial reports, M&A plans). If their offices lack physical protection or fail to enforce clear desk/screen policies, the risk and impact of a data breach are significantly higher. Therefore, management must never be exempted from security audit requirements."
+        "type": "MC",
+        "q": "某高科技企業的資訊安全長（CISO）發現，部分離職員工在離職前夕利用合法的管理權限，透過自動化腳本大量打包非自身職責範圍的研發圖紙與核心原始碼。為有效防範此類內部威脅，企業應優先落實下列哪一項管理與技術控制措施？",
+        "en_q": "某高科技企業的資訊安全長（CISO）發現，部分離職員工在離職前夕利用合法的管理權限，透過自動化腳本大量打包非自身職責範圍的研發圖紙與核心原始碼。為有效防範此類內部威脅，企業應優先落實下列哪一項管理與技術控制措施？",
+        "options": {
+            "A": "A. 要求所有員工在入職時簽署終身禁業禁止條款，以確保離職後無法轉投競爭對手。",
+            "B": "B. 建立基於使用者行為分析（UEBA）與資料外洩防護（DLP）的即時異常存取監控與告警機制，並對敏感資料異動設置「雙人覆核」或特權帳號審查機制。",
+            "C": "C. 委託外部知名徵信社對全體員工進行每季一次的突擊性背景複查與測謊。",
+            "D": "D. 將所有員工的個人隨身碟與外接儲存媒體全面沒收，改由企業統一配發無對外傳輸功能的印表機。"
+        },
+        "en_options": {
+            "A": "A. 要求所有員工在入職時簽署終身禁業禁止條款，以確保離職後無法轉投競爭對手。",
+            "B": "B. 建立基於使用者行為分析（UEBA）與資料外洩防護（DLP）的即時異常存取監控與告警機制，並對敏感資料異動設置「雙人覆核」或特權帳號審查機制。",
+            "C": "C. 委託外部知名徵信社對全體員工進行每季一次的突擊性背景複查與測謊。",
+            "D": "D. 將所有員工的個人隨身碟與外接儲存媒體全面沒收，改由企業統一配發無對外傳輸功能的印表機。"
+        },
+        "ans": "B",
+        "explanation": "內部威脅往往來自擁有合法權限的合法人員。僅靠合約約束（A）或沒收實體設備（D）無法阻止數位資料透過網路外洩。ISO 27002 強調在人員變更與存取控制中，必須透過技術監控手段（如 UEBA、DLP）即時偵測異常的大量下載行為（B），並搭配職責區隔（Segregation of duties）與雙人覆核，才能在損害發生前攔截。突擊測謊與過度侵犯隱私（C）不符合國際資安標準的比例原則。",
+        "en_explanation": "內部威脅往往來自擁有合法權限的合法人員。僅靠合約約束（A）或沒收實體設備（D）無法阻止數位資料透過網路外洩。ISO 27002 強調在人員變更與存取控制中，必須透過技術監控手段（如 UEBA、DLP）即時偵測異常的大量下載行為（B），並搭配職責區隔（Segregation of duties）與雙人覆核，才能在損害發生前攔截。突擊測謊與過度侵犯隱私（C）不符合國際資安標準的比例原則。"
     },
     {
         "id": 12,
-        "type": "TF",
-        "q": "若公司採用「共享辦公空間（Co-working space）」，因缺乏實體牆壁周界，應強制採用防窺片、上鎖抽屜等補償性控制措施來保護資產。",
-        "en_q": "If the company uses a \"co-working space\", compensating controls like privacy filters and lockable drawers must be mandated to protect assets due to the lack of physical wall perimeters.",
-        "ans": "true",
-        "explanation": "在共享辦公空間中，傳統的實體周界（如獨立辦公室門禁、實體牆壁）已不存在，外部人員極易接近員工。為了彌補這層安全防護的缺失，必須實施補償性控制（Compensating controls），如螢幕防窺片、設備上鎖與嚴格的桌面淨空，以防範偷窺與實體竊盜。",
-        "en_explanation": "In co-working spaces, traditional physical perimeters (e.g., independent office doors, solid walls) do not exist, making it easy for outsiders to approach employees. To compensate for this lack of physical security, compensating controls—such as screen privacy filters, locking equipment, and strict clear desk policies—must be implemented to prevent shoulder surfing and physical theft."
+        "type": "MC",
+        "q": "某金融機構的資料中心位於辦公大樓地下室，為因應實體及環境安全的要求，稽核員在檢視其機房空調與消防系統時，發現下列四種設計。請問哪一項設計最符合最高規格的防護標準？",
+        "en_q": "某金融機構的資料中心位於辦公大樓地下室，為因應實體及環境安全的要求，稽核員在檢視其機房空調與消防系統時，發現下列四種設計。請問哪一項設計最符合最高規格的防護標準？",
+        "options": {
+            "A": "A. 採用傳統的直立式水管撒水系統，並連接大樓的主消防水管，確保水源不斷。",
+            "B": "B. 設置雙迴路獨立供電的精密恆溫恆濕空調，並在機房天花板及高架地板下全面部署感溫線纜，同時搭配氣體式自動滅火系統與緊急手動切斷閥。",
+            "C": "C. 為了節省空間與成本，將機房空調與整棟大樓的中央空調共用風管，並在機房內放置數台移動式水冷扇。",
+            "D": "D. 僅依賴大樓外側的自然通風窗戶進行散熱，以達到節能減碳與符合環保法規的要求。"
+        },
+        "en_options": {
+            "A": "A. 採用傳統的直立式水管撒水系統，並連接大樓的主消防水管，確保水源不斷。",
+            "B": "B. 設置雙迴路獨立供電的精密恆溫恆濕空調，並在機房天花板及高架地板下全面部署感溫線纜，同時搭配氣體式自動滅火系統與緊急手動切斷閥。",
+            "C": "C. 為了節省空間與成本，將機房空調與整棟大樓的中央空調共用風管，並在機房內放置數台移動式水冷扇。",
+            "D": "D. 僅依賴大樓外側的自然通風窗戶進行散熱，以達到節能減碳與符合環保法規的要求。"
+        },
+        "ans": "B",
+        "explanation": "機房實體環境控制要求必須具備穩定且安全的支援設施。水管撒水系統（A）對 IT 設備是災難性的；共用風管與水冷扇（C）或自然通風（D）會引入外部粉塵、濕氣或無法控制的環境威脅。正確的做法是採用獨立且雙迴路的精密空調、全方位的消防感測（溫感/煙感）以及不損壞設備的氣體滅火系統（B），並具備手動切斷機制防止誤觸釋放。",
+        "en_explanation": "機房實體環境控制要求必須具備穩定且安全的支援設施。水管撒水系統（A）對 IT 設備是災難性的；共用風管與水冷扇（C）或自然通風（D）會引入外部粉塵、濕氣或無法控制的環境威脅。正確的做法是採用獨立且雙迴路的精密空調、全方位的消防感測（溫感/煙感）以及不損壞設備的氣體滅火系統（B），並具備手動切斷機制防止誤觸釋放。"
     },
     {
         "id": 13,
-        "type": "TF",
-        "q": "員工出差在咖啡廳工作時，只要筆電有設定開機密碼，即使短暫去洗手間將筆電單獨留在桌上，也不算違反實體安全規範。",
-        "en_q": "When an employee works at a cafe during a business trip, as long as the laptop has a boot password, leaving it unattended on the table briefly to use the restroom does not violate physical security guidelines.",
-        "ans": "false",
-        "explanation": "即使筆電有開機密碼，在公共場所（如咖啡廳）將設備無人看管地留在桌上，極容易遭到實體竊盜（整台筆電被偷走）。開機密碼只能防止直接登入，無法防止設備遺失造成的資產損失與潛在的硬碟破解風險，此行為嚴重違反實體安全規範。",
-        "en_explanation": "Even with a boot password, leaving a device unattended in a public place (like a cafe) makes it highly susceptible to physical theft. A password only prevents direct login; it does not prevent the loss of the physical asset or potential offline hard drive cracking. This behavior is a severe violation of physical security guidelines."
+        "type": "MC",
+        "q": "一家跨國外包軟體研發公司聘用了大量來自不同國家的遠距約聘工程師。依據「遠距工作（Remote Working）」規範，下列何種管理作法最容易在稽核時被判為重大缺失？",
+        "en_q": "一家跨國外包軟體研發公司聘用了大量來自不同國家的遠距約聘工程師。依據「遠距工作（Remote Working）」規範，下列何種管理作法最容易在稽核時被判為重大缺失？",
+        "options": {
+            "A": "A. 要求所有遠距外包工程師必須透過公司規定的虛擬私人網路（VPN）連線，並強制啟動多因素驗證（MFA）與端點合規檢查。",
+            "B": "B. 允許外包工程師使用其個人私人筆記型電腦直接透過網頁端存取客戶的正式生產環境資料庫，並由其自行決定密碼複雜度。",
+            "C": "C. 定期對外包廠商進行實體與數位資安合規稽核，並在合約中明確規範其人員的保密與違約罰則。",
+            "D": "D. 針對遠距工作環境，要求工程師必須確保工作場所具備實體隱私，防止同住家人或訪客窺視螢幕機密。"
+        },
+        "en_options": {
+            "A": "A. 要求所有遠距外包工程師必須透過公司規定的虛擬私人網路（VPN）連線，並強制啟動多因素驗證（MFA）與端點合規檢查。",
+            "B": "B. 允許外包工程師使用其個人私人筆記型電腦直接透過網頁端存取客戶的正式生產環境資料庫，並由其自行決定密碼複雜度。",
+            "C": "C. 定期對外包廠商進行實體與數位資安合規稽核，並在合約中明確規範其人員的保密與違約罰則。",
+            "D": "D. 針對遠距工作環境，要求工程師必須確保工作場所具備實體隱私，防止同住家人或訪客窺視螢幕機密。"
+        },
+        "ans": "B",
+        "explanation": "允許外包人員使用無法受企業管控的「私人筆記型電腦」直接存取正式生產環境，且不強制安全規範與端點防護（B），是極度嚴重的資安破口，違反了 ISO 27002 對外部供應商與遠距資產的嚴格管控原則。選項 A、C、D 均為標準且合規的最佳實務。",
+        "en_explanation": "允許外包人員使用無法受企業管控的「私人筆記型電腦」直接存取正式生產環境，且不強制安全規範與端點防護（B），是極度嚴重的資安破口，違反了 ISO 27002 對外部供應商與遠距資產的嚴格管控原則。選項 A、C、D 均為標準且合規的最佳實務。"
     },
     {
         "id": 14,
-        "type": "TF",
-        "q": "備份磁帶或硬碟在運送至異地備援中心的過程中，應使用上鎖容器或加密技術，以防止半途發生資料外洩（Data Breach）。",
-        "en_q": "Backup tapes or hard drives being transported to an off-site recovery center should use locked containers or encryption technologies to prevent data breaches in transit.",
-        "ans": "true",
-        "explanation": "實體媒體在運送過程中（Transit）是最脆弱的環節之一，容易遭受遺失、攔截或竊取。根據 ISO 標準，運送機敏資料的實體媒體時，必須採取適當的保護措施，包括使用防破壞的上鎖容器以及將資料強加密，確保即使實體遺失，資料也不會外洩。",
-        "en_explanation": "Physical media in transit is one of the most vulnerable links and is susceptible to loss, interception, or theft. According to ISO standards, transporting physical media containing sensitive data requires adequate protection, including tamper-evident locked containers and strong data encryption, ensuring that even if the physical asset is lost, the data remains secure."
+        "type": "MC",
+        "q": "某企業總部大樓為防止外部不明人士利用「尾隨（Tailgating）」手法闖入辦公區或機房，決定升級門禁管制系統。下列哪一項門禁硬體與邏輯配置的組合，在實體防護上最具備防禦鑑別力？",
+        "en_q": "某企業總部大樓為防止外部不明人士利用「尾隨（Tailgating）」手法闖入辦公區或機房，決定升級門禁管制系統。下列哪一項門禁硬體與邏輯配置的組合，在實體防護上最具備防禦鑑別力？",
+        "options": {
+            "A": "A. 於出入口安裝單向傳統玻璃旋轉門，並在旁邊設置訪客登記簿。",
+            "B": "B. 採用雙門互鎖氣閘門，結合刷卡，並於內部裝設光學防尾隨偵測器，當偵測到兩人同時進入時自動鎖定並觸發警報。",
+            "C": "C. 將辦公區大門全面改為自動感應電動滑門，並調靈敏度，只要有人靠近就自動開啟。",
+            "D": "D. 廢除所有電子門禁卡，改發紙本通行證，並由大樓門口的保全人員識別並開放通行。"
+        },
+        "en_options": {
+            "A": "A. 於出入口安裝單向傳統玻璃旋轉門，並在旁邊設置訪客登記簿。",
+            "B": "B. 採用雙門互鎖氣閘門，結合刷卡，並於內部裝設光學防尾隨偵測器，當偵測到兩人同時進入時自動鎖定並觸發警報。",
+            "C": "C. 將辦公區大門全面改為自動感應電動滑門，並調靈敏度，只要有人靠近就自動開啟。",
+            "D": "D. 廢除所有電子門禁卡，改發紙本通行證，並由大樓門口的保全人員識別並開放通行。"
+        },
+        "ans": "B",
+        "explanation": "防範尾隨需要高強度的實體架構與技術結合。雙門互鎖氣閘門（Mantrap）確保一次只能通過一人，加上光學防尾隨偵測（B），能有效阻絕未授權者緊跟進入。傳統旋轉門（A）容易被兩人硬擠通過；自動滑門（C）毫無防尾隨能力；紙本與肉眼辨識（D）則完全無法應對現代資安稽核要求。",
+        "en_explanation": "防範尾隨需要高強度的實體架構與技術結合。雙門互鎖氣閘門（Mantrap）確保一次只能通過一人，加上光學防尾隨偵測（B），能有效阻絕未授權者緊跟進入。傳統旋轉門（A）容易被兩人硬擠通過；自動滑門（C）毫無防尾隨能力；紙本與肉眼辨識（D）則完全無法應對現代資安稽核要求。"
     },
     {
         "id": 15,
-        "type": "TF",
-        "q": "因為行銷與總機人員平常接觸不到後端伺服器，因此在「人員控制」中，他們無須被要求簽署資安保密協議。",
-        "en_q": "Since marketing and reception personnel usually do not access backend servers, they are not required to sign information security NDAs under \"personnel controls\".",
-        "ans": "false",
-        "explanation": "企業內的所有員工，無論職位為何，都可能接觸到某種程度的機敏資訊（如客戶名單、內部通訊錄、來訪貴賓資訊）。保密協議（NDA）是確保所有人員理解其保密義務的法律基礎，因此，全體員工在到職時都必須簽署，沒有例外。",
-        "en_explanation": "All employees within an enterprise, regardless of their role, may access some level of sensitive information (e.g., customer lists, internal directories, VIP visitor logs). A Non-Disclosure Agreement (NDA) is the legal foundation ensuring all personnel understand their confidentiality obligations. Therefore, all employees must sign an NDA upon hiring, without exception."
+        "type": "MA",
+        "q": "某企業人資與資安團隊針對即將離職的高階主管制定了標準作業程序（SOP）。下列哪些處置步驟符合資安稽核的合規要求？（多選）",
+        "en_q": "某企業人資與資安團隊針對即將離職的高階主管制定了標準作業程序（SOP）。下列哪些處置步驟符合資安稽核的合規要求？（多選）",
+        "options": {
+            "A": "A. 在離職生效日的當下，同步且立即終止其所有企業身分識別帳號、VPN 憑證、電子郵件及雲端儲存空間存取權限。",
+            "B": "B. 要求該主管在離職前將個人工作筆記型電腦繳回，並由資安團隊進行數位鑑識與硬碟完整抹除或封存。",
+            "C": "C. 考量其為高階主管，允許其在離職後一個月內以「顧問」身分保留原有的系統管理員權限，以便隨時協助交接。",
+            "D": "D. 確實執行離職面談與資產清點，收回所有實體門禁卡、辦公室鑰匙及公司配發的硬體資產。"
+        },
+        "en_options": {
+            "A": "A. 在離職生效日的當下，同步且立即終止其所有企業身分識別帳號、VPN 憑證、電子郵件及雲端儲存空間存取權限。",
+            "B": "B. 要求該主管在離職前將個人工作筆記型電腦繳回，並由資安團隊進行數位鑑識與硬碟完整抹除或封存。",
+            "C": "C. 考量其為高階主管，允許其在離職後一個月內以「顧問」身分保留原有的系統管理員權限，以便隨時協助交接。",
+            "D": "D. 確實執行離職面談與資產清點，收回所有實體門禁卡、辦公室鑰匙及公司配發的硬體資產。"
+        },
+        "ans": [
+            "A",
+            "B",
+            "D"
+        ],
+        "explanation": "高階主管離職或變更職務時，權限回收必須「即時且全面」（A），絕對不可因為「協助交接」而刻意保留高權限（C），這是非常致命的資安錯誤。收回實體資產與門禁卡（D）以及對設備進行鑑識封存（B）是標準的離職控管流程。",
+        "en_explanation": "高階主管離職或變更職務時，權限回收必須「即時且全面」（A），絕對不可因為「協助交接」而刻意保留高權限（C），這是非常致命的資安錯誤。收回實體資產與門禁卡（D）以及對設備進行鑑識封存（B）是標準的離職控管流程。"
     },
     {
         "id": 16,
-        "type": "TF",
-        "q": "背景查核（Screening）不應一視同仁，而是應依據該職位即將接觸的「資訊機密等級與系統風險」來決定查核的深度。",
-        "en_q": "Background screening should not be uniform; rather, the depth of the check should be determined by the \"information confidentiality level and system risk\" the position will encounter.",
-        "ans": "true",
-        "explanation": "根據 ISO 27002 人員安全指南，背景查核應符合比例原則（Proportionality）。接觸極機密資料或具備系統最高權限的職位（如系統管理員、財務長），其背景查核必須比一般行政人員更為嚴格和深入，以有效管控內部威脅風險。",
-        "en_explanation": "According to ISO 27002 personnel security guidelines, background screening should be proportionate to the business requirements and acceptable risks. Positions accessing highly confidential data or possessing ultimate system privileges (e.g., System Administrators, CFOs) require stricter and deeper background checks than general administrative staff to effectively manage insider threats."
+        "type": "MA",
+        "q": "某資料中心為符合 ISO 27002 關於「設備汰除或重新使用之保全（Security of Equipment Disposal or Re-use）」的安全規範，針對內含機敏資料的伺服器與硬碟進行報廢處理。下列哪些作業流程是稽核員在查核時會認定為合規的項目？（多選）",
+        "en_q": "某資料中心為符合 ISO 27002 關於「設備汰除或重新使用之保全（Security of Equipment Disposal or Re-use）」的安全規範，針對內含機敏資料的伺服器與硬碟進行報廢處理。下列哪些作業流程是稽核員在查核時會認定為合規的項目？（多選）",
+        "options": {
+            "A": "A. 所有報廢硬碟在離開資料中心機房前，必須在現場直接完成實體破壞（如使用專業消磁機進行強力消磁，或透過物理鑽孔破壞碟片結構）。",
+            "B": "B. 若硬碟需交由外部合格的回收廠商處理，必須簽署嚴格的資安與保密合約（SLA/NDA），並要求回收商提供具法律效力的銷毀證明。",
+            "C": "C. 將淘汰的伺服器硬碟進行作業系統層級的「快速格式化（Quick Format）」，確認開機無畫面後，即可丟棄或低價售出。",
+            "D": "D. 建立完整的資產報廢與生命週期追蹤清冊，詳細記錄每一顆硬碟的序號、報廢時間、銷毀方式及經手人員簽名。"
+        },
+        "en_options": {
+            "A": "A. 所有報廢硬碟在離開資料中心機房前，必須在現場直接完成實體破壞（如使用專業消磁機進行強力消磁，或透過物理鑽孔破壞碟片結構）。",
+            "B": "B. 若硬碟需交由外部合格的回收廠商處理，必須簽署嚴格的資安與保密合約（SLA/NDA），並要求回收商提供具法律效力的銷毀證明。",
+            "C": "C. 將淘汰的伺服器硬碟進行作業系統層級的「快速格式化（Quick Format）」，確認開機無畫面後，即可丟棄或低價售出。",
+            "D": "D. 建立完整的資產報廢與生命週期追蹤清冊，詳細記錄每一顆硬碟的序號、報廢時間、銷毀方式及經手人員簽名。"
+        },
+        "ans": [
+            "A",
+            "B",
+            "D"
+        ],
+        "explanation": "設備汰除或重新使用之保全（控制項 7.14）要求極高的嚴謹度。快速格式化（C）極易被復原，直接外售會導致嚴重資料外洩，是重大違規。現場消磁或物理破壞（A）、簽署合約並取得銷毀證明（B）以及完整的監管追蹤清冊（D）均為標準且必要的合規項目。",
+        "en_explanation": "設備汰除或重新使用之保全（控制項 7.14）要求極高的嚴謹度。快速格式化（C）極易被復原，直接外售會導致嚴重資料外洩，是重大違規。現場消磁或物理破壞（A）、簽署合約並取得銷毀證明（B）以及完整的監管追蹤清冊（D）均為標準且必要的合規項目。"
     },
     {
         "id": 17,
-        "type": "TF",
-        "q": "為了方便日後更換，機房內高架地板下的網路佈線（Cabling）可以不加貼標籤標示，只要負責的資深工程師自己記得線路走向即可。",
-        "en_q": "To facilitate future replacements, network cabling under raised floors in server rooms does not need labeling, as long as the responsible senior engineer remembers the cable routes.",
-        "ans": "false",
-        "explanation": "依賴單一工程師的記憶會產生嚴重的單點故障（Single Point of Failure）風險，若該工程師離職或休假，將導致線路無法維護或發生接線錯誤。ISO 規範要求所有佈線應有清楚且一致的標籤標示與文件紀錄，以確保維護的正確性與實體安全性。",
-        "en_explanation": "Relying on a single engineer's memory creates a severe Single Point of Failure. If the engineer resigns or is on leave, cables become unmaintainable or prone to patching errors. ISO standards require all cabling to have clear, consistent labeling and documented records to ensure accurate maintenance and physical security."
+        "type": "MA",
+        "q": "針對「資訊安全認知、教育及訓練 (Information Security Awareness, Education and Training)」規範，企業若要向稽核員證明其員工資安培訓有效降低了人為疏失風險，下列哪些做法與衡量指標是合理且被採納的？（多選）",
+        "en_q": "針對「資訊安全認知、教育及訓練 (Information Security Awareness, Education and Training)」規範，企業若要向稽核員證明其員工資安培訓有效降低了人為疏失風險，下列哪些做法與衡量指標是合理且被採納的？（多選）",
+        "options": {
+            "A": "A. 規定所有新進員工在到職當天必須線上觀看資安政策影片，並通過隨堂測驗。",
+            "B": "B. 定期舉辦不定期的「實兵社交工程演練（如模擬釣魚郵件、社群釣魚或電話詐騙測試）」，並以員工的「中招率下降趨勢」及「主動通報率上升幅度」作為量化 KPI。",
+            "C": "C. 針對不同權限與風險的職位（如財務人員、研發人員、高階主管）設計分眾、客製化的資安進階課程。",
+            "D": "D. 若全公司員工的年度資安培訓簽到表達 100% 簽名，就不須進行任何成效評估與測驗。"
+        },
+        "en_options": {
+            "A": "A. 規定所有新進員工在到職當天必須線上觀看資安政策影片，並通過隨堂測驗。",
+            "B": "B. 定期舉辦不定期的「實兵社交工程演練（如模擬釣魚郵件、社群釣魚或電話詐騙測試）」，並以員工的「中招率下降趨勢」及「主動通報率上升幅度」作為量化 KPI。",
+            "C": "C. 針對不同權限與風險的職位（如財務人員、研發人員、高階主管）設計分眾、客製化的資安進階課程。",
+            "D": "D. 若全公司員工的年度資安培訓簽到表達 100% 簽名，就不須進行任何成效評估與測驗。"
+        },
+        "ans": [
+            "A",
+            "B",
+            "C"
+        ],
+        "explanation": "資安培訓不能只做形式上的簽到（D）是錯誤的。有效的培訓包含新進訓練（A）、針對高風險族群的分眾客製化課程（C），以及透過量化的演練指標（如釣魚點擊率與通報率）來證明成效（B），這才符合 ISO 27002 對於持續改善與有效性的稽核要求。",
+        "en_explanation": "資安培訓不能只做形式上的簽到（D）是錯誤的。有效的培訓包含新進訓練（A）、針對高風險族群的分眾客製化課程（C），以及透過量化的演練指標（如釣魚點擊率與通報率）來證明成效（B），這才符合 ISO 27002 對於持續改善與有效性的稽核要求。"
     },
     {
         "id": 18,
-        "type": "TF",
-        "q": "在建置機房時，電源線與通訊纜線應盡可能分開鋪設或採取實體隔離，以避免電磁干擾（EMI）與潛在的實體線路竊聽風險。",
-        "en_q": "When building a server room, power cables and communication cables should be laid separately or physically isolated to avoid electromagnetic interference (EMI) and potential physical wiretapping risks.",
-        "ans": "true",
-        "explanation": "電源線在傳輸電流時會產生電磁場，若與通訊網路線靠得太近，會引發電磁干擾（EMI），導致網路封包遺失或傳輸不穩。此外，分開鋪設也有助於防止有心人士利用電磁外洩進行訊號竊聽，這是佈線安全（Cabling security）的標準作法。",
-        "en_explanation": "Power cables generate electromagnetic fields when transmitting current. If laid too close to communication cables, they can cause Electromagnetic Interference (EMI), leading to packet loss or unstable transmissions. Furthermore, separate routing helps prevent threat actors from exploiting electromagnetic emissions for signal eavesdropping, which is a standard practice in cabling security."
+        "type": "MA",
+        "q": "某企業的總部辦公大樓位於地質敏感帶且鄰近河畔，面臨地震與水災的雙重潛在威脅。依據「防範實體及環境威脅（Protecting Against Physical and Environmental Threats）」之規定，企業在規劃與維護辦公室及機房實體環境時，下列哪些防護與應變措施是符合標準的？（多選）",
+        "en_q": "某企業的總部辦公大樓位於地質敏感帶且鄰近河畔，面臨地震與水災的雙重潛在威脅。依據「防範實體及環境威脅（Protecting Against Physical and Environmental Threats）」之規定，企業在規劃與維護辦公室及機房實體環境時，下列哪些防護與應變措施是符合標準的？（多選）",
+        "options": {
+            "A": "A. 將核心伺服器機櫃與不斷電系統（UPS）主機安裝在地下一樓的地面上，以方便重型機具的搬運與進出。",
+            "B": "B. 建立完善的自然災害應變計畫與業務持續計畫（BCP），並定期舉辦實體防汛與抗震演練。",
+            "C": "C. 在機房及重要檔案室內設置防水閘門、自動抽水幫浦，並將重要 IT 設備架設在高架地板或防震基座上。",
+            "D": "D. 針對大樓結構進行耐震補強評估，並將關鍵電力與備用發電機組設置在不受淹水影響的高樓層或安全區域。"
+        },
+        "en_options": {
+            "A": "A. 將核心伺服器機櫃與不斷電系統（UPS）主機安裝在地下一樓的地面上，以方便重型機具的搬運與進出。",
+            "B": "B. 建立完善的自然災害應變計畫與業務持續計畫（BCP），並定期舉辦實體防汛與抗震演練。",
+            "C": "C. 在機房及重要檔案室內設置防水閘門、自動抽水幫浦，並將重要 IT 設備架設在高架地板或防震基座上。",
+            "D": "D. 針對大樓結構進行耐震補強評估，並將關鍵電力與備用發電機組設置在不受淹水影響的高樓層或安全區域。"
+        },
+        "ans": [
+            "B",
+            "C",
+            "D"
+        ],
+        "explanation": "地下一樓（A）是水災的高風險區，將核心伺服器直接放置於地下一樓地面是嚴重的環境安全設計失誤。正確的做法是將關鍵設施設置在高樓層或做好防水防震工程（C、D），並建立完善的 BCP 與演練（B）。",
+        "en_explanation": "地下一樓（A）是水災的高風險區，將核心伺服器直接放置於地下一樓地面是嚴重的環境安全設計失誤。正確的做法是將關鍵設施設置在高樓層或做好防水防震工程（C、D），並建立完善的 BCP 與演練（B）。"
+    },
+    {
+        "id": 19,
+        "type": "MC",
+        "q": "某企業在進行人員安全稽核時發現，內部員工違反資安政策的懲處紀錄僅保留在各部門主管的私人記事本中，未統一納入正式的人事懲戒程序。依據 ISO 27002 「人員控制措施」規範，此做法最主要的合規風險為何？",
+        "en_q": "某企業在進行人員安全稽核時發現，內部員工違反資安政策的懲處紀錄僅保留在各部門主管的私人記事本中，未統一納入正式的人事懲戒程序。依據 ISO 27002 「人員控制措施」規範，此做法最主要的合規風險為何？",
+        "options": {
+            "A": "A. 導致人事部門無法正確計算員工的年終獎金發放金額。",
+            "B": "B. 違反不可否認性（Non-repudiation）與制度一致性，可能因缺乏正式與客觀的紀律處分程序而引發勞資爭議或稽核缺失。",
+            "C": "C. 使得員工的個人隱私資料遭到公開洩漏，違反個資保護法。",
+            "D": "D. 影響公司內部通訊錄的更新效率，導致資料交叉比對有誤。"
+        },
+        "en_options": {
+            "A": "A. 導致人事部門無法正確計算員工的年終獎金發放金額。",
+            "B": "B. 違反不可否認性（Non-repudiation）與制度一致性，可能因缺乏正式與客觀的紀律處分程序而引發勞資爭議或稽核缺失。",
+            "C": "C. 使得員工的個人隱私資料遭到公開洩漏，違反個資保護法。",
+            "D": "D. 影響公司內部通訊錄的更新效率，導致資料交叉比對有誤。"
+        },
+        "ans": "B",
+        "explanation": "ISO 27002 要求企業必須建立並溝通正式的獎懲過程（Disciplinary Process，控制項 6.4）。若懲處紀錄僅由主管私下保留，缺乏標準化與一致性，不僅無法達到嚇阻效果，更可能在發生解雇或降職處分時因程序不合法而面臨嚴重的勞資訴訟與稽核缺失（NCR）。",
+        "en_explanation": "ISO 27002 要求企業必須建立並溝通正式的獎懲過程（Disciplinary Process，控制項 6.4）。若懲處紀錄僅由主管私下保留，缺乏標準化與一致性，不僅無法達到嚇阻效果，更可能在發生解雇或降職處分時因程序不合法而面臨嚴重的勞資訴訟與稽核缺失（NCR）。"
     },
     {
         "id": 20,
-        "type": "TF",
-        "q": "實體與環境安全防護不僅在防範人為惡意入侵，同時也應包含對火災、水災、地震等自然災害的防護與監測措施。",
-        "en_q": "Physical and environmental security protection is not only about preventing malicious human intrusions but should also include protection and monitoring measures against natural disasters like fires, floods, and earthquakes.",
-        "ans": "true",
-        "explanation": "資訊安全不僅關注機密性（Confidentiality），也高度重視可用性（Availability）。火災、漏水或地震等自然與環境威脅，皆可瞬間摧毀 IT 基礎設施。因此，實體與環境安全必須涵蓋防火、防水、溫濕度監控及抗震等防災與監測機制。",
-        "en_explanation": "Information security focuses not only on Confidentiality but also heavily on Availability. Natural and environmental threats like fires, leaks, or earthquakes can instantly destroy IT infrastructure. Therefore, physical and environmental security must encompass disaster prevention and monitoring mechanisms, such as fire suppression, water detection, temperature/humidity monitoring, and seismic bracing."
+        "type": "MC",
+        "q": "企業在規劃辦公室實體安全周界時，若大樓採用開放式設計且與商場共構，下列哪一項實體控制措施最能有效區隔辦公區域與外部公眾空間？",
+        "en_q": "企業在規劃辦公室實體安全周界時，若大樓採用開放式設計且與商場共構，下列哪一項實體控制措施最能有效區隔辦公區域與外部公眾空間？",
+        "options": {
+            "A": "A. 在大樓外圍張貼「閒雜人等禁止進入」的告示牌。",
+            "B": "B. 建立多層次實體周界，於辦公區入口設置實體轉閘門或雙門互鎖閘道，並嚴格執行訪客身分驗證與全程陪同。",
+            "C": "C. 要求員工在公共走道上大聲喧嘩以嚇阻潛在入侵者。",
+            "D": "D. 依靠商場的保全人員兼任辦公室內部的安全巡邏。"
+        },
+        "en_options": {
+            "A": "A. 在大樓外圍張貼「閒雜人等禁止進入」的告示牌。",
+            "B": "B. 建立多層次實體周界，於辦公區入口設置實體轉閘門或雙門互鎖閘道，並嚴格執行訪客身分驗證與全程陪同。",
+            "C": "C. 要求員工在公共走道上大聲喧嘩以嚇阻潛在入侵者。",
+            "D": "D. 依靠商場的保全人員兼任辦公室內部的安全巡邏。"
+        },
+        "ans": "B",
+        "explanation": "當辦公環境與外部公眾空間共構時，單靠告示牌或外部保全（A、D）完全無法阻絕未授權存取。透過轉閘門、雙門互鎖及嚴格的訪客管理（B），才能確保未授權人員無法進入辦公或敏感區域。",
+        "en_explanation": "當辦公環境與外部公眾空間共構時，單靠告示牌或外部保全（A、D）完全無法阻絕未授權存取。透過轉閘門、雙門互鎖及嚴格的訪客管理（B），才能確保未授權人員無法進入辦公或敏感區域。"
     },
     {
         "id": 21,
-        "type": "TF",
-        "q": "在機房（Secure areas）內進行設備查修時，只要鏡頭沒有刻意對準伺服器螢幕上的機密代碼，技師就可以自由使用手機全程錄影。",
-        "en_q": "When inspecting equipment in secure areas, technicians can freely record the entire process using their phones, provided the camera is not deliberately aimed at confidential code on server screens.",
-        "ans": "false",
-        "explanation": "機房屬於高度安全區域（Secure areas），內部可能包含機密設備配置、網路拓撲或未受保護的實體資訊。自由錄影極易無意間拍到敏感資訊，違反機密性原則。通常機房內嚴格禁止未經授權的攝影及錄音設備，即便需要記錄，也必須經過嚴格的申請與審查。",
-        "en_explanation": "Server rooms are highly secure areas that may expose confidential equipment configurations, network topologies, or unprotected physical data. Freely recording video can easily capture sensitive information unintentionally, violating the principle of confidentiality. Generally, unauthorized photographic and recording equipment is strictly prohibited in secure areas; any required recording must go through a strict approval and review process."
+        "type": "MC",
+        "q": "在執行「人員背景查核」時，跨國企業在不同國家招募員工必須兼顧當地勞動法與隱私權保護法（如歐盟 GDPR）。下列關於背景查核合規執行的敘述，何者最為正確？",
+        "en_q": "在執行「人員背景查核」時，跨國企業在不同國家招募員工必須兼顧當地勞動法與隱私權保護法（如歐盟 GDPR）。下列關於背景查核合規執行的敘述，何者最為正確？",
+        "options": {
+            "A": "A. 為了落實全面資安防護，企業應在應徵者完全不知情的情況下，秘密向徵信社購買其所有醫療與政治傾向紀錄。",
+            "B": "B. 背景查核項目應與職位風險成比例，且必須在取得應徵者明確的知情同意前提下合法進行。",
+            "C": "C. 跨國企業是根據總部的最高標準背景查核表格，優先於當地國家的法律限制。",
+            "D": "D. 背景查核僅能針對基層員工執行，對於核心高階主管因享有豁免權而完全免除。"
+        },
+        "en_options": {
+            "A": "A. 為了落實全面資安防護，企業應在應徵者完全不知情的情況下，秘密向徵信社購買其所有醫療與政治傾向紀錄。",
+            "B": "B. 背景查核項目應與職位風險成比例，且必須在取得應徵者明確的知情同意前提下合法進行。",
+            "C": "C. 跨國企業是根據總部的最高標準背景查核表格，優先於當地國家的法律限制。",
+            "D": "D. 背景查核僅能針對基層員工執行，對於核心高階主管因享有豁免權而完全免除。"
+        },
+        "ans": "B",
+        "explanation": "ISO 27002 及相關隱私法規強調，背景查核必須遵循比例原則與合法性。企業必須事先取得應徵者的知情同意（B），且查核範圍需與職務風險相符。秘密調查（A）或無視當地法律（C）均屬嚴重違法；高階主管更因權限高而需要更嚴格的查核而非豁免（D）。",
+        "en_explanation": "ISO 27002 及相關隱私法規強調，背景查核必須遵循比例原則與合法性。企業必須事先取得應徵者的知情同意（B），且查核範圍需與職務風險相符。秘密調查（A）或無視當地法律（C）均屬嚴重違法；高階主管更因權限高而需要更嚴格的查核而非豁免（D）。"
     },
     {
         "id": 22,
-        "type": "TF",
-        "q": "當員工內部輪調（從業務部轉至研發部）時，其舊有部門的系統權限與實體門禁權限應立即被觸發審查，並移除不必要的存取權。",
-        "en_q": "When an employee transfers internally (e.g., from Sales to R&D), their system permissions and physical access rights from the old department should trigger an immediate review, removing unnecessary access.",
-        "ans": "true",
-        "explanation": "員工內部輪調是權限潛變（Privilege Creep）最常發生的原因。若未即時撤銷舊部門的權限，員工將累積過多不必要的存取權，違反「最小權限原則」與「權責分立」。因此，人事異動必須自動觸發存取權限審查，移除不再適用的實體與邏輯權限。",
-        "en_explanation": "Internal employee transfers are the most common cause of Privilege Creep. If permissions from the old department are not promptly revoked, the employee accumulates unnecessary access rights, violating the \"principle of least privilege\" and \"segregation of duties.\" Therefore, personnel changes must automatically trigger access reviews to remove physical and logical privileges that are no longer applicable."
+        "type": "MC",
+        "q": "某企業的伺服器機房內部部署了氣體自動滅火系統。在進行年度實體安全與消防演練時，稽核員發現該滅火系統在觸發後會「瞬間釋放氣體並在 0.5 秒內完全抽乾室內氧氣」，且未設置任何預警與緩衝機制。從安全與合規角度來看，這項設計最需要立即改善的問題為何？",
+        "en_q": "某企業的伺服器機房內部部署了氣體自動滅火系統。在進行年度實體安全與消防演練時，稽核員發現該滅火系統在觸發後會「瞬間釋放氣體並在 0.5 秒內完全抽乾室內氧氣」，且未設置任何預警與緩衝機制。從安全與合規角度來看，這項設計最需要立即改善的問題為何？",
+        "options": {
+            "A": "A. 氣體釋放速度太快會導致滅火劑成本過高。",
+            "B": "B. 缺乏足夠的預警時間、聲光警報、緊急停止按鈕及人員撤離機制，可能對在機房內作業的人員造成窒息或致命危害。",
+            "C": "C. 氣體滅火系統會破壞機房內部的網路線接頭及設備，造成巨大損失。",
+            "D": "D. 該設計會使機房溫度瞬間飆升，對設備造成危害。"
+        },
+        "en_options": {
+            "A": "A. 氣體釋放速度太快會導致滅火劑成本過高。",
+            "B": "B. 缺乏足夠的預警時間、聲光警報、緊急停止按鈕及人員撤離機制，可能對在機房內作業的人員造成窒息或致命危害。",
+            "C": "C. 氣體滅火系統會破壞機房內部的網路線接頭及設備，造成巨大損失。",
+            "D": "D. 該設計會使機房溫度瞬間飆升，對設備造成危害。"
+        },
+        "ans": "B",
+        "explanation": "氣體滅火系統雖然能保護 IT 設備不受水損，但瞬間釋放高濃度氣體會導致缺氧窒息（控制項 7.5、7.8）。標準的實體安全規範要求系統必須具備預警時間、聲光警報、緊急中止鈕以及洩壓與人員撤離機制，以確保人身安全。",
+        "en_explanation": "氣體滅火系統雖然能保護 IT 設備不受水損，但瞬間釋放高濃度氣體會導致缺氧窒息（控制項 7.5、7.8）。標準的實體安全規範要求系統必須具備預警時間、聲光警報、緊急中止鈕以及洩壓與人員撤離機制，以確保人身安全。"
     },
     {
         "id": 23,
-        "type": "TF",
-        "q": "測試用的 USB 隨身碟裝因為沒有存放真實客戶的正式資料，所以在專案結束後，可以直接格式化一次並丟入一般垃圾桶。",
-        "en_q": "Since testing USB drives do not store real formal customer data, they can simply be formatted once and thrown into regular trash bins after the project ends.",
-        "ans": "false",
-        "explanation": "測試用隨身碟可能包含系統架構、測試用原始碼、網路配置等公司內部敏感資訊，且一般的「快速格式化」無法徹底清除資料，有心人士可輕易還原。所有儲存媒體在廢棄前，都必須經過安全抹除（Secure Wiping）或實體破壞程序，不可隨意丟棄。",
-        "en_explanation": "Testing USB drives may contain internal sensitive information such as system architectures, test source code, and network configurations. A standard \"quick format\" does not permanently erase data, allowing threat actors to easily recover it. All storage media must undergo secure wiping or physical destruction processes before disposal and must never be thrown into regular trash."
+        "type": "MC",
+        "q": "關於企業內部員工「智慧財產權與工作成果歸屬」的管理規範，下列敘述何者最符合 ISO 27002 人員控制的核心要求？",
+        "en_q": "關於企業內部員工「智慧財產權與工作成果歸屬」的管理規範，下列敘述何者最符合 ISO 27002 人員控制的核心要求？",
+        "options": {
+            "A": "A. 員工在上班時間利用公司資源研發出的專利或程式碼，其智慧財產權自然屬於員工個人所有，公司無權干涉。",
+            "B": "B. 聘用合約中應明確約定，員工在職期間所產出之所有與公司業務相關的工作成果、智慧財產權與專利，皆歸屬企業所有，且離職後仍須受保密義務拘束。",
+            "C": "C. 只要員工離職，其先前參與開發的專利技術所有權即自動轉移給員工。",
+            "D": "D. 智慧財產權的歸屬只需靠主管口頭交代即可，無須在合約中白紙黑字載明。"
+        },
+        "en_options": {
+            "A": "A. 員工在上班時間利用公司資源研發出的專利或程式碼，其智慧財產權自然屬於員工個人所有，公司無權干涉。",
+            "B": "B. 聘用合約中應明確約定，員工在職期間所產出之所有與公司業務相關的工作成果、智慧財產權與專利，皆歸屬企業所有，且離職後仍須受保密義務拘束。",
+            "C": "C. 只要員工離職，其先前參與開發的專利技術所有權即自動轉移給員工。",
+            "D": "D. 智慧財產權的歸屬只需靠主管口頭交代即可，無須在合約中白紙黑字載明。"
+        },
+        "ans": "B",
+        "explanation": "ISO 27002 關於聘用條款及條件（控制項 6.2）要求明確規範智慧財產權的歸屬與保密義務。合約必須白紙黑字約定所有職務發明與工作成果歸屬企業，以保障企業資產。",
+        "en_explanation": "ISO 27002 關於聘用條款及條件（控制項 6.2）要求明確規範智慧財產權的歸屬與保密義務。合約必須白紙黑字約定所有職務發明與工作成果歸屬企業，以保障企業資產。"
     },
     {
         "id": 24,
-        "type": "TF",
-        "q": "稽核時若發現門禁讀卡機外殼有被撬開或異常接線的痕跡，不論是否真的遭入侵，都應立即視為重大實體資安事件進行通報與調查。",
-        "en_q": "During an audit, if a card reader enclosure shows signs of prying or abnormal wiring, it should immediately be treated as a major physical security incident for reporting and investigation, regardless of whether a breach actually occurred.",
-        "ans": "true",
-        "explanation": "門禁讀卡機被撬開或有異常接線，是典型的實體破壞或側錄攻擊（如接上擷取器竊取卡片資料）跡象。即便當下無法確認是否已有未授權者進入，這已構成實體防線被妥協的嚴重威脅，必須立即啟動資安事件通報程序進行全面調查與防堵。",
-        "en_explanation": "A pried open card reader or abnormal wiring are classic signs of physical tampering or skimming attacks (e.g., attaching a skimmer to steal card data). Even if it cannot be immediately confirmed whether unauthorized access occurred, this constitutes a severe compromise of physical defenses. It must immediately trigger an incident response protocol for comprehensive investigation and containment."
+        "type": "MA",
+        "q": "某資料中心的備用不斷電系統（UPS）與柴油發電機組放置於戶外專用機房。稽核員在進行實體環境巡檢時，發現該發電機組的排氣管直接對著員工吸菸區。此發現可能違反下列哪一項 ISO 27002 控制項的精神？（多選）",
+        "en_q": "某資料中心的備用不斷電系統（UPS）與柴油發電機組放置於戶外專用機房。稽核員在進行實體環境巡檢時，發現該發電機組的排氣管直接對著員工吸菸區。此發現可能違反下列哪一項 ISO 27002 控制項的精神？（多選）",
+        "options": {
+            "A": "A. 設備維護與資產汰除（Equipment maintenance and disposal）",
+            "B": "B. 設備安置及保護（Equipment Siting and Protection）",
+            "C": "C. 佈纜安全 (Cabling Security)",
+            "D": "D. 防範實體及環境威脅 (Protecting Against Physical and Environmental Threats)"
+        },
+        "en_options": {
+            "A": "A. 設備維護與資產汰除（Equipment maintenance and disposal）",
+            "B": "B. 設備安置及保護（Equipment Siting and Protection）",
+            "C": "C. 佈纜安全 (Cabling Security)",
+            "D": "D. 防範實體及環境威脅 (Protecting Against Physical and Environmental Threats)"
+        },
+        "ans": [
+            "B",
+            "D"
+        ],
+        "explanation": "本情境屬於「設備擺放位置不當」引發的「火災風險」，同時違反兩項實體安全原則:(B)發電機排氣管（具高溫及油氣）直接朝向吸菸區，未避開危險源，屬於嚴重的設備安置與位置設計瑕疵；(D)吸菸區的明火若接觸到發電機廢氣，極易引發火災或氣爆，構成直接的實體與環境威脅。(A) 探討的是維修保養與報廢，與設備位置無關；(C) 探討的是網路或電源纜線保護，發電機排氣管非線纜，故不適用。",
+        "en_explanation": "本情境屬於「設備擺放位置不當」引發的「火災風險」，同時違反兩項實體安全原則:(B)發電機排氣管（具高溫及油氣）直接朝向吸菸區，未避開危險源，屬於嚴重的設備安置與位置設計瑕疵；(D)吸菸區的明火若接觸到發電機廢氣，極易引發火災或氣爆，構成直接的實體與環境威脅。(A) 探討的是維修保養與報廢，與設備位置無關；(C) 探討的是網路或電源纜線保護，發電機排氣管非線纜，故不適用。"
+    },
+    {
+        "id": 25,
+        "type": "MA",
+        "q": "依據 ISO 27002 關於「遠距工作（Remote working）」規範，當企業允許員工在家工作時，下列哪些管理與技術控制措施是必須落實的？（多選）",
+        "en_q": "依據 ISO 27002 關於「遠距工作（Remote working）」規範，當企業允許員工在家工作時，下列哪些管理與技術控制措施是必須落實的？（多選）",
+        "options": {
+            "A": "A. 企業必須提供安全且加密的遠端連線管道（如 VPN 搭配 MFA），並確保遠端終端設備受到企業端點防護軟體（EDR/MDM）的統一管控。",
+            "B": "B. 若員工有要求，便可使用自己的筆記型電腦進行工作。",
+            "C": "C. 要求員工在遠距辦公時，必須確保工作場所的實體隱私，防止同住家人或訪客窺視螢幕上的機密資料。",
+            "D": "D. 允許員工將公司機密紙本文件帶回家中方便工作。"
+        },
+        "en_options": {
+            "A": "A. 企業必須提供安全且加密的遠端連線管道（如 VPN 搭配 MFA），並確保遠端終端設備受到企業端點防護軟體（EDR/MDM）的統一管控。",
+            "B": "B. 若員工有要求，便可使用自己的筆記型電腦進行工作。",
+            "C": "C. 要求員工在遠距辦公時，必須確保工作場所的實體隱私，防止同住家人或訪客窺視螢幕上的機密資料。",
+            "D": "D. 允許員工將公司機密紙本文件帶回家中方便工作。"
+        },
+        "ans": [
+            "A",
+            "C"
+        ],
+        "explanation": "遠距工作的資安重點在於端點安全與實體隱私（控制項 6.7）。企業必須提供加密連線與端點管控（A），且員工必須防範家庭環境中的視覺外洩（C）。使用非公司電腦（B）與隨意帶回機密紙本（D）均會造成嚴重的資安破口。",
+        "en_explanation": "遠距工作的資安重點在於端點安全與實體隱私（控制項 6.7）。企業必須提供加密連線與端點管控（A），且員工必須防範家庭環境中的視覺外洩（C）。使用非公司電腦（B）與隨意帶回機密紙本（D）均會造成嚴重的資安破口。"
+    },
+    {
+        "id": 26,
+        "type": "MA",
+        "q": "某金融機構依據 ISO 27002「設備維護（Equipment Maintenance）」指引，重新審視其資產管理與維運程序。當核心伺服器或存有營業秘密之硬體設備，必須移出實體機房進行廠外維修時，下列哪些安全控制程序最符合標準之要求？（多選）",
+        "en_q": "某金融機構依據 ISO 27002「設備維護（Equipment Maintenance）」指引，重新審視其資產管理與維運程序。當核心伺服器或存有營業秘密之硬體設備，必須移出實體機房進行廠外維修時，下列哪些安全控制程序最符合標準之要求？（多選）",
+        "options": {
+            "A": "A. 設備送交廠外前，應確認機敏資料及具版權之軟體皆已被移除、安全覆寫，或已實施組織認可之高強度加密保護。",
+            "B": "B. 若委外維修與物流廠商已具備 ISO 27001 驗證，基於信任原則，組織可直接交由該廠商收送，無須於出廠前執行內部之資料抹除作業。",
+            "C": "C. 維修返廠之設備在重新接入內部生產網路前，必須進行安全性檢測（如硬體完整性檢視與惡意程式掃描），以確認未遭植入未授權組件。",
+            "D": "D. 若設備仍在原廠保固期內且由原廠直接派車收送，為簡化流程，組織可僅憑維修合約（SLA）進行追蹤，免除留存該次設備移轉之實體放行紀錄。"
+        },
+        "en_options": {
+            "A": "A. 設備送交廠外前，應確認機敏資料及具版權之軟體皆已被移除、安全覆寫，或已實施組織認可之高強度加密保護。",
+            "B": "B. 若委外維修與物流廠商已具備 ISO 27001 驗證，基於信任原則，組織可直接交由該廠商收送，無須於出廠前執行內部之資料抹除作業。",
+            "C": "C. 維修返廠之設備在重新接入內部生產網路前，必須進行安全性檢測（如硬體完整性檢視與惡意程式掃描），以確認未遭植入未授權組件。",
+            "D": "D. 若設備仍在原廠保固期內且由原廠直接派車收送，為簡化流程，組織可僅憑維修合約（SLA）進行追蹤，免除留存該次設備移轉之實體放行紀錄。"
+        },
+        "ans": [
+            "A",
+            "C"
+        ],
+        "explanation": "設備廠外維修的重點在於資料保護與供應鏈安全。設備移出前，必須確保機敏資料與軟體已移除或完整加密（A），且返廠重新連網前須進行嚴格的安全檢測與驗證（C）。過度依賴廠商認證而未做資料清除（B），或因原廠保固而省略設備移轉的放行紀錄（D），皆會造成嚴重的資料外洩與資產管理破口。",
+        "en_explanation": "設備廠外維修的重點在於資料保護與供應鏈安全。設備移出前，必須確保機敏資料與軟體已移除或完整加密（A），且返廠重新連網前須進行嚴格的安全檢測與驗證（C）。過度依賴廠商認證而未做資料清除（B），或因原廠保固而省略設備移轉的放行紀錄（D），皆會造成嚴重的資料外洩與資產管理破口。"
     },
     {
         "id": 27,
         "type": "MC",
-        "q": "在規劃「辦公室實體安全周界」時，下列哪一種補償性控制措施（Compensating Control）最適合用來彌補「全透明玻璃會議室」的機密外洩風險？",
-        "en_q": "When planning \"office physical perimeters,\" which compensating control best mitigates the confidentiality leakage risk of a \"fully transparent glass conference room\"?",
+        "q": "某跨國企業為展現其技術實力，在其新建的資料中心大樓外牆掛上極為醒目的「全球核心資料中心」霓虹招牌，並在官方網站詳細公開了該大樓的樓層平面配置圖。此舉最嚴重違反了下列哪一項實體控制措施的精神？",
+        "en_q": "某跨國企業為展現其技術實力，在其新建的資料中心大樓外牆掛上極為醒目的「全球核心資料中心」霓虹招牌，並在官方網站詳細公開了該大樓的樓層平面配置圖。此舉最嚴重違反了下列哪一項實體控制措施的精神？",
         "options": {
-            "A": "A. 在會議室外設立指紋辨識門禁與金方探測門。",
-            "B": "B. 在會議室玻璃上加裝防窺霧面貼膜或百葉窗，並嚴格要求會議後擦拭白板。",
-            "C": "C. 強制要求所有進入會議室的員工交出手機集中保管。"
+            "A": "A. 實體進入（Physical entry）",
+            "B": "B. 保全辦公室、房間及設施（Securing offices, rooms and facilities）",
+            "C": "C. 實體安全周界（Physical security perimeters）",
+            "D": "D. 設備安置及保護（Equipment siting and protection）"
         },
         "en_options": {
-            "A": "A. Install fingerprint access and metal detectors outside the room.",
-            "B": "B. Apply frosted privacy films or blinds on the glass, and strictly require erasing whiteboards after meetings.",
-            "C": "C. Mandate all employees entering the room to hand over their phones for centralized storage."
+            "A": "A. 實體進入（Physical entry）",
+            "B": "B. 保全辦公室、房間及設施（Securing offices, rooms and facilities）",
+            "C": "C. 實體安全周界（Physical security perimeters）",
+            "D": "D. 設備安置及保護（Equipment siting and protection）"
         },
         "ans": "B",
-        "explanation": "全透明玻璃會議室最大的資安風險在於「視覺外洩（Visual eavesdropping）」，外部人員可輕易看見投影幕或白板上的機密資訊。加上防窺霧面貼膜或百葉窗可有效阻斷視線，而會後擦拭白板則是確保資訊不殘留的標準作業程序，這是最直接且有效的補償性控制。選項 A 與 C 過於極端且無法解決「看見」的問題。",
-        "en_explanation": "The primary security risk of a fully transparent glass conference room is \"visual eavesdropping,\" where outsiders can easily see confidential information on projectors or whiteboards. Applying frosted privacy films or blinds effectively blocks the line of sight, and erasing whiteboards is a standard procedure to prevent residual information. This is the most direct and effective compensating control. Options A and C are too extreme and do not solve the visual exposure issue."
+        "explanation": "保全辦公室、房間及設施的控制重點之一，在於關鍵設施的外觀應保持低調且不引人注意，以避免成為攻擊目標。該企業設置醒目招牌並公開內部平面圖，完全違背了避免明顯標示資訊處理活動地點的防護原則，大幅增加了遭受實體攻擊或惡意破壞的風險。",
+        "en_explanation": "保全辦公室、房間及設施的控制重點之一，在於關鍵設施的外觀應保持低調且不引人注意，以避免成為攻擊目標。該企業設置醒目招牌並公開內部平面圖，完全違背了避免明顯標示資訊處理活動地點的防護原則，大幅增加了遭受實體攻擊或惡意破壞的風險。"
     },
     {
         "id": 28,
-        "type": "MC",
-        "q": "當執行員工的「終止聘用（離職）」程序時，從資安稽核的角度來看，下列何者應被列為「最優先」的執行事項？",
-        "en_q": "When executing the \"termination of employment\" process, from an IT security audit perspective, which of the following should be prioritized?",
+        "type": "MA",
+        "q": "依據 ISO 27002「實體安全監視（Physical security monitoring）」之規範，企業在敏感區域部署閉路電視（CCTV）與入侵警報系統時，下列哪些管理與技術配置符合合規要求？（多選）",
+        "en_q": "依據 ISO 27002「實體安全監視（Physical security monitoring）」之規範，企業在敏感區域部署閉路電視（CCTV）與入侵警報系統時，下列哪些管理與技術配置符合合規要求？（多選）",
         "options": {
-            "A": "A. 同步撤銷其邏輯存取權限（系統帳號）與實體存取權限（門禁卡）。",
-            "B": "B. 確保該員工完成所有未結案的工作交接報告。",
-            "C": "C. 結算該員工當月的特休假與績效獎金。"
+            "A": "A. 監視系統本身的影像紀錄與管理介面，必須受到嚴格的存取控制與防篡改保護。",
+            "B": "B. 無人看管的敏感區域應保持 24 小時全天候警戒，並配置入侵警報系統。",
+            "C": "C. 為節省儲存空間，監視器影像僅需保留 24 小時即可自動覆寫，無須考量法規要求。",
+            "D": "D. 在部署監視設備時，必須考量當地法律規範與個人隱私（PII）保護要求。"
         },
         "en_options": {
-            "A": "A. Simultaneously revoke their logical access (system accounts) and physical access (access cards).",
-            "B": "B. Ensure the employee completes all pending handover reports.",
-            "C": "C. Settle the employee's PTO and performance bonuses for the month."
+            "A": "A. 監視系統本身的影像紀錄與管理介面，必須受到嚴格的存取控制與防篡改保護。",
+            "B": "B. 無人看管的敏感區域應保持 24 小時全天候警戒，並配置入侵警報系統。",
+            "C": "C. 為節省儲存空間，監視器影像僅需保留 24 小時即可自動覆寫，無須考量法規要求。",
+            "D": "D. 在部署監視設備時，必須考量當地法律規範與個人隱私（PII）保護要求。"
         },
-        "ans": "A",
-        "explanation": "在員工離職流程中，最大的資安風險是離職員工利用原有權限竊取資料或破壞系統（尤其是非自願離職者）。因此，從資安稽核的角度，最優先的事項是「立即且同步撤銷所有的邏輯與實體存取權限」，以阻斷任何未授權存取的可能。交接與結算薪資屬於行政流程，順位在權限撤銷之後。",
-        "en_explanation": "During the employee termination process, the greatest security risk is the departing employee using their existing privileges to steal data or sabotage systems (especially in involuntary terminations). Therefore, from a security audit perspective, the absolute priority is \"immediately and simultaneously revoking all logical and physical access rights\" to block any potential unauthorized access. Handover and payroll settlement are administrative procedures that follow access revocation."
+        "ans": [
+            "A",
+            "B",
+            "D"
+        ],
+        "explanation": "實體安全監視要求在進出口與敏感區域設置 CCTV，且無人區域需 24/7(全天候無間斷) 警戒並配置定期測試的入侵警報。同時，監視設備本身的存取權限與影像必須受保護防遭竄改，且部署時必須遵循當地隱私法規並明確影像留存期限（通常依業務或法規需求保留數十天至數月，絕非隨意覆寫）。",
+        "en_explanation": "實體安全監視要求在進出口與敏感區域設置 CCTV，且無人區域需 24/7(全天候無間斷) 警戒並配置定期測試的入侵警報。同時，監視設備本身的存取權限與影像必須受保護防遭竄改，且部署時必須遵循當地隱私法規並明確影像留存期限（通常依業務或法規需求保留數十天至數月，絕非隨意覆寫）。"
+    },
+    {
+        "id": 29,
+        "type": "MC",
+        "q": "某電信公司的機房維護人員在引導外部硬體設備供應商進入核心機房進行設備檢修時，供應商工程師隨手拿起具有攝影功能的手機，對著機櫃自拍並準備上傳社群媒體。此行為直接違反了下列哪一項控制項的作業規範？",
+        "en_q": "某電信公司的機房維護人員在引導外部硬體設備供應商進入核心機房進行設備檢修時，供應商工程師隨手拿起具有攝影功能的手機，對著機櫃自拍並準備上傳社群媒體。此行為直接違反了下列哪一項控制項的作業規範？",
+        "options": {
+            "A": "A. 實體安全監視（Physical security monitoring）",
+            "B": "B. 佈纜安全（Cabling security）",
+            "C": "C. 場所外資產之安全（Security of assets off-premises）",
+            "D": "D. 於安全區域內工作（Working in secure areas）"
+        },
+        "en_options": {
+            "A": "A. 實體安全監視（Physical security monitoring）",
+            "B": "B. 佈纜安全（Cabling security）",
+            "C": "C. 場所外資產之安全（Security of assets off-premises）",
+            "D": "D. 於安全區域內工作（Working in secure areas）"
+        },
+        "ans": "D",
+        "explanation": "於安全區域內工作（控制項 7.6）明確規範，為了保護區域內的資訊與資產，應限制未經授權的拍照、錄影或錄音行為，特別是攜帶具攝影功能的行動裝置進入時必須嚴格納管。供應商在核心機房內隨意拍照，極易造成機敏設備配置或網路架構外洩。",
+        "en_explanation": "於安全區域內工作（控制項 7.6）明確規範，為了保護區域內的資訊與資產，應限制未經授權的拍照、錄影或錄音行為，特別是攜帶具攝影功能的行動裝置進入時必須嚴格納管。供應商在核心機房內隨意拍照，極易造成機敏設備配置或網路架構外洩。"
     },
     {
         "id": 30,
-        "type": "MC",
-        "q": "關於「設備安置與保護」，稽核員巡視辦公室時發現下列何種情況，應立即開立缺失單（NCR）？",
-        "en_q": "Regarding \"Equipment Siting and Protection,\" which scenario found during an office tour should prompt an immediate Non-Conformance Report (NCR)?",
+        "type": "MA",
+        "q": "針對「場所外資產之安全（Security of assets off-premises）」，當企業的高階主管頻繁攜帶存有營業秘密的筆記型電腦與平板出差時，下列哪些防護措施是必要且合規的？（多選）",
+        "en_q": "針對「場所外資產之安全（Security of assets off-premises）」，當企業的高階主管頻繁攜帶存有營業秘密的筆記型電腦與平板出差時，下列哪些防護措施是必要且合規的？（多選）",
         "options": {
-            "A": "A. 將存放核心數據的 NAS 伺服器，直接擺放在靠近一樓臨街玻璃窗旁的層架上。",
-            "B": "B. 在核心機房內安裝了氣體式滅火設備（FM-200）取代傳統撒水系統。",
-            "C": "C. 將網路印表機放置在需要刷卡才能進入的員工專屬 OA 辦公區內。"
+            "A": "A. 設備應具備遠端清除（Remote wipe）功能，以便在遺失或遭竊時抹除資料。",
+            "B": "B. 在高鐵、飛機或咖啡廳等公共交通工具與場所，應使用防窺片以落實視覺防窺措施。",
+            "C": "C. 資產帶出辦公室前，必須經過管理階層的授權並確實留存設備借出紀錄。",
+            "D": "D. 為減輕出差負擔，允許主管將筆記型電腦隨意留在飯店大廳的無人看管沙發上。"
         },
         "en_options": {
-            "A": "A. Placing the core data NAS server on a shelf right next to a street-facing glass window on the ground floor.",
-            "B": "B. Installing FM-200 gas fire suppression systems in the core server room instead of traditional sprinklers.",
-            "C": "C. Placing a network printer in an employee-only OA area requiring card access."
+            "A": "A. 設備應具備遠端清除（Remote wipe）功能，以便在遺失或遭竊時抹除資料。",
+            "B": "B. 在高鐵、飛機或咖啡廳等公共交通工具與場所，應使用防窺片以落實視覺防窺措施。",
+            "C": "C. 資產帶出辦公室前，必須經過管理階層的授權並確實留存設備借出紀錄。",
+            "D": "D. 為減輕出差負擔，允許主管將筆記型電腦隨意留在飯店大廳的無人看管沙發上。"
         },
-        "ans": "A",
-        "explanation": "核心數據 NAS 伺服器放置在靠近一樓臨街玻璃窗旁，極易遭受外部人員的窺視、實體破壞，甚至直接打破玻璃竊取（Smash and grab）。根據 ISO 規範，關鍵 IT 設備應安置在安全的內部區域，避免非授權存取與環境破壞。B 為正確的機房滅火防護，C 放置在需刷卡的員工區是合理的。",
-        "en_explanation": "Placing a core data NAS server near a ground-floor, street-facing window makes it highly vulnerable to snooping, physical vandalism, and \"smash and grab\" theft. According to ISO standards, critical IT equipment should be sited in secure internal areas to avoid unauthorized access and environmental damage. Option B is a correct fire suppression practice, and Option C is reasonable since the printer is in a card-controlled employee area."
+        "ans": [
+            "A",
+            "B",
+            "C"
+        ],
+        "explanation": "場所外資產安全要求對帶出場外的設備採取嚴密的技術與管理防護。這包含搬移前的授權與紀錄、公共場所的防窺措施，以及遺失時的遠端清除機制。將設備放置於公共場所無人看管（D）是標準中明文禁止的嚴重疏失。",
+        "en_explanation": "場所外資產安全要求對帶出場外的設備採取嚴密的技術與管理防護。這包含搬移前的授權與紀錄、公共場所的防窺措施，以及遺失時的遠端清除機制。將設備放置於公共場所無人看管（D）是標準中明文禁止的嚴重疏失。"
     },
     {
         "id": 31,
         "type": "MC",
-        "q": "下列何者屬於「防範環境威脅」中，針對水災或漏水風險的有效實體控制措施？",
-        "en_q": "Which of the following is an effective physical control measure against flood or leakage risks under \"Protection from environmental threats\"?",
+        "q": "企業在進行系統升級時，需透過可移除式外接硬碟將巨量且高度機密的客戶資料從 A 廠區實體運送至 B 廠區。針對「儲存媒體（Storage media）」的管控，下列何種做法最符合資安標準？",
+        "en_q": "企業在進行系統升級時，需透過可移除式外接硬碟將巨量且高度機密的客戶資料從 A 廠區實體運送至 B 廠區。針對「儲存媒體（Storage media）」的管控，下列何種做法最符合資安標準？",
         "options": {
-            "A": "A. 將伺服器機櫃全面改用防火塗料。",
-            "B": "B. 在機房建置雙備援的空調系統與不斷電系統 (UPS)。",
-            "C": "C. 機房底層安裝高架地板，並於地板下配置漏水偵測感知線纜。"
+            "A": "A. 將檔案壓縮並設定 6 碼數字密碼，直接交給內部公文傳遞員運送。",
+            "B": "B. 對外接硬碟執行硬體級的全碟加密，採用防破壞的物理安全包裝，並記錄運送與點交軌跡。",
+            "C": "C. 只要確保外接硬碟在運送過程中沒有離開運送人員的視線，就不需要進行資料加密。",
+            "D": "D. 使用完畢後，針對該外接硬碟執行檔案刪除動作，即可配發給其他部門使用。"
         },
         "en_options": {
-            "A": "A. Applying fireproof coatings entirely to server racks.",
-            "B": "B. Deploying dual-redundant HVAC and UPS systems in the server room.",
-            "C": "C. Installing raised floors in the server room with water leakage detection cables placed underneath."
+            "A": "A. 將檔案壓縮並設定 6 碼數字密碼，直接交給內部公文傳遞員運送。",
+            "B": "B. 對外接硬碟執行硬體級的全碟加密，採用防破壞的物理安全包裝，並記錄運送與點交軌跡。",
+            "C": "C. 只要確保外接硬碟在運送過程中沒有離開運送人員的視線，就不需要進行資料加密。",
+            "D": "D. 使用完畢後，針對該外接硬碟執行檔案刪除動作，即可配發給其他部門使用。"
         },
-        "ans": "C",
-        "explanation": "機房安裝高架地板可以讓設備遠離地面，避免積水直接浸泡伺服器；同時在地板下配置漏水偵測感知線纜，能在空調漏水或外部滲水初期發出警報，是防範水災/漏水最標準且有效的實體控制措施。A 和 B 主要是針對火災與電力中斷的防護。",
-        "en_explanation": "Installing raised floors elevates equipment above the ground, preventing direct submersion in water; placing water leakage detection cables underneath provides early warnings for HVAC leaks or external seepage. This is the standard and most effective physical control against flood/leak risks. Options A and B address fire and power outage risks, respectively."
+        "ans": "B",
+        "explanation": "儲存媒體的管理涵蓋整個生命週期。在運送與儲存期間，含有機敏資訊的媒體必須進行加密保護，並搭配物理安全包裝與運送紀錄以防止中途攔截。此外，使用完畢的媒體汰除或重新使用前，必須依資訊敏感度執行不可復原的抹除或物理銷毀，不可僅做簡單刪除。",
+        "en_explanation": "儲存媒體的管理涵蓋整個生命週期。在運送與儲存期間，含有機敏資訊的媒體必須進行加密保護，並搭配物理安全包裝與運送紀錄以防止中途攔截。此外，使用完畢的媒體汰除或重新使用前，必須依資訊敏感度執行不可復原的抹除或物理銷毀，不可僅做簡單刪除。"
+    },
+    {
+        "id": 32,
+        "type": "MA",
+        "q": "關於「支援之公用服務事業（Supporting utilities）」，資料中心為防止電力中斷導致營運停擺，導入了多項設施與管理流程。下列哪些措施符合 ISO 27002 的稽核要求？（多選）",
+        "en_q": "關於「支援之公用服務事業（Supporting utilities）」，資料中心為防止電力中斷導致營運停擺，導入了多項設施與管理流程。下列哪些措施符合 ISO 27002 的稽核要求？（多選）",
+        "options": {
+            "A": "A. 依據製造商規格，定期對不斷電系統（UPS）與柴油發電機進行維護與負載測試。",
+            "B": "B. 設置故障警報系統，並配置多重饋線（不同變電所來源的電力供應）。",
+            "C": "C. 確保在主電力中斷時，緊急照明、通訊設備與緊急開關功能仍能正常運作。",
+            "D": "D. 為節省成本，發電機的燃油儲備量僅需維持短時間可運作即可，無需與營運持續計畫（BCP）掛鉤。"
+        },
+        "en_options": {
+            "A": "A. 依據製造商規格，定期對不斷電系統（UPS）與柴油發電機進行維護與負載測試。",
+            "B": "B. 設置故障警報系統，並配置多重饋線（不同變電所來源的電力供應）。",
+            "C": "C. 確保在主電力中斷時，緊急照明、通訊設備與緊急開關功能仍能正常運作。",
+            "D": "D. 為節省成本，發電機的燃油儲備量僅需維持短時間可運作即可，無需與營運持續計畫（BCP）掛鉤。"
+        },
+        "ans": [
+            "A",
+            "B",
+            "C"
+        ],
+        "explanation": "支援之公用服務事業要求防止公用設施失效導致運作中斷。企業必須依原廠規格定期測試備援電力（A）、設置故障警報並考慮多重線路（B），同時確保中斷期間的緊急照明與通訊安全（C）。備用燃油的儲存量必須足以支撐營運持續計畫所需的時間，30 分鐘通常遠低於災難復原標準。",
+        "en_explanation": "支援之公用服務事業要求防止公用設施失效導致運作中斷。企業必須依原廠規格定期測試備援電力（A）、設置故障警報並考慮多重線路（B），同時確保中斷期間的緊急照明與通訊安全（C）。備用燃油的儲存量必須足以支撐營運持續計畫所需的時間，30 分鐘通常遠低於災難復原標準。"
     },
     {
         "id": 33,
         "type": "MC",
-        "q": "稽核員發現公司櫃台抽屜放有 3 張無記名的「公用門禁卡」，專供忘記帶卡的員工自行簽名借用。此作法最大的資安風險為何？",
-        "en_q": "An auditor finds 3 anonymous \"public access cards\" in the reception desk for employees who forget their badges to sign out. What is the biggest security risk here?",
+        "q": "某企業的資深研發工程師經內部調動，轉任至業務部門擔任產品經理。依據「聘用終止或變更後之責任（Responsibilities after termination or change of employment）」，資訊部門應優先執行下列哪一項安全控制作業？",
+        "en_q": "某企業的資深研發工程師經內部調動，轉任至業務部門擔任產品經理。依據「聘用終止或變更後之責任（Responsibilities after termination or change of employment）」，資訊部門應優先執行下列哪一項安全控制作業？",
         "options": {
-            "A": "A. 破壞了存取控制的「不可否認性（Non-repudiation）」，無法追蹤真實進出者。",
-            "B": "B. 增加了櫃檯行政人員管理卡片的時間成本。",
-            "C": "C. 公用卡片容易因為頻繁刷卡而導致晶片提早損壞。"
+            "A": "A. 保留其原本在研發部門的原始碼存取權限，以防業務部門需要查詢相關技術規格。",
+            "B": "B. 要求該員工即刻離職，並重新以新進員工身分辦理業務部門的報到手續。",
+            "C": "C. 依據新職務的「知其所需（Need-to-know）」原則，立即撤銷其研發系統權限、重新界定資安責任，並確保其理解對過往研發機密的持續保密義務。",
+            "D": "D. 僅需在公司內部通訊錄更新其職稱與分機號碼，系統權限待年度審查時再行調整。"
         },
         "en_options": {
-            "A": "A. It destroys the \"non-repudiation\" of access controls, making it impossible to trace the actual entrants.",
-            "B": "B. It increases the time cost for administrative staff to manage the cards.",
-            "C": "C. Public cards are prone to premature chip damage due to frequent swiping."
+            "A": "A. 保留其原本在研發部門的原始碼存取權限，以防業務部門需要查詢相關技術規格。",
+            "B": "B. 要求該員工即刻離職，並重新以新進員工身分辦理業務部門的報到手續。",
+            "C": "C. 依據新職務的「知其所需（Need-to-know）」原則，立即撤銷其研發系統權限、重新界定資安責任，並確保其理解對過往研發機密的持續保密義務。",
+            "D": "D. 僅需在公司內部通訊錄更新其職稱與分機號碼，系統權限待年度審查時再行調整。"
         },
-        "ans": "A",
-        "explanation": "存取控制的核心原則之一是「不可否認性（Non-repudiation）與可追溯性（Accountability）」。無記名的公用門禁卡允許多人共用同一組識別碼，系統紀錄無法辨識真實進出的個體。若發生實體安全事件，將無法追蹤是誰持卡進入，徹底破壞了稽核軌跡。",
-        "en_explanation": "A core principle of access control is \"Non-repudiation and Accountability.\" Anonymous public access cards allow multiple people to share the same credential, meaning system logs cannot identify the actual individual entering. In a physical security incident, it becomes impossible to trace who used the card, completely destroying the audit trail."
+        "ans": "C",
+        "explanation": "職務變更並不只是更改職稱，必須同步進行權限的重新調整與資安責任的重新界定。實務上常被忽略的是員工調職後仍保留舊權限（權限潛變），這會產生極大風險；同時，必須明確傳達其對原單位機密資訊仍負有保密（NDA）義務。",
+        "en_explanation": "職務變更並不只是更改職稱，必須同步進行權限的重新調整與資安責任的重新界定。實務上常被忽略的是員工調職後仍保留舊權限（權限潛變），這會產生極大風險；同時，必須明確傳達其對原單位機密資訊仍負有保密（NDA）義務。"
     },
     {
         "id": 34,
-        "type": "MC",
-        "q": "當公司將含有機敏資料的實體伺服器硬碟汰換並準備報廢時，應採取何種防範資料外洩的最終措施？",
-        "en_q": "When retiring and disposing of physical server hard drives containing sensitive data, what ultimate measure should be taken to prevent data leakage?",
+        "type": "MA",
+        "q": "企業在修訂與外部合作夥伴及內部員工簽署的「機密性或保密協議（Confidentiality or non-disclosure agreements, NDA）」時，為確保其具備管理有效性與合規性，協議內容應明確涵蓋下列哪些要素？（多選）",
+        "en_q": "企業在修訂與外部合作夥伴及內部員工簽署的「機密性或保密協議（Confidentiality or non-disclosure agreements, NDA）」時，為確保其具備管理有效性與合規性，協議內容應明確涵蓋下列哪些要素？（多選）",
         "options": {
-            "A": "A. 在作業系統內將檔案丟入資源回收桶並清空即可。",
-            "B": "B. 實施實體破壞（如物理鑽孔、消磁）或使用合規軟體進行多次覆寫抹除（Wiping）。",
-            "C": "C. 將硬碟重新格式化（Quick Format）後，以二手價賣給回收廠商。"
+            "A": "A. 受保護機密資訊的具體定義與涵蓋範圍。",
+            "B": "B. 簽署者的保密責任與允許使用機密資訊的特定目的。",
+            "C": "C. 保密義務的持續期間（依機密等級不同，可能為離職後數年或永久有效）。",
+            "D": "D. 違反保密協議時將面臨的法律追訴與處置措施。"
         },
         "en_options": {
-            "A": "A. Just moving the files to the recycle bin within the OS and emptying it.",
-            "B": "B. Implementing physical destruction (e.g., drilling, degaussing) or using compliant software for multiple wipe passes.",
-            "C": "C. Performing a Quick Format and selling it secondhand to recyclers."
+            "A": "A. 受保護機密資訊的具體定義與涵蓋範圍。",
+            "B": "B. 簽署者的保密責任與允許使用機密資訊的特定目的。",
+            "C": "C. 保密義務的持續期間（依機密等級不同，可能為離職後數年或永久有效）。",
+            "D": "D. 違反保密協議時將面臨的法律追訴與處置措施。"
         },
-        "ans": "B",
-        "explanation": "硬碟中若含機敏資料，簡單的刪除或快速格式化都可輕易透過救援軟體還原。為了徹底防止資料外洩，必須對儲存媒體進行「安全抹除（Secure Wiping，如 DoD 5220.22-M 標準）」或「實體破壞（如消磁 Degaussing、鑽孔或絞碎）」，確保資料永遠無法被復原。",
-        "en_explanation": "If hard drives contain sensitive data, simple deletions or quick formats can be easily reversed using recovery software. To completely prevent data leakage, storage media must undergo \"Secure Wiping (e.g., DoD 5220.22-M standard)\" or \"Physical Destruction (e.g., degaussing, drilling, or shredding)\" to ensure data is permanently unrecoverable."
+        "ans": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "explanation": "有效的保密協議（NDA）是維護資訊機密性的關鍵法律防線。一份符合標準的 NDA 必須清晰定義保護範圍、簽署者的責任、保密期限，以及違約時的具體處罰與後果，缺一不可，否則在發生洩密事件時將難以舉證與追責。",
+        "en_explanation": "有效的保密協議（NDA）是維護資訊機密性的關鍵法律防線。一份符合標準的 NDA 必須清晰定義保護範圍、簽署者的責任、保密期限，以及違約時的具體處罰與後果，缺一不可，否則在發生洩密事件時將難以舉證與追責。"
+    },
+    {
+        "id": 35,
+        "type": "MC",
+        "q": "某金控公司經常在特定的高階會議室討論重大併購案（M&A）。為了防範未經授權的存取、破壞或干擾，該會議室不僅採用了隔音建材，還在牆面內部加裝了防護網與特殊塗層。這最主要是為了防範下列哪一種實體環境風險？",
+        "en_q": "某金控公司經常在特定的高階會議室討論重大併購案（M&A）。為了防範未經授權的存取、破壞或干擾，該會議室不僅採用了隔音建材，還在牆面內部加裝了防護網與特殊塗層。這最主要是為了防範下列哪一種實體環境風險？",
+        "options": {
+            "A": "A. 防範透過電磁輻射溢波（Electromagnetic emanation）或竊聽造成的機密資訊外洩。",
+            "B": "B. 防範自然災害如地震或水災對會議室設備的損壞。",
+            "C": "C. 防範外部不明無人機直接撞擊大樓玻璃。",
+            "D": "D. 防範內部網路纜線因高溫而引發火災。"
+        },
+        "en_options": {
+            "A": "A. 防範透過電磁輻射溢波（Electromagnetic emanation）或竊聽造成的機密資訊外洩。",
+            "B": "B. 防範自然災害如地震或水災對會議室設備的損壞。",
+            "C": "C. 防範外部不明無人機直接撞擊大樓玻璃。",
+            "D": "D. 防範內部網路纜線因高溫而引發火災。"
+        },
+        "ans": "A",
+        "explanation": "針對處理高度敏感資訊的辦公室或房間（控制項 7.3），除了門禁管制外，還必須防範窺視或竊聽造成的資訊外洩。加裝特殊塗層或防護網（電磁屏蔽與隔音）是為了防止高階會議內容遭到外部透過無線電波截取或實體竊聽，確保機密性。",
+        "en_explanation": "針對處理高度敏感資訊的辦公室或房間（控制項 7.3），除了門禁管制外，還必須防範窺視或竊聽造成的資訊外洩。加裝特殊塗層或防護網（電磁屏蔽與隔音）是為了防止高階會議內容遭到外部透過無線電波截取或實體竊聽，確保機密性。"
     },
     {
         "id": 36,
-        "type": "MC",
-        "q": "關於資安「保密協議(NDA)」的法律與稽核實務，下列敘述何者最為準確？",
-        "en_q": "Regarding the legal and audit practices of \"Non-Disclosure Agreements (NDA)\", which statement is most accurate?",
+        "type": "MA",
+        "q": "依據「獎懲過程（Disciplinary process）」控制項，當員工因將密碼貼在螢幕上而遭查獲時，人資與資安主管在決定懲處層級與行動時，應綜合評估下列哪些因素以確保處置的一致性與比例原則？（多選）",
+        "en_q": "依據「獎懲過程（Disciplinary process）」控制項，當員工因將密碼貼在螢幕上而遭查獲時，人資與資安主管在決定懲處層級與行動時，應綜合評估下列哪些因素以確保處置的一致性與比例原則？（多選）",
         "options": {
-            "A": "A. 僅在員工任職期間有效，只要員工辦理離職手續，保密責任即自動解除。",
-            "B": "B. 不僅在職期間有效，通常會規範員工或廠商在離職/解約後之一段時間內，仍需負保密義務。",
-            "C": "C. 只要員工口頭發誓不會洩漏公司機密，即可取代紙本或電子的 NDA 簽署。"
+            "A": "A. 該違規行為的性質，以及是否對組織造成實質的影響或損害。",
+            "B": "B. 該員工的年資長短與近期的業績表現。",
+            "C": "C. 該員工是否為初犯，或者是屢勸不聽的累犯。",
+            "D": "D. 該員工是否已接受過相關的資安認知訓練並清楚知悉規定。"
         },
         "en_options": {
-            "A": "A. It is valid only during employment; confidentiality responsibilities are automatically waived upon resignation.",
-            "B": "B. It is valid during employment and usually mandates confidentiality obligations for a period after resignation/termination.",
-            "C": "C. Verbal promises not to leak company secrets can replace physical or electronic NDA signatures."
+            "A": "A. 該違規行為的性質，以及是否對組織造成實質的影響或損害。",
+            "B": "B. 該員工的年資長短與近期的業績表現。",
+            "C": "C. 該員工是否為初犯，或者是屢勸不聽的累犯。",
+            "D": "D. 該員工是否已接受過相關的資安認知訓練並清楚知悉規定。"
         },
-        "ans": "B",
-        "explanation": "實務上，保密協議（NDA）的效力不限於員工在職期間。為了保護公司的商業機密與智慧財產權，NDA 通常會明文約定在員工離職或合約終止後的特定期間內（甚至無限期），當事人仍須負擔保密義務。口頭承諾不具法律強制力且無法稽核。",
-        "en_explanation": "In practice, the validity of a Non-Disclosure Agreement (NDA) is not limited to the duration of employment. To protect company trade secrets and intellectual property, NDAs typically specify that confidentiality obligations persist for a certain period (or indefinitely) after resignation or contract termination. Verbal promises lack legal enforceability and cannot be audited."
+        "ans": [
+            "A",
+            "C",
+            "D"
+        ],
+        "explanation": "獎懲過程必須公平、一致且符合比例原則。評估裁罰輕重的標準應包含違規性質與影響（A）、初犯或累犯紀錄（C），以及員工是否已受過充分的訓練（D）。員工的業績表現（B）絕不能作為豁免資安懲處的護身符，否則會破壞制度的公平性與管理有效性。",
+        "en_explanation": "獎懲過程必須公平、一致且符合比例原則。評估裁罰輕重的標準應包含違規性質與影響（A）、初犯或累犯紀錄（C），以及員工是否已受過充分的訓練（D）。員工的業績表現（B）絕不能作為豁免資安懲處的護身符，否則會破壞制度的公平性與管理有效性。"
     },
     {
         "id": 37,
         "type": "MC",
-        "q": "下列何種情況屬於「社交工程（Social Engineering）」的『實體面』攻擊手法？",
-        "en_q": "Which scenario constitutes a \"physical\" attack technique of Social Engineering?",
+        "q": "某電商平台為了應付雙十一的龐大客服量，臨時透過派遣公司聘用了 50 名短期客服人員，並配發了可存取客戶訂單系統的帳號。關於「篩選（Screening）」作業，下列處置何者正確？",
+        "en_q": "某電商平台為了應付雙十一的龐大客服量，臨時透過派遣公司聘用了 50 名短期客服人員，並配發了可存取客戶訂單系統的帳號。關於「篩選（Screening）」作業，下列處置何者正確？",
         "options": {
-            "A": "A. 駭客利用系統漏洞，從外部網路植入勒索軟體加密伺服器。",
-            "B": "B. 發送大量偽造的銀行中獎信件誘騙使用者點擊網址。",
-            "C": "C. 攻擊者穿著知名快遞公司的制服，抱著大箱子要求櫃台人員代為刷卡開門進入辦公區。"
+            "A": "A. 短期派遣人員非正式編制，因此無須進行任何背景查證。",
+            "B": "B. 應要求派遣公司依據電商平台的資安要求，在加入組織前對這些臨時人員進行適當的背景查證，並保護其隱私。",
+            "C": "C. 為了節省時間，只需確認其身分證件影本，等上線工作一個月後再補做背景查核。",
+            "D": "D. 應直接公開派遣人員的所有犯罪與信用紀錄給全體員工審查。"
         },
         "en_options": {
-            "A": "A. Hackers exploiting a system vulnerability to inject ransomware via the external network.",
-            "B": "B. Sending massive fake bank lottery emails to trick users into clicking URLs.",
-            "C": "C. An attacker wearing a famous courier uniform holding a large box, asking the receptionist to badge them in."
+            "A": "A. 短期派遣人員非正式編制，因此無須進行任何背景查證。",
+            "B": "B. 應要求派遣公司依據電商平台的資安要求，在加入組織前對這些臨時人員進行適當的背景查證，並保護其隱私。",
+            "C": "C. 為了節省時間，只需確認其身分證件影本，等上線工作一個月後再補做背景查核。",
+            "D": "D. 應直接公開派遣人員的所有犯罪與信用紀錄給全體員工審查。"
         },
-        "ans": "C",
-        "explanation": "社交工程是利用人性弱點（如同情心、信任、恐懼）來獲取權限。選項 C 中，攻擊者偽裝成快遞人員，利用抱著大箱子不方便拿卡的「同情心」情境，誘使櫃台人員幫忙開門，這是典型的「實體社交工程（如尾隨或冒充身分）」手法。A 與 B 屬於網路與電子郵件層面的技術攻擊。",
-        "en_explanation": "Social Engineering exploits human psychology (like empathy, trust, or fear) to gain access. In Option C, the attacker disguises as a courier and uses the \"empathy\" of holding a large box to trick the receptionist into opening the door. This is a classic \"physical social engineering\" technique (like tailgating or impersonation). Options A and B are technical attacks via network and email vectors."
+        "ans": "B",
+        "explanation": "人員篩選不應僅限於全職人員，對於兼職與臨時人員（如派遣工）同樣適用。背景查證必須在加入組織前進行，且其深度應與職位角色相符，同時查證過程必須嚴格遵循隱私與 PII 保護法規（排除 D），不可因短期聘用而免除必要的信任確認。",
+        "en_explanation": "人員篩選不應僅限於全職人員，對於兼職與臨時人員（如派遣工）同樣適用。背景查證必須在加入組織前進行，且其深度應與職位角色相符，同時查證過程必須嚴格遵循隱私與 PII 保護法規（排除 D），不可因短期聘用而免除必要的信任確認。"
+    },
+    {
+        "id": 38,
+        "type": "MC",
+        "q": "某企業為了提升便利性，設定所有新進員工的實體門禁卡皆預設開啟研發區與伺服器機房的通行權限，且發卡後從未進行權限盤點。此做法最嚴重違反了「實體進入（Physical entry）」規範中的哪一項原則？",
+        "en_q": "某企業為了提升便利性，設定所有新進員工的實體門禁卡皆預設開啟研發區與伺服器機房的通行權限，且發卡後從未進行權限盤點。此做法最嚴重違反了「實體進入（Physical entry）」規範中的哪一項原則？",
+        "options": {
+            "A": "A. 權限的申請、核准、審查與撤銷流程失效，未能確保僅「經授權且有業務需求」的人員才能進出敏感區域。",
+            "B": "B. 門禁卡未使用高強度的生物特徵雙因子鑑別。",
+            "C": "C. 訪客進入機房時未填寫登記簿。",
+            "D": "D. 門禁系統未採用失效安全（Fail-safe）設計。"
+        },
+        "en_options": {
+            "A": "A. 權限的申請、核准、審查與撤銷流程失效，未能確保僅「經授權且有業務需求」的人員才能進出敏感區域。",
+            "B": "B. 門禁卡未使用高強度的生物特徵雙因子鑑別。",
+            "C": "C. 訪客進入機房時未填寫登記簿。",
+            "D": "D. 門禁系統未採用失效安全（Fail-safe）設計。"
+        },
+        "ans": "A",
+        "explanation": "實體進入控制的核心在於確保僅有「經授權人員」能進出存放資訊的實體區域。預設給予過大權限且不定期審查與撤銷，完全違背了最小權限原則，導致門禁管理形同虛設，無法有效管控高敏感區域的進出人員。",
+        "en_explanation": "實體進入控制的核心在於確保僅有「經授權人員」能進出存放資訊的實體區域。預設給予過大權限且不定期審查與撤銷，完全違背了最小權限原則，導致門禁管理形同虛設，無法有效管控高敏感區域的進出人員。"
     },
     {
         "id": 39,
-        "type": "MC",
-        "q": "稽核員發現某部門的「機密文件專用碎紙機」被放置在大樓外側的公共電梯口旁，這會帶來什麼重大的管理風險？",
-        "en_q": "An auditor finds a department's \"Confidential Document Shredder\" placed near the public elevator lobby. What major management risk does this pose?",
+        "type": "MA",
+        "q": "當外部清潔人員或非 IT 廠區維護人員必須進入資料中心機房執行打掃或維修作業時，依據「於安全區域內工作（Working in secure areas）」之規範，組織應採取哪些控管行動？（多選）",
+        "en_q": "當外部清潔人員或非 IT 廠區維護人員必須進入資料中心機房執行打掃或維修作業時，依據「於安全區域內工作（Working in secure areas）」之規範，組織應採取哪些控管行動？（多選）",
         "options": {
-            "A": "A. 碎紙機運轉聲音太大，會干擾等電梯的訪客。",
-            "B": "B. 機密文件在等待排隊銷毀的過程中，極易遭搭乘電梯的外部人員順手牽羊竊取。",
-            "C": "C. 會導致大樓公共區域的電費異常增加。"
+            "A": "A. 盡可能降低未受監督工作的情況，特別是針對外部人員，應安排內部授權人員全程陪同與監督。",
+            "B": "B. 確保外部人員僅能進入並接觸其工作職責範圍內的區域。",
+            "C": "C. 只要清潔人員已簽署保密協議，即可讓其獨自進入機房打掃。",
+            "D": "D. 空置或當下無人作業的敏感安全區域，應確實上鎖並定期檢查狀態。"
         },
         "en_options": {
-            "A": "A. The shredder noise might disturb visitors waiting for the elevator.",
-            "B": "B. Confidential documents waiting to be destroyed are highly vulnerable to being snatched by external personnel using the elevator.",
-            "C": "C. It will cause an abnormal increase in the building's public electricity bill."
+            "A": "A. 盡可能降低未受監督工作的情況，特別是針對外部人員，應安排內部授權人員全程陪同與監督。",
+            "B": "B. 確保外部人員僅能進入並接觸其工作職責範圍內的區域。",
+            "C": "C. 只要清潔人員已簽署保密協議，即可讓其獨自進入機房打掃。",
+            "D": "D. 空置或當下無人作業的敏感安全區域，應確實上鎖並定期檢查狀態。"
         },
-        "ans": "B",
-        "explanation": "機密文件在放進碎紙機銷毀前，通常會暫存在回收箱或堆疊在旁邊。若將碎紙機放置在公共電梯口等非管制區域，任何人（包括訪客、外部快遞）都可以輕易接觸到這些等待銷毀的機密文件，大幅增加實體資料被竊取的風險。碎紙機應放置於受門禁管制的內部區域。",
-        "en_explanation": "Confidential documents are often temporarily stored in bins or stacked nearby before being shredded. Placing the shredder in a non-restricted area like a public elevator lobby allows anyone (including visitors and external couriers) to easily access these pending-destruction documents, massively increasing the risk of physical data theft. Shredders should be located in access-controlled internal areas."
+        "ans": [
+            "A",
+            "B",
+            "D"
+        ],
+        "explanation": "在安全區域內工作必須嚴格落實監督與管理。外部人員進入高度敏感區域時，無論是否簽署 NDA，皆不可處於無人監督的狀態（排除 C），必須由內部人員陪同以防止意外破壞或惡意干擾；同時，無人使用的安全區域必須上鎖並檢查，以防止未授權潛入。",
+        "en_explanation": "在安全區域內工作必須嚴格落實監督與管理。外部人員進入高度敏感區域時，無論是否簽署 NDA，皆不可處於無人監督的狀態（排除 C），必須由內部人員陪同以防止意外破壞或惡意干擾；同時，無人使用的安全區域必須上鎖並檢查，以防止未授權潛入。"
     },
     {
         "id": 40,
         "type": "MC",
-        "q": "下列哪一項屬於「人員控制 (Clause 6)」中「聘用條款及條件」必須白紙黑字涵蓋的核心內容？",
-        "en_q": "Which of the following is core content that must be explicitly covered in writing under \"Terms and conditions of employment\" in Personnel Controls (Clause 6)?",
+        "q": "某企業人資主管的辦公座位緊鄰公共走道，且其電腦螢幕直接面向透明玻璃，使得路過的訪客或快遞員能輕易看見螢幕上的員工薪資報表。此配置缺失最應透過下列哪一項控制措施來進行改善？",
+        "en_q": "某企業人資主管的辦公座位緊鄰公共走道，且其電腦螢幕直接面向透明玻璃，使得路過的訪客或快遞員能輕易看見螢幕上的員工薪資報表。此配置缺失最應透過下列哪一項控制措施來進行改善？",
         "options": {
-            "A": "A. 詳細列出公司未來五年內的產品開發 Roadmap。",
-            "B": "B. 明確定義員工保護資訊資產的責任，以及違反政策時的懲戒程序（Disciplinary process）。",
-            "C": "C. 強制規定員工每年必須官方參加兩次以上的國內外員工旅遊。"
+            "A": "A. 設備維護（Equipment maintenance）",
+            "B": "B. 設備汰除或重新使用之保全（Security of equipment disposal or re-use）",
+            "C": "C. 佈纜安全（Cabling security）",
+            "D": "D. 設備安置及保護（Equipment siting and protection）"
         },
         "en_options": {
-            "A": "A. Detailed listing of the company's 5-year product development roadmap.",
-            "B": "B. Clear definition of employee responsibilities for protecting info assets and disciplinary processes for policy violations.",
-            "C": "C. Mandating employees to officially attend two or more domestic/international company trips annually."
-        },
-        "ans": "B",
-        "explanation": "根據 ISO 27001 人員安全規範，「聘用條款及條件（Terms and conditions of employment）」必須在合約中明確寫出員工對資訊安全的職責與義務，包含保密要求、遵守資安政策，以及違反政策時將面臨的紀律與懲戒程序（Disciplinary process），使雙方在法律上有明確共識。",
-        "en_explanation": "According to ISO 27001 personnel security guidelines, the \"Terms and conditions of employment\" must explicitly document the employee's information security responsibilities and obligations in the contract. This includes confidentiality requirements, adherence to security policies, and the disciplinary processes they will face if policies are violated, ensuring a clear legal consensus between both parties."
-    },
-    {
-        "id": 41,
-        "type": "MC",
-        "q": "為了防範火災，伺服器機房內通常會設置「FM-200 或 Novec 1230 等氣體滅火系統」，而不是傳統的撒水系統。這考量了哪一項資安原則？",
-        "en_q": "To prevent fires, server rooms typically install gas suppression systems (like FM-200) instead of traditional sprinklers. Which security principle does this address?",
-        "options": {
-            "A": "A. 氣體滅火系統的建置成本比撒水系統便宜。",
-            "B": "B. 氣體比較不會破壞人體健康。",
-            "C": "C. 保護極具價值的 IT 設備免受水患造成的二次物理性永久破壞。"
-        },
-        "en_options": {
-            "A": "A. Gas systems are cheaper to build than sprinkler systems.",
-            "B": "B. Gases are less harmful to human health.",
-            "C": "C. Protecting highly valuable IT equipment from secondary, permanent physical damage caused by water floods."
-        },
-        "ans": "C",
-        "explanation": "機房內充滿昂貴且關鍵的電子設備，若發生火警時使用傳統的撒水系統，即使撲滅了火勢，大量的水也會對伺服器與電路板造成不可逆的物理短路與損壞。使用無水氣體滅火系統（如 FM-200）能有效滅火，同時保護 IT 設備免受「水患」帶來的二次物理性損壞，確保可用性。",
-        "en_explanation": "Server rooms are filled with expensive and critical electronic equipment. If traditional water sprinklers are used during a fire, the massive amount of water will cause irreversible short circuits and physical damage to servers and motherboards, even if the fire is put out. Using waterless gas suppression systems (like FM-200) effectively extinguishes fires while protecting IT equipment from secondary physical damage caused by \"water floods,\" ensuring availability."
-    },
-    {
-        "id": 42,
-        "type": "MC",
-        "q": "某員工收到一封標題為「【緊急警告】您的信箱容量已滿，請點擊驗證升級」的信件，該員工最符合資安意識的動作是？",
-        "en_q": "An employee receives an email titled \"[URGENT] Mailbox full, click to verify and upgrade.\" What is the most security-conscious response?",
-        "options": {
-            "A": "A. 保持冷靜不點擊任何連結，將信件作為附件通報給資訊安全或 IT 單位分析。",
-            "B": "B. 先點擊連結看看是不是真的跳到公司的登入網頁，確認是假的再關掉。",
-            "C": "C. 直接回信給寄件者，痛罵對方是詐騙集團。"
-        },
-        "en_options": {
-            "A": "A. Stay calm, do not click any links, and report the email as an attachment to IT or InfoSec for analysis.",
-            "B": "B. Click the link first to see if it leads to the company login page, and close it if fake.",
-            "C": "C. Reply directly to the sender scolding them for being a scam group."
-        },
-        "ans": "A",
-        "explanation": "這是一封典型的「釣魚郵件（Phishing Email）」，利用「緊急警告」製造恐懼與急迫感。具備良好資安意識的員工不應點擊任何可疑連結或隨意回信（以防暴露活躍信箱），而是應該遵循公司的資安事件通報流程，將信件作為附件（以保留完整的郵件標頭資訊）轉發給 IT 或資安團隊進行專業分析。",
-        "en_explanation": "This is a classic \"Phishing Email\" that uses \"urgent warnings\" to create a sense of fear and urgency. A security-conscious employee should not click any suspicious links or reply (which confirms an active inbox). Instead, they should follow the company's incident reporting procedures by forwarding the email as an attachment (to preserve full email header information) to the IT or security team for professional analysis."
-    },
-    {
-        "id": 43,
-        "type": "MC",
-        "q": "針對外部供應商的維護設備（例如外包工程師帶來的檢測用筆電）準備接入公司內部網路前，應落實何種技術與實體控制？",
-        "en_q": "Before allowing external supplier equipment (e.g., outsourced engineer's diagnostic laptop) to connect to the internal network, what technical and physical controls should be implemented?",
-        "options": {
-            "A": "A. 基於信任原則，直接提供內部網路的 Wi-Fi 密碼讓其連線。",
-            "B": "B. 先強制進行惡意軟體掃描、確認防毒軟體更新，並將其限制在隔離的訪客網段（VLAN）。",
-            "C": "C. 要求工程師交出筆電密碼，由公司內部人員代為操作測試。"
-        },
-        "en_options": {
-            "A": "A. Based on trust, directly provide the internal Wi-Fi password for connection.",
-            "B": "B. Enforce malware scans, verify AV updates, and restrict it to an isolated guest network (VLAN).",
-            "C": "C. Demand the laptop password from the engineer and have internal staff operate it for testing."
-        },
-        "ans": "B",
-        "explanation": "外部供應商的設備不受公司內部的資安政策管控，極可能感染惡意軟體或病毒。在允許其接入網路前，必須將其視為「不可信設備」，強制進行防毒掃描、確認安全更新，並在網路架構上將其隔離在受限的訪客網段（VLAN）中，避免其直接接觸或感染內部核心網路。基於信任直接放行是極危險的作法。",
-        "en_explanation": "External supplier equipment is not governed by the company's internal security policies and is highly likely to harbor malware or viruses. Before allowing network access, it must be treated as an \"untrusted device.\" It is mandatory to enforce antivirus scans, verify security updates, and architecturally isolate it in a restricted guest network (VLAN) to prevent direct contact or infection of the internal core network. Granting access based purely on trust is an extremely dangerous practice."
-    },
-    {
-        "id": 44,
-        "type": "MC",
-        "q": "有關「佈線安全 (Cabling security)」，為了防止核心網路訊號被實體竊聽、破壞或意外截斷，下列作法何者正確？",
-        "en_q": "Regarding \"Cabling security\", to prevent core network signals from physical wiretapping, sabotage, or accidental cuts, which practice is correct?",
-        "options": {
-            "A": "A. 將網路線全部改為無線網路，即可徹底解決實體破壞問題。",
-            "B": "B. 將網路線與高壓電纜捆綁在一起，利用高壓電防止老鼠啃咬。",
-            "C": "C. 將核心通訊纜線封裝於具保護層的導管或實體線槽內，並避開公共頻繁走動區域。"
-        },
-        "en_options": {
-            "A": "A. Switch entirely to wireless networks to completely solve physical destruction issues.",
-            "B": "B. Bundle network cables with high-voltage lines, utilizing high voltage to deter rodents.",
-            "C": "C. Encase core communication cables in protective conduits or physical trenches, avoiding high-traffic public areas."
-        },
-        "ans": "C",
-        "explanation": "ISO 實體安全中對於「佈線安全」的要求，是保護電源與通訊纜線免於攔截、干擾或損壞。將核心纜線封裝在堅固的導管（Conduit）或加蓋的線槽中，並盡可能避開公眾容易進入或頻繁走動的區域，能有效降低被老鼠啃咬、意外切斷或有心人士加裝側錄設備的實體風險。無線網路有其自身的傳輸風險，無法取代核心實體佈線。",
-        "en_explanation": "ISO physical security requirements for \"Cabling Security\" mandate protecting power and communication cables from interception, interference, or damage. Enclosing core cables in sturdy conduits or covered physical trenches, while routing them away from easily accessible or high-traffic public areas, effectively reduces physical risks like rodent damage, accidental cuts, or malicious wiretapping devices. Wireless networks have their own transmission risks and cannot replace core physical cabling."
-    },
-    {
-        "id": 45,
-        "type": "MC",
-        "q": "若公司為了節省空間，全面實施「開放式辦公與隨機座位（Hot-desking）」，這對於實體資安會帶來什麼最大的挑戰？",
-        "en_q": "If the company fully implements \"Hot-desking\" to save space, what is the biggest challenge to physical security?",
-        "options": {
-            "A": "A. 極難落實桌面淨空政策，且大幅增加旁人窺視機密畫面（Shoulder surfing）的風險。",
-            "B": "B. 每天找座位會導致員工上班遲到。",
-            "C": "C. 員工會找不到網路孔可以插網路線。"
-        },
-        "en_options": {
-            "A": "A. It is extremely difficult to enforce clear desk policies and significantly increases shoulder surfing risks.",
-            "B": "B. Finding a seat every day will cause employees to be late.",
-            "C": "C. Employees won't find LAN ports to plug their network cables into."
-        },
-        "ans": "A",
-        "explanation": "隨機座位（Hot-desking）意味著員工每天坐在不同的位置，且周圍的人也不斷變換。在這種缺乏固定實體邊界與個人抽屜的環境下，員工極容易將機密文件遺留在桌上，難以徹底執行「桌面淨空（Clear desk）」。此外，開放空間大幅增加了旁人（包括其他部門或訪客）輕易從背後窺視螢幕（Shoulder surfing）的風險。",
-        "en_explanation": "Hot-desking means employees sit in different spots daily, surrounded by constantly changing neighbors. In this environment lacking fixed physical boundaries and personal drawers, employees are highly prone to leaving confidential documents behind, making the \"Clear desk\" policy exceptionally hard to enforce. Furthermore, open spaces massively increase the risk of \"Shoulder surfing,\" where others (including different departments or visitors) can easily spy on screens from behind."
-    },
-    {
-        "id": 46,
-        "type": "MC",
-        "q": "當稽核員發現公司總部機房大門的密碼鎖，其「密碼長達三年未曾更換」，這主要違反了什麼安全管理原則？",
-        "en_q": "When an auditor finds that the core server room door keypad \"has not had its password changed in 3 years\", what core security management principle is violated?",
-        "options": {
-            "A": "A. 密碼太舊會導致鍵盤按鈕條理褪色，影響美觀。",
-            "B": "B. 認證憑證未定期更新，前員工或離包商可能仍持有密碼，大幅提高未授權存取風險。",
-            "C": "C. 舊密碼會拖慢機房大門微電腦的處理速度。"
-        },
-        "en_options": {
-            "A": "A. Old passwords lead to faded keypad buttons, affecting aesthetics.",
-            "B": "B. Failure to periodically update credentials leaves former employees or contractors with passwords, significantly increasing unauthorized access risks.",
-            "C": "C. Old passwords slow down the processing speed of the door's microcomputer."
-        },
-        "ans": "B",
-        "explanation": "存取憑證（如密碼、通行碼）必須定期強制更新。若密碼長達三年未更換，期間離職的員工、調職人員或約聘的外包廠商可能依然記得這組密碼。這嚴重違反了「最小權限」與「存取控制」原則，導致未授權人員極可能利用舊密碼輕易進入機房，帶來巨大的實體入侵風險。",
-        "en_explanation": "Access credentials (like passwords or passcodes) must be mandatorily updated on a regular basis. If a password hasn't been changed in three years, resigned employees, transferred staff, or former contractors might still remember it. This severely violates the principles of \"Least Privilege\" and \"Access Control,\" making it highly likely for unauthorized individuals to easily enter the server room using the old password, posing a massive physical intrusion risk."
-    },
-    {
-        "id": 47,
-        "type": "MC",
-        "q": "下列何者「最不適合作為」資訊安全認知教育訓練成效的客觀衡量指標（KPI）？",
-        "en_q": "Which of the following is \"least suitable\" as an objective KPI for measuring the effectiveness of information security awareness training?",
-        "options": {
-            "A": "A. 釣魚郵件模擬測試中，員工不慎點擊連結的「中招率」下降幅度。",
-            "B": "B. 實際資安通報演練中，員工在發現異常後通報 IT 單位的人數比例。",
-            "C": "C. 教育訓練當天中午發放的便當與點心滿意度調查問卷分數。"
-        },
-        "en_options": {
-            "A": "A. The drop in \"click rate\" during simulated phishing email tests.",
-            "B": "B. The proportion of employees who report to IT after discovering anomalies during incident reporting drills.",
-            "C": "C. The satisfaction scores from surveys regarding the lunchboxes and snacks provided during training."
-        },
-        "ans": "C",
-        "explanation": "教育訓練的目的在於「改變員工的行為與提升資安意識」。選項 A（釣魚信件點擊率下降）與選項 B（主爬通報資安事件的比例增加）都是客觀且能反映行為改變的實質指標。選項 C（便當或點心滿意度）僅反映了行政後勤的感受，與員工是否吸收了資安知識並應用於日常工作毫無關聯，是最不適合的 KPI。",
-        "en_explanation": "The goal of security training is to \"change employee behavior and raise security awareness.\" Option A (drop in phishing click rates) and Option B (increased proportion of proactive incident reporting) are both objective, substantial metrics reflecting behavioral changes. Option C (lunchbox or snack satisfaction) only reflects administrative logistics; it has absolutely no correlation with whether employees absorbed security knowledge and applied it to their daily work, making it the least suitable KPI."
-    },
-    {
-        "id": 48,
-        "type": "MC",
-        "q": "若公司必須將含有全公司薪資檔案的實體備份磁帶，每週運送至異地備援機房，下列哪種運送方式最符合 ISO 實體安全規範？",
-        "en_q": "If the company must transport physical backup tapes containing all payroll files to an off-site center weekly, which transport method best meets ISO physical security guidelines?",
-        "options": {
-            "A": "A. 為了省錢，指派當天最閒的實習生搭捷運送過去。",
-            "B": "B. 將資料加密，放入防破壞的上鎖保險箱，交由具信任合約的專業保全物流運送並保留交接簽收紀錄。",
-            "C": "C. 用一般的牛皮紙袋裝著，叫一般的計程車快遞送達。"
-        },
-        "en_options": {
-            "A": "A. To save money, assign the most idle intern to deliver it via the subway.",
-            "B": "B. Encrypt data, place it in tamper-proof locked safes, and entrust it to professional security logistics with trust contracts and signed handover records.",
-            "C": "C. Pack it in standard kraft envelopes and send it via a regular taxi courier."
-        },
-        "ans": "B",
-        "explanation": "薪資檔案屬於極機密資訊。在實體媒體的運送過程中，必須考量防護、追蹤與究責。選項 B 包含了技術層面（資料加密）、實體防護層面（防破壞上鎖保險箱），以及管理層面（由具備保密合約的專業物流執行，並保留簽收紀錄以確保稽核軌跡），完美符合 ISO 對於設備與媒體安全運送的嚴格規範。",
-        "en_explanation": "Payroll files are highly confidential information. When transporting physical media, protection, tracking, and accountability must be considered. Option B encompasses technical measures (data encryption), physical protection (tamper-proof locked safes), and management controls (executed by professional logistics with NDA contracts, maintaining signed records for audit trails). This perfectly complies with ISO's strict standards for the secure transport of equipment and media."
-    },
-    {
-        "id": 49,
-        "type": "MC",
-        "q": "關於「實體鑰匙與備用門禁卡」的管理，下列稽核場景中何者屬於「嚴重缺失（Major Non-conformity）」？",
-        "en_q": "Regarding the management of \"physical keys and backup access cards,\" which audit scenario constitutes a \"Major Non-conformity\"?",
-        "options": {
-            "A": "A. 核心機房的萬用實體備用鑰匙，直接掛在 IT 部門經理辦公桌的透明壓克力板上，且無人監管。",
-            "B": "B. 備用鑰匙被存放在附有密碼鎖的保險箱內，只有兩位高階主管知道密碼。",
-            "C": "C. 所有訪客門禁卡在下班前都會進行盤點與數量核對。"
-        },
-        "en_options": {
-            "A": "A. The master backup physical key to the core server room hangs on an unsupervised clear acrylic board on the IT manager's desk.",
-            "B": "B. Backup keys are stored in a keypad safe with only two senior managers knowing the code.",
-            "C": "C. All visitor access cards undergo inventory and quantity checks before the end of the workday."
-        },
-        "ans": "A",
-        "explanation": "核心機房是企業 IT 架構的心臟，其備用鑰匙擁有最高等級的實體存取權。將萬用備用鑰匙直接掛在透明壓克力板上且無人監管，等同於向所有人（包括訪客與內部非授權員工）開放機房大門，完全喪失了實體存取控制的作用，這是極度致命的嚴重稽核缺失。B 是正確的保護作法，C 是正確的管理作法。",
-        "en_explanation": "The core server room is the heart of an enterprise's IT architecture, and its backup keys possess the highest level of physical access. Hanging the master backup key on an unsupervised clear acrylic board is equivalent to opening the server room doors to everyone (including visitors and unauthorized internal staff). It completely nullifies physical access controls and represents a highly critical, major audit non-conformity. Option B is a correct protection practice, and Option C is a correct management practice."
-    },
-    {
-        "id": 50,
-        "type": "MC",
-        "q": "綜合實體與人員安全，當員工於非上班時間（如假日、深夜）需進入公司辦公區加班時，最合規的存取流程應該是？",
-        "en_q": "Combining physical and personnel security, what is the most compliant access flow when an employee needs to enter the office for overtime during non-working hours (e.g., holidays, late nights)?",
-        "options": {
-            "A": "A. 只要是正職員工，24 小時隨時都可以自由刷卡進出公司。",
-            "B": "B. 聯絡熟識的大樓保全幫忙直接開門，不留刷卡紀錄以免被查勤。",
-            "C": "C. 需依制度事先提出加班申請，經權責主管核准後，門禁系統才於該特定時段自動開放其刷卡權限。"
-        },
-        "en_options": {
-            "A": "A. As long as they are full-time employees, they can freely swipe in and out 24/7.",
-            "B": "B. Call a familiar building guard to let them in, leaving no swipe records to avoid attendance checks.",
-            "C": "C. Submit an overtime request per policy beforehand; upon manager approval, the access system automatically grants swipe rights for that specific timeframe."
-        },
-        "ans": "C",
-        "explanation": "非上班時間的辦公室人員稀少，缺乏同事間的互相監督（Shoulder check），因此實體存取風險較高。合規的做法必須符合「授權」與「最小存取時間」原則。員工應先透過系統提出申請，經主管核准授權後，門禁系統才在該特定的加班時段自動賦予刷卡權限。這能確保進出合法，並留下完整的稽核紀錄，防範內部員工惡意闖入。",
-        "en_explanation": "During non-working hours, the office is sparsely populated, lacking peer supervision (shoulder checks), which elevates physical access risks. Compliant procedures must adhere to the principles of \"Authorization\" and \"Minimum Access Time.\" Employees should submit a system request first; upon managerial approval, the access system automatically grants swipe privileges solely for that specific overtime window. This ensures legitimate entry, maintains comprehensive audit logs, and prevents malicious intrusions by internal staff."
-    },
-    {
-        "id": 51,
-        "type": "SC",
-        "q": "關於人員篩選(背景調查)，哪一項最符合資訊安全管理的要求？",
-        "en_q": "Regarding personnel screening (background checks), which of the following best meets information security management requirements?",
-        "options": {
-            "A": "A. 徵才時必須記錄並保存背景調查結果以符合資安要求",
-            "B": "B. 背景調查為選擇性程序，僅對關鍵職務執行",
-            "C": "C. 公司不得保存任何求職者背景資料以保護隱私",
-            "D": "D. 只需在員工離職時補做背景調查即可"
-        },
-        "en_options": {
-            "A": "A. Background check results must be recorded and retained during hiring to meet security requirements",
-            "B": "B. Background checks are optional procedures performed only for key roles",
-            "C": "C. The company must not retain any applicant background data to protect privacy",
-            "D": "D. Background checks only need to be done retroactively upon resignation"
-        },
-        "ans": "A",
-        "explanation": "根據 ISO 27001 (A.7.1.1 篩選)，組織在任用員工或承包商前應進行背景調查。選項A正確，因記錄與保存調查結果能提供合規性與資安管理的稽核軌跡。選項B錯誤，背景調查應涵蓋所有適用人員，不僅限於關鍵職務。選項C錯誤，企業在遵循隱私法規的前提下可合法保存這些記錄。選項D錯誤，背景調查必須在「任用前」完成以防範潛在風險。",
-        "en_explanation": "According to ISO 27001 (A.7.1.1 Screening), organizations must conduct background checks prior to employment. Option A is correct because retaining these records provides an audit trail for compliance. Option B is incorrect as screening applies to all relevant personnel, not just key roles. Option C is incorrect; companies can legally retain these records if privacy laws are followed. Option D is incorrect because checks must be completed before hiring to mitigate risks."
-    },
-    {
-        "id": 52,
-        "type": "SC",
-        "q": "關於聘用條款與條件，下列敘述何者正確？",
-        "en_q": "Regarding terms and conditions of employment, which of the following statements is correct?",
-        "options": {
-            "A": "A. 聘用合約僅需記載薪資與職稱，不需涉及資安責任",
-            "B": "B. 聘用合約應包含違反資安的懲處與離職後的保密條款",
-            "C": "C. 所有資安責任可口頭約定而不必寫入合約",
-            "D": "D. 離職後不得有任何保密義務"
-        },
-        "en_options": {
-            "A": "A. Employment contracts only need to list salary and title, without involving security responsibilities",
-            "B": "B. Employment contracts should include disciplinary actions for security violations and post-employment confidentiality clauses",
-            "C": "C. All security responsibilities can be verbally agreed upon without written contracts",
-            "D": "D. There must not be any confidentiality obligations after resignation"
-        },
-        "ans": "B",
-        "explanation": "依據 ISO 27001 (A.7.1.2 任用條款與條件)，聘僱合約必須明確規範資安責任。選項B正確，合約應載明違反資安的懲戒處分，及離職後持續生效的保密條款(NDA)。選項A錯誤，合約必須納入資安責任而不能僅有薪資與職稱。選項C錯誤，資安責任必須以書面約定以具備法律效力。選項D錯誤，離職後的保密義務是保護企業營業秘密的關鍵，不受僱用關係終止影響。",
-        "en_explanation": "Per ISO 27001 (A.7.1.2 Terms and conditions of employment), contracts must explicitly state security responsibilities. Option B is correct; contracts should include disciplinary actions for violations and post-employment NDAs. Option A is incorrect because security responsibilities are mandatory. Option C is incorrect; security duties must be written to be legally binding. Option D is incorrect; post-employment confidentiality is crucial for protecting trade secrets."
-    },
-    {
-        "id": 53,
-        "type": "SC",
-        "q": "關於保密協議(NDA)的實務要求，何者為正確做法？",
-        "en_q": "Regarding the practical requirements of Non-Disclosure Agreements (NDA), what is the correct practice?",
-        "options": {
-            "A": "A. 只有正職員工需簽署保密協議，外包人員除外",
-            "B": "B. 僅在離職時要求簽署保密協議即可",
-            "C": "C. 正職與外包人員在接觸內網前均須已簽署保密協議",
-            "D": "D. 由直屬主管口頭承諾即可取代書面保密協議"
-        },
-        "en_options": {
-            "A": "A. Only full-time employees need to sign NDAs, excluding outsourced personnel",
-            "B": "B. NDAs are only required to be signed upon resignation",
-            "C": "C. Both full-time and outsourced personnel must sign an NDA before accessing the intranet",
-            "D": "D. A verbal promise from a direct supervisor can replace a written NDA"
-        },
-        "ans": "C",
-        "explanation": "依據 ISO 27001 (A.13.2.4 保密協議)，所有可能接觸敏感資訊的人員均須簽署NDA。選項C正確，正職與外包人員在存取內網或敏感資源前，都必須完成書面NDA簽署以確保承諾保密。選項A錯誤，外包人員同樣會接觸機密資訊且風險可能更高。選項B錯誤，保密協議必須在授予權限前簽署，而非離職時。選項D錯誤，口頭承諾缺乏法律約束力與稽核證據。",
-        "en_explanation": "Under ISO 27001 (A.13.2.4 Confidentiality agreements), anyone accessing sensitive info must sign an NDA. Option C is correct; both full-time and outsourced personnel must sign written NDAs before accessing the intranet or sensitive resources. Option A is incorrect as outsourced staff also pose risks. Option B is incorrect; NDAs must be signed prior to access, not upon resignation. Option D is incorrect; verbal promises lack legal force and auditability."
-    },
-    {
-        "id": 54,
-        "type": "SC",
-        "q": "關於在高度安全區域的行為規範，下列何者為正確？",
-        "en_q": "Regarding behavior norms in highly secure areas, which of the following is correct?",
-        "options": {
-            "A": "A. 可以在安全區域拍照以供後續比對，只要不外傳",
-            "B": "B. 在無監督時拍照只要經主管事後補簽即可",
-            "C": "C. 只要是公司員工就可自由在機房拍攝作業過程記錄",
-            "D": "D. 未經授權且無監督人員在場時，禁止拍照或錄影"
-        },
-        "en_options": {
-            "A": "A. Photography is allowed in secure areas for future reference as long as it is not leaked",
-            "B": "B. Unsupervised photography only needs retroactive approval from a supervisor",
-            "C": "C. Any company employee can freely record operational processes in the server room",
-            "D": "D. Unauthorized photography or video recording is prohibited when unsupervised"
+            "A": "A. 設備維護（Equipment maintenance）",
+            "B": "B. 設備汰除或重新使用之保全（Security of equipment disposal or re-use）",
+            "C": "C. 佈纜安全（Cabling security）",
+            "D": "D. 設備安置及保護（Equipment siting and protection）"
         },
         "ans": "D",
-        "explanation": "根據 ISO 27001 (A.11.1.5 在安全區域內之作業)，安全區域(如機房)應有嚴格規範。選項D正確，安全區域內存放核心系統，未經授權且無人監督時嚴禁拍照或錄影，以防機密或架構外洩。選項A錯誤，未經授權拍攝即違反實體安全規範，難以控管後續風險。選項B錯誤，事後補簽無法挽回事發時的潛在資料外洩。選項C錯誤，即使是員工也不能自由拍攝，必須具備授權與業務需求。",
-        "en_explanation": "According to ISO 27001 (A.11.1.5 Working in secure areas), strict rules apply to secure zones like server rooms. Option D is correct; unauthorized and unsupervised photography is strictly prohibited to prevent leakage of sensitive data or infrastructure layouts. Option A is incorrect; unauthorized filming violates physical security regardless of intent. Option B is incorrect; retroactive approval cannot undo potential leaks. Option C is incorrect; employees cannot film freely and require explicit authorization."
-    },
-    {
-        "id": 55,
-        "type": "SC",
-        "q": "關於桌面與螢幕淨空，下列何者為公司資訊安全的正確規範？",
-        "en_q": "Regarding clear desk and clear screen policies, which of the following is the correct information security standard?",
-        "options": {
-            "A": "A. 應保持桌面與螢幕淨空，避免將帳密貼在螢幕上並及時取走列印資料",
-            "B": "B. 在辦公桌放置訪客名片與未取列印資料是可接受的日常習慣",
-            "C": "C. 可在桌面隨意放置含機密資訊的USB以便備援使用",
-            "D": "D. 列印機資料無需即時取走，放置一段時間是允許的"
-        },
-        "en_options": {
-            "A": "A. Desks and screens must be kept clear, passwords should not be stuck on screens, and printed materials should be collected promptly",
-            "B": "B. Leaving visitor business cards and uncollected prints on desks is an acceptable daily habit",
-            "C": "C. Confidential USBs can be casually left on the desk for backup convenience",
-            "D": "D. Printed materials do not need to be collected immediately; leaving them for a while is allowed"
-        },
-        "ans": "A",
-        "explanation": "依據 ISO 27001 (A.11.2.9 桌面與螢幕淨空政策)，組織應降低未授權存取風險。選項A正確，員工應保持桌面淨空，鎖定電腦螢幕，絕對不可將密碼貼在螢幕上，且列印資料應即時取走。選項B錯誤，未取走的列印資料容易被他人翻閱。選項C錯誤，隨意放置含有機密資訊的USB容易導致遺失或遭竊。選項D錯誤，列印機多位於公共區域，文件不及時取走將面臨被竊取的風險。",
-        "en_explanation": "Per ISO 27001 (A.11.2.9 Clear desk and clear screen policy), organizations must reduce unauthorized access risks. Option A is correct; employees must keep desks clear, lock screens, never stick passwords on monitors, and collect printouts immediately. Option B is incorrect; leaving uncollected prints risks exposure. Option C is incorrect; leaving confidential USBs around leads to theft or loss. Option D is incorrect; printers are public, and uncollected documents risk being stolen."
-    },
-    {
-        "id": 56,
-        "type": "MA",
-        "q": "關於資訊安全認知、教育訓練與獎懲，下列何者為適當措施？(多選)",
-        "en_q": "Regarding info security awareness, education training, and disciplinary measures, which of the following are appropriate? (Multiple Choice)",
-        "options": {
-            "A": "A. 應定期舉辦資安認知與教育訓練以提升員工警覺",
-            "B": "B. 資安教育僅需新進時一次性宣導即可",
-            "C": "C. 重大違規應影響績效獎金並視情節給予行政警告等懲處",
-            "D": "D. 資安違規只需口頭提醒，不應納入獎懲制度"
-        },
-        "en_options": {
-            "A": "A. Security awareness and training should be held regularly to raise vigilance",
-            "B": "B. Security education is only needed as a one-time orientation for new hires",
-            "C": "C. Major violations should impact performance bonuses and lead to administrative warnings",
-            "D": "D. Security violations only need verbal reminders and should not be part of the disciplinary system"
-        },
-        "ans": [
-            "A",
-            "C"
-        ],
-        "explanation": "根據 ISO 27001，資安意識是第一道防線且需有懲戒機制支持。選項A正確，定期舉辦資安認知訓練可確保員工了解最新威脅與規範。選項C正確，組織應制定正式懲戒程序，重大違規應影響績效並給予行政處分以確保規範具強制力。選項B錯誤，單次新人訓練無法應對不斷變化的威脅。選項D錯誤，若無明確獎懲制度，資安規範將流於形式而無法遏止違規。",
-        "en_explanation": "Under ISO 27001, security awareness is the first defense line and requires disciplinary backing. Option A is correct; regular training ensures employees understand current threats. Option C is correct; formal disciplinary procedures penalizing major violations are needed to enforce compliance. Option B is incorrect; a one-time orientation cannot address evolving threats. Option D is incorrect; without a disciplinary system, policies become formalities and fail to deter violations."
-    },
-    {
-        "id": 57,
-        "type": "MA",
-        "q": "關於實體安全周界與進入控制，下列哪些做法是正確的？(多選)",
-        "en_q": "Regarding physical security perimeters and entry controls, which practices are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 會議室視訊鏡頭未使用時應關閉以避免拍到敏感文件",
-            "B": "B. 門禁系統應嚴格管控進出並管理訪客",
-            "C": "C. 過期或停用的門禁卡必須失效以防止未授權進入",
-            "D": "D. 門禁可任由員工自主管理過期卡片"
-        },
-        "en_options": {
-            "A": "A. Conference room cameras should be turned off when not in use to avoid recording sensitive documents",
-            "B": "B. Access systems should strictly control entry and manage visitors",
-            "C": "C. Expired or deactivated access cards must be invalidated to prevent unauthorized entry",
-            "D": "D. Employees can autonomously manage expired cards for access control"
-        },
-        "ans": [
-            "A",
-            "B",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001 (A.11.1 實體安全周界與進入控制)，實體存取需受嚴格控管。選項A正確，會議室鏡頭閒置時關閉可避免意外拍到機密討論。選項B正確，門禁系統必須記錄並控管所有進出人員與訪客。選項C正確，基於最小權限原則，過期或停用的門禁卡必須立即註銷以防未授權存取。選項D錯誤，門禁權限涉及實體安全，必須由專責單位統一控管，絕不能由員工自主管理。",
-        "en_explanation": "Per ISO 27001 (A.11.1 Physical security perimeter and entry controls), physical access must be strictly managed. Option A is correct; turning off idle cameras prevents accidental filming of confidential discussions. Option B is correct; access systems must log and manage all entries, including visitors. Option C is correct; under the principle of least privilege, expired cards must be instantly disabled. Option D is incorrect; access rights must be centrally managed, never autonomously by employees."
-    },
-    {
-        "id": 58,
-        "type": "MA",
-        "q": "關於報告資安事件的流程，下列哪些敘述正確？(多選)",
-        "en_q": "Regarding the procedure for reporting security incidents, which statements are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 員工收到可疑郵件時必須依標準程序向IT部門報告",
-            "B": "B. 可疑郵件可先在個人電腦上開啟以確認是否含惡意程式",
-            "C": "C. 發現異常文件若非自己負責就無須回報",
-            "D": "D. 員工發現異常情況應立即報告，不得延遲"
-        },
-        "en_options": {
-            "A": "A. Employees must report suspicious emails to the IT department per standard procedures",
-            "B": "B. Suspicious emails can be opened on personal PCs first to confirm malware presence",
-            "C": "C. Abnormal documents do not need to be reported if you are not responsible for them",
-            "D": "D. Employees must immediately report anomalies without delay"
-        },
-        "ans": [
-            "A",
-            "D"
-        ],
-        "explanation": "根據 ISO 27001 (A.16.1.2 報告資訊安全事件)，員工有義務通報任何疑似資安事件。選項A正確，員工應依循標準程序向IT報告可疑郵件，交由專業團隊處理。選項D正確，及時回報是控制損害範圍的關鍵，延遲可能導致惡意程式擴散。選項B錯誤，員工自行開啟可疑附件極易觸發惡意軟體(如勒索軟體)。選項C錯誤，資安是全員責任，任何異常都應通報，與是否為個人業務無關。",
-        "en_explanation": "According to ISO 27001 (A.16.1.2 Reporting info security events), employees must report suspected incidents. Option A is correct; employees must report suspicious emails to IT following standard procedures for professional handling. Option D is correct; prompt reporting is critical to contain damage. Option B is incorrect; opening suspicious attachments personally risks triggering malware. Option C is incorrect; security is everyone's responsibility, so anomalies must be reported regardless of whose task it is."
-    },
-    {
-        "id": 59,
-        "type": "MA",
-        "q": "關於保密協議(NDA)的要求，下列哪些為正確？(多選)",
-        "en_q": "Regarding Non-Disclosure Agreement (NDA) requirements, which of the following are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 非必要情況下可不要求外包人員簽署保密協議",
-            "B": "B. 正職與外包人員在接觸內網前都應完成保密協議簽署",
-            "C": "C. 保密協議應以書面形式記載雙方義務與範圍",
-            "D": "D. 只需口頭承諾即可視為保密義務成立"
-        },
-        "en_options": {
-            "A": "A. NDAs are not required for outsourced personnel unless absolutely necessary",
-            "B": "B. Both full-time and outsourced staff must sign an NDA before accessing the intranet",
-            "C": "C. NDAs must be in written form documenting obligations and scope",
-            "D": "D. A verbal promise is sufficient to establish confidentiality obligations"
-        },
-        "ans": [
-            "B",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001，NDA 是確保各方遵守資訊保護規範的法律基礎。選項B正確，正職員工與外包人員皆會接觸敏感資料，在正式授權存取內網前均須簽署。選項C正確，NDA必須是具法律效力的書面文件，明確記載保密範圍與義務。選項A錯誤，外包人員的流動性與風險較高，簽署NDA是強制性控制措施。選項D錯誤，口頭承諾無法作為法庭證據與稽核軌跡，無法取代書面協議。",
-        "en_explanation": "Under ISO 27001, NDAs are the legal foundation for information protection. Option B is correct; both full-time and outsourced staff must sign NDAs before accessing the intranet since both handle sensitive data. Option C is correct; an NDA must be a legally binding written document outlining the scope and obligations. Option A is incorrect; outsourced staff pose higher risks, making NDAs mandatory. Option D is incorrect; verbal promises lack legal standing and auditability."
-    },
-    {
-        "id": 60,
-        "type": "MA",
-        "q": "關於在機房等安全區域的管理，下列哪些措施是必要的？(多選)",
-        "en_q": "Regarding management in secure areas like server rooms, which measures are necessary? (Multiple Choice)",
-        "options": {
-            "A": "A. 在機房等高度安全區域未經授權且無監督人員在場時，應禁止拍照或錄影",
-            "B": "B. 機房應禁止放置飲料食物以避免濺灑或造成設備損壞",
-            "C": "C. 在安全區域內可以自由拍照以便記錄設備狀態",
-            "D": "D. 允許於機房飲食只要注意不靠近設備即可"
-        },
-        "en_options": {
-            "A": "A. Unauthorized photography/video without supervision is prohibited in highly secure areas",
-            "B": "B. Food and drinks are prohibited in server rooms to prevent spills and equipment damage",
-            "C": "C. Photography is freely allowed in secure areas to record equipment status",
-            "D": "D. Eating is allowed in server rooms as long as it is kept away from equipment"
-        },
-        "ans": [
-            "A",
-            "B"
-        ],
-        "explanation": "根據 ISO 27001 (A.11.1.5 在安全區域內之作業)與設備安全規範，機房需具備高標準的實體與環境控制。選項A正確，為防止機密或架構外洩，機房內嚴禁未經授權與無監督的拍攝。選項B正確，機房內禁止放置飲食，以防液體濺灑導致短路或設備損壞。選項C錯誤，即使在安全區域內也不能自由拍照，需有授權。選項D錯誤，機房內嚴格禁止任何飲食行為，沒有遠離設備即可飲食的例外。",
-        "en_explanation": "Per ISO 27001 (A.11.1.5 Working in secure areas) and equipment security policies, server rooms require high-standard physical/environmental controls. Option A is correct; unauthorized and unsupervised filming is strictly prohibited to prevent data and layout leaks. Option B is correct; food and drinks are banned to prevent spills causing short circuits or damage. Option C is incorrect; free photography is not allowed without authorization. Option D is incorrect; eating is strictly forbidden with no exceptions."
-    },
-    {
-        "id": 61,
-        "type": "MA",
-        "q": "關於桌面與螢幕淨空，下列哪些為正確的控制項？(多選)",
-        "en_q": "Regarding clear desk and screen policies, which of the following are correct controls? (Multiple Choice)",
-        "options": {
-            "A": "A. 機密文件、訪客名片、USB不應隨意放置桌面",
-            "B": "B. 可將帳密貼於螢幕下方以便登入使用",
-            "C": "C. 印表機資料應及時取走以防外流",
-            "D": "D. 不得將帳密貼在螢幕上以免資訊外洩"
-        },
-        "en_options": {
-            "A": "A. Confidential documents, visitor cards, and USBs should not be casually left on desks",
-            "B": "B. Passwords can be stuck below the screen for login convenience",
-            "C": "C. Printed materials should be collected promptly to prevent leakage",
-            "D": "D. Passwords must not be stuck on screens to prevent information leaks"
-        },
-        "ans": [
-            "A",
-            "C",
-            "D"
-        ],
-        "explanation": "依據 ISO 27001 (A.11.2.9 桌面淨空與螢幕淨空政策)，目的是減少敏感資訊遭未經授權存取的機會。選項A正確，機密文件、訪客名片與USB不應留在無人看管的桌面上。選項C正確，印表機列印的資料應即時取走，防止被他人翻閱。選項D正確，密碼絕對不得寫在紙上並貼於螢幕或鍵盤下。選項B錯誤，將帳密貼於螢幕嚴重違反資安基本規範，極易導致帳號遭盜用。",
-        "en_explanation": "Per ISO 27001 (A.11.2.9 Clear desk and clear screen policy), the goal is to reduce unauthorized access. Option A is correct; confidential documents, visitor cards, and USBs should not be left unattended on desks. Option C is correct; printed materials must be retrieved instantly to prevent unauthorized viewing. Option D is correct; passwords must never be written down and stuck to screens. Option B is incorrect; sticking passwords on screens severely violates basic security rules and invites account compromise."
-    },
-    {
-        "id": 62,
-        "type": "MA",
-        "q": "關於儲存媒體（如USB）的實體存放安全，下列哪些敘述正確？(多選)",
-        "en_q": "Regarding the physical storage security of media (e.g., USBs), which statements are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 含機密資訊或測試用的USB必須妥善保管",
-            "B": "B. 含機密資訊的USB可隨手放置於靠近門口以便帶走",
-            "C": "C. 公司可允許員工將含機密資訊的USB丟棄在公共垃圾桶",
-            "D": "D. 不得將含機密資訊的外部存儲媒體隨意丟棄於公共區域"
-        },
-        "en_options": {
-            "A": "A. USBs with confidential data or testing files must be properly secured",
-            "B": "B. Confidential USBs can be left near doors for quick grab-and-go",
-            "C": "C. Employees are allowed to toss confidential USBs in public trash bins",
-            "D": "D. External media with confidential data must not be casually discarded in public areas"
-        },
-        "ans": [
-            "A",
-            "D"
-        ],
-        "explanation": "依據 ISO 27001 (A.8.3 媒體處置)，組織應對可攜式儲存媒體進行妥善的實體保護。選項A正確，含有機密資訊或測試資料的USB必須鎖在抽屜或保險箱中妥善保管。選項D正確，當這類媒體不再需要時，必須進行安全的資料抹除或實體銷毀，絕不可隨意丟棄於公共區域。選項B錯誤，將USB放置於靠近門口等易取得處，極易遭竊。選項C錯誤，將含有機密資訊的USB丟入公共垃圾桶會導致嚴重的資料外洩。",
-        "en_explanation": "Under ISO 27001 (A.8.3 Media handling), portable storage media require proper physical protection. Option A is correct; USBs with confidential or testing data must be securely stored (e.g., in a locked drawer). Option D is correct; external media must undergo secure data wiping or physical destruction when no longer needed, never casually discarded. Option B is incorrect; leaving USBs near doors invites theft. Option C is incorrect; throwing confidential USBs in public trash causes severe data leaks."
-    },
-    {
-        "id": 63,
-        "type": "MA",
-        "q": "關於設備維護與汰除保全，下列哪些為公司應採取的措施？(多選)",
-        "en_q": "Regarding equipment maintenance and disposal security, what measures should the company take? (Multiple Choice)",
-        "options": {
-            "A": "A. 報廢設備可直接丟棄於一般垃圾桶以節省成本",
-            "B": "B. 報廢設備及碎紙機中的機密文件必須妥善銷毀",
-            "C": "C. 機房內可放置開啟式食物以供值班人員使用",
-            "D": "D. 設備維護時應防範鼠害以保護線路與接點"
-        },
-        "en_options": {
-            "A": "A. Scrapped equipment can be thrown into normal trash to save costs",
-            "B": "B. Scrapped equipment and confidential files in shredders must be properly destroyed",
-            "C": "C. Open food can be placed in the server room for duty personnel",
-            "D": "D. Equipment maintenance should prevent rodent damage to protect wiring and contacts"
-        },
-        "ans": [
-            "B",
-            "D"
-        ],
-        "explanation": "根據 ISO 27001 (A.11.2.7 設備汰除或重新安置之安全維護)與環境安全規範，設備與資料的銷毀需受嚴格控管。選項B正確，報廢設備中的硬碟與碎紙機中的機密文件都必須被妥善且不可逆地銷毀，防止資料復原。選項D正確，設備維護包含環境控制，防範鼠害能避免線路被咬斷而導致服務中斷。選項A錯誤，報廢設備若未經資料抹除即丟棄，會導致機密外洩。選項C錯誤，機房內嚴禁放置任何食物或飲料。",
-        "en_explanation": "Per ISO 27001 (A.11.2.7 Secure disposal or re-use of equipment) and environmental policies, equipment/data destruction must be strictly managed. Option B is correct; hard drives in scrapped equipment and documents in shredders must be irreversibly destroyed to prevent recovery. Option D is correct; environmental controls include pest prevention, avoiding rodent damage to wiring that causes downtime. Option A is incorrect; discarding equipment without wiping data causes leaks. Option C is incorrect; food/drinks are strictly banned in server rooms."
-    },
-    {
-        "id": 64,
-        "type": "MA",
-        "q": "關於門禁及周界安全管理，下列何者為適當做法？(多選)",
-        "en_q": "Regarding access control and perimeter security management, which are appropriate practices? (Multiple Choice)",
-        "options": {
-            "A": "A. 過期卡片應立即停用以防止未授權進出",
-            "B": "B. 門禁系統應記錄出入以利追蹤與稽核",
-            "C": "C. 訪客進出應由負責人陪同並受限於允許區域",
-            "D": "D. 門禁管理可完全依賴員工自律無需紀錄"
-        },
-        "en_options": {
-            "A": "A. Expired cards should be deactivated immediately to prevent unauthorized access",
-            "B": "B. Access systems must record entry/exit for tracking and auditing",
-            "C": "C. Visitors should be escorted by sponsors and restricted to allowed areas",
-            "D": "D. Access control can fully rely on employee self-discipline without logging"
-        },
-        "ans": [
-            "A",
-            "B",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001 (A.11.1 實體安全周界與進入控制)，門禁管理是保護內部資源的基礎。選項A正確，過期或離職員工的卡片必須立即在系統中停用，遵循最小權限原則。選項B正確，門禁系統必須詳細記錄進出時間與身分，以供後續的資安事件追蹤與稽核。選項C正確，訪客進入敏感區域時必須由內部人員全程陪同，且僅限於授權範圍。選項D錯誤，門禁管理必須具備強制力的系統管控與日誌記錄，絕不能僅依賴員工自律。",
-        "en_explanation": "Under ISO 27001 (A.11.1 Physical security perimeter and entry controls), access management is foundational. Option A is correct; expired or former employee cards must be deactivated instantly, following least privilege principles. Option B is correct; access systems must log entry/exit details for tracking and auditing. Option C is correct; visitors must be escorted by internal staff and restricted to authorized areas. Option D is incorrect; access control requires enforced system management and logging, not just self-discipline."
-    },
-    {
-        "id": 65,
-        "type": "MA",
-        "q": "針對會議室視訊設備的管理，下列哪些做法正確？(多選)",
-        "en_q": "Regarding the management of conference room video equipment, which practices are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 會議室視訊鏡頭未使用時應關閉以避免拍攝敏感資料",
-            "B": "B. 鏡頭應避免正對含敏感文件或白板內容",
-            "C": "C. 會議室鏡頭即使閒置也可持續開啟以利監控",
-            "D": "D. 會議室鏡頭對敏感文件無需特別注意"
-        },
-        "en_options": {
-            "A": "A. Cameras should be turned off when idle to avoid filming sensitive data",
-            "B": "B. Cameras should avoid pointing directly at sensitive documents or whiteboards",
-            "C": "C. Cameras can remain active while idle for surveillance purposes",
-            "D": "D. No special attention is needed regarding cameras pointing at sensitive documents"
-        },
-        "ans": [
-            "A",
-            "B"
-        ],
-        "explanation": "依據 ISO 27001 實體與環境安全控制，視訊設備若管理不當將成為實體安全的漏洞。選項A正確，會議室鏡頭在未使用時應隨手關閉或遮蔽，避免因遠端誤啟動而錄下機密討論。選項B正確，安裝與使用鏡頭時，應刻意避開直接拍攝白板上的機密架構圖或桌面上的敏感文件。選項C錯誤，閒置時持續開啟鏡頭會增加未經授權監看的風險。選項D錯誤，敏感文件若被高解析度鏡頭拍下，等同於資料外洩，必須特別防範。",
-        "en_explanation": "Per ISO 27001 physical security controls, mismanaged video equipment creates vulnerabilities. Option A is correct; idle cameras should be turned off or covered to prevent accidental recording of confidential discussions due to remote activation. Option B is correct; cameras should be positioned to avoid capturing confidential whiteboard diagrams or sensitive documents. Option C is incorrect; leaving idle cameras on increases the risk of unauthorized surveillance. Option D is incorrect; high-res cameras capturing sensitive documents constitutes a data leak and requires strict prevention."
-    },
-    {
-        "id": 66,
-        "type": "MA",
-        "q": "在資安事件通報與處理流程中，下列哪些敘述正確？(多選)",
-        "en_q": "In the security incident reporting and handling process, which statements are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 員工收受可疑郵件應依標準程序通報IT部門",
-            "B": "B. 員工可先下載附件以便自行判斷是否惡意",
-            "C": "C. IT在接獲通報後應依標準流程進行後續處理",
-            "D": "D. 員工收到可疑郵件宜直接刪除並不需通報"
-        },
-        "en_options": {
-            "A": "A. Employees should report suspicious emails to IT per standard procedures",
-            "B": "B. Employees can download attachments first to judge if they are malicious themselves",
-            "C": "C. IT should proceed with standard handling processes upon receiving reports",
-            "D": "D. Suspicious emails should just be deleted without reporting"
-        },
-        "ans": [
-            "A",
-            "C"
-        ],
-        "explanation": "根據 ISO 27001 (A.16.1 資訊安全事件管理)，建立標準的事件通報與處理流程至關重要。選項A正確，員工是防範社交工程攻擊的守門員，發現可疑郵件應立即依SOP通報IT部門。選項C正確，IT或資安團隊接獲通報後，應啟動標準應變流程(如隔離、分析、清除)以專業方式處理風險。選項B錯誤，員工自行下載或開啟附件極可能觸發惡意程式感染整個內網。選項D錯誤，直接刪除雖然保護了自己，但未通報會使IT無法掌握攻擊趨勢並保護其他可能收到同封郵件的員工。",
-        "en_explanation": "Under ISO 27001 (A.16.1 Information security incident management), standard reporting procedures are vital. Option A is correct; employees are gatekeepers against social engineering and must report suspicious emails to IT via SOP. Option C is correct; upon receiving reports, IT/Security must initiate standard response workflows (isolation, analysis, eradication) to handle risks professionally. Option B is incorrect; personally downloading attachments likely triggers network-wide malware infections. Option D is incorrect; simply deleting the email protects one user but fails to alert IT to protect others from the same attack."
-    },
-    {
-        "id": 67,
-        "type": "MA",
-        "q": "關於保密協議的適用與時效，下列哪些為正確？(多選)",
-        "en_q": "Regarding the applicability and validity of NDAs, which are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 保密協議可只限定在職期間有效，離職後自動失效",
-            "B": "B. 保密協議通常含離職後的保密義務與適用範圍",
-            "C": "C. 保密協議僅適用於全職員工，不適用外包或承攬人員",
-            "D": "D. 外包人員在接觸內網前亦應簽署保密協議"
-        },
-        "en_options": {
-            "A": "A. NDAs are only valid during employment and automatically expire after resignation",
-            "B": "B. NDAs typically include post-resignation confidentiality obligations and scope",
-            "C": "C. NDAs apply only to full-time employees, not outsourced contractors",
-            "D": "D. Outsourced personnel must also sign NDAs before accessing the intranet"
-        },
-        "ans": [
-            "B",
-            "D"
-        ],
-        "explanation": "依據 ISO 27001 (A.13.2.4 保密協議)，NDA 旨在確保所有接觸敏感資訊的人員皆受法律約束。選項B正確，保密協議必須明確規定即使在離職或合約終止後，保密義務依然持續有效，以保護營業秘密。選項D正確，外包或承攬人員在執行業務前，同樣必須簽署NDA才能獲准接觸內部網路。選項A錯誤，保密義務不能隨離職而自動失效。選項C錯誤，NDA的適用對象應涵蓋所有會接觸機密資訊的人員，不限於全職員工。",
-        "en_explanation": "According to ISO 27001 (A.13.2.4 Confidentiality agreements), NDAs ensure all parties accessing sensitive data are legally bound. Option B is correct; NDAs must specify that confidentiality obligations survive post-employment or contract termination to protect trade secrets. Option D is correct; outsourced personnel must sign NDAs before being granted intranet access. Option A is incorrect; confidentiality duties do not expire automatically upon resignation. Option C is incorrect; NDAs apply to anyone handling confidential info, not just full-time staff."
-    },
-    {
-        "id": 68,
-        "type": "MA",
-        "q": "為維護桌面與列印資料的資訊安全，下列哪些為正確措施？(多選)",
-        "en_q": "To maintain information security for desks and printed data, which are correct measures? (Multiple Choice)",
-        "options": {
-            "A": "A. 應保持桌面整潔，不讓機密文件裸露於工作區域",
-            "B": "B. 印表機列印資料應及時取走避免被他人取得",
-            "C": "C. 將帳密貼在螢幕側邊以供他人使用是允許的做法",
-            "D": "D. 不得將帳密、密碼等資訊貼於螢幕上以防落入他人之手"
-        },
-        "en_options": {
-            "A": "A. Desks should be kept tidy, avoiding exposure of confidential files in work areas",
-            "B": "B. Printed materials should be promptly retrieved from printers",
-            "C": "C. Sticking passwords on the side of the monitor for others to use is allowed",
-            "D": "D. Passwords must not be stuck on screens to prevent them from falling into others' hands"
-        },
-        "ans": [
-            "A",
-            "B",
-            "D"
-        ],
-        "explanation": "依據 ISO 27001 (A.11.2.9 桌面與螢幕淨空政策)，實體環境的資訊保密同樣重要。選項A正確，員工離開座位時應將機密文件收入抽屜並上鎖，避免資料裸露。選項B正確，印表機多在公共區域，列印資料應即時取走以免被他人誤拿或惡意翻閱。選項D正確，將密碼寫在便利貼上並貼於螢幕是極大的資安漏洞，絕對禁止。選項C錯誤，將帳密貼在螢幕側邊供他人使用違反了存取控制中的「帳號不可共用」與「密碼保密」原則。",
-        "en_explanation": "Under ISO 27001 (A.11.2.9 Clear desk and clear screen policy), physical information confidentiality is critical. Option A is correct; employees must lock confidential files away when leaving their desks to prevent exposure. Option B is correct; printers are public, so printouts must be retrieved instantly to avoid theft or accidental exposure. Option D is correct; writing passwords on sticky notes and attaching them to screens is a massive vulnerability and strictly forbidden. Option C is incorrect; sticking passwords for others violates \"no account sharing\" and password secrecy rules."
-    },
-    {
-        "id": 69,
-        "type": "MA",
-        "q": "關於含機密資訊的儲存媒體實體安全，下列哪些敘述正確？(多選)",
-        "en_q": "Regarding the physical security of media containing confidential data, which statements are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 可以在公共區域短暫放置含機密資訊的USB以便共享",
-            "B": "B. 含機密資訊的USB不得隨意放置於桌緣或公共區域",
-            "C": "C. 對含機密資訊的儲存媒體應采取適當實體保護與登記管理",
-            "D": "D. 所有USB皆可不經登記即可帶離辦公場所"
-        },
-        "en_options": {
-            "A": "A. Confidential USBs can be briefly placed in public areas for sharing",
-            "B": "B. Confidential USBs must not be casually left on desk edges or public areas",
-            "C": "C. Storage media with sensitive info should have physical protection and registry management",
-            "D": "D. All USBs can be taken off-site without registration"
-        },
-        "ans": [
-            "B",
-            "C"
-        ],
-        "explanation": "根據 ISO 27001 (A.8.3 媒體處置)，可攜式儲存媒體因體積小且易攜帶，是資料外洩的高風險載體。選項B正確，含機密資訊的USB絕對不可放置在桌緣、會客室等無人看管的公共區域，以免遭竊。選項C正確，組織應對這類媒體實施實體保護(如上鎖)與借用登記管理，確保其流向可被追蹤。選項A錯誤，短暫放置於公共區域便足以讓有心人士輕易拷貝或取走資料。選項D錯誤，將USB隨意帶離辦公場所極易造成遺失，必須經過審批與登記。",
-        "en_explanation": "Per ISO 27001 (A.8.3 Media handling), portable media carry high risks of data leakage due to their size. Option B is correct; confidential USBs must never be left in unattended public areas or desk edges to prevent theft. Option C is correct; organizations must implement physical protection (e.g., locking) and registry management to track the custody of these media. Option A is incorrect; even brief exposure in public areas allows for quick theft or copying. Option D is incorrect; taking USBs off-site without registration risks loss and requires formal approval."
-    },
-    {
-        "id": 70,
-        "type": "MA",
-        "q": "關於設備汰除與維護，下列哪些做法是應採取的？(多選)",
-        "en_q": "Regarding equipment disposal and maintenance, which practices should be adopted? (Multiple Choice)",
-        "options": {
-            "A": "A. 報廢設備必須清除或銷毀內含資料以防資料外洩",
-            "B": "B. 碎紙機應用於處理機密文件的銷毀",
-            "C": "C. 設備應防範鼠害以避免線路與接點被破壞",
-            "D": "D. 報廢設備可直接捐贈而不處理內部資料即可"
-        },
-        "en_options": {
-            "A": "A. Scrapped equipment must be wiped or destroyed to prevent data leaks",
-            "B": "B. Shredders should be used for destroying confidential paper documents",
-            "C": "C. Equipment should be protected from rodents to avoid wiring damage",
-            "D": "D. Scrapped equipment can be directly donated without handling internal data"
-        },
-        "ans": [
-            "A",
-            "B",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001 (A.11.2.7 設備汰除或重新安置之安全維護)，設備生命週期終止時的處置極為關鍵。選項A正確，報廢設備在離開組織控制前，內部儲存媒體必須經過安全抹除(Secure Wipe)或實體破壞。選項B正確，紙本機密文件應使用符合安全等級的碎紙機銷毀，避免被拼湊還原。選項C正確，實體環境維護包含防範鼠害等環境威脅，以免線路受損導致服務中斷。選項D錯誤，報廢設備若未經資料抹除即捐贈，等同將企業機密雙手奉上，嚴重違反資安規範。",
-        "en_explanation": "Under ISO 27001 (A.11.2.7 Secure disposal or re-use of equipment), end-of-life disposal is critical. Option A is correct; scrapped equipment must undergo secure data wiping or physical destruction before leaving organizational control. Option B is correct; confidential paper documents must be destroyed using security-grade shredders to prevent reconstruction. Option C is correct; physical maintenance includes pest control to prevent rodent damage to wiring, causing downtime. Option D is incorrect; donating equipment without wiping data hands over corporate secrets and severely violates policies."
-    },
-    {
-        "id": 71,
-        "type": "MA",
-        "q": "關於門禁卡管理，下列何者為正確？(多選)",
-        "en_q": "Regarding access card management, which of the following are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 過期或失效的門禁卡須立即停用",
-            "B": "B. 員工可憑過去的印象自行更新卡片有效性",
-            "C": "C. 門禁系統應嚴格管控以限制未授權人員進入",
-            "D": "D. 允許過期卡在非上班時段仍可使用進出辦公室"
-        },
-        "en_options": {
-            "A": "A. Expired or invalid access cards must be deactivated immediately",
-            "B": "B. Employees can self-renew card validity based on memory",
-            "C": "C. Access systems should strictly limit unauthorized entry",
-            "D": "D. Expired cards can still be allowed during off-hours"
-        },
-        "ans": [
-            "A",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001 (A.11.1 實體安全周界與進入控制)，門禁系統是保護實體資產的第一道防線。選項A正確，當員工離職或卡片遺失、過期時，系統必須立即將其停用，以防遭未授權者冒用進入。選項C正確，門禁系統必須嚴格根據業務需求配置權限，限制未授權人員進入機房等敏感區域。選項B錯誤，卡片的有效性必須由門禁系統管理員依據人事異動或核准文件進行設定，不能由員工自行決定。選項D錯誤，過期卡片代表權限已終止，任何時段都不允許使用。",
-        "en_explanation": "Per ISO 27001 (A.11.1 Physical security perimeter and entry controls), access systems are the first line of defense for physical assets. Option A is correct; expired, lost, or former employee cards must be deactivated immediately to prevent unauthorized access. Option C is correct; access systems must strictly enforce permissions based on business needs, restricting unauthorized entry to sensitive areas. Option B is incorrect; card validity must be managed by administrators based on HR records, not by employees. Option D is incorrect; an expired card means access rights are terminated, and it cannot be used at any time."
-    },
-    {
-        "id": 72,
-        "type": "MA",
-        "q": "下列哪些項目均屬於實體與環境控制的範疇？(多選)",
-        "en_q": "Which of the following belong to the scope of Physical and Environmental Controls? (Multiple Choice)",
-        "options": {
-            "A": "A. 會議室視訊鏡頭應在閒置時關閉以免拍攝敏感資料",
-            "B": "B. 門禁系統需使過期卡失效並記錄出入以便稽核",
-            "C": "C. 報廢設備與碎紙機中的機密文件必須妥善銷毀",
-            "D": "D. 應維持桌面與螢幕淨空以防止資訊外洩"
-        },
-        "en_options": {
-            "A": "A. Conference cameras should be turned off when idle to avoid filming sensitive data",
-            "B": "B. Access systems must deactivate expired cards and log entries for audits",
-            "C": "C. Scrapped equipment and shredder documents must be properly destroyed",
-            "D": "D. Desks and screens must be kept clear to prevent info leaks"
-        },
-        "ans": [
-            "A",
-            "B",
-            "C",
-            "D"
-        ],
-        "explanation": "實體與環境安全控制旨在防止未經授權的實體存取、損壞或干擾。選項A正確，視訊設備管理屬於實體環境規範，閒置關閉可防機密外洩。選項B正確，門禁系統的過期卡註銷與進出日誌稽核是實體存取控制的核心要求。選項C正確，設備與紙本文件的實體銷毀是防止資料從垃圾堆中被竊取(垃圾搜查 Dumpster Diving)的重要實體保全措施。選項D正確，桌面與螢幕淨空政策直接規範了辦公環境的實體資訊安全。因此四個選項皆屬於該範疇。",
-        "en_explanation": "Physical and environmental controls aim to prevent unauthorized physical access, damage, or interference. Option A is correct; video equipment management is a physical control, and closing idle cameras prevents leaks. Option B is correct; deactivating expired cards and logging entries are core physical access controls. Option C is correct; physical destruction of equipment and paper prevents data theft via dumpster diving, a key physical security measure. Option D is correct; clear desk and screen policies directly regulate the physical security of the workspace. Thus, all options fall under this scope."
-    },
-    {
-        "id": 73,
-        "type": "MA",
-        "q": "員工在日常工作中遇到下列何種情況應立即向IT或資安單位報告？(多選)",
-        "en_q": "In daily work, which of the following situations require employees to immediately report to IT or Security units? (Multiple Choice)",
-        "options": {
-            "A": "A. 員工若收到可疑郵件應立即依公司程序向IT回報",
-            "B": "B. 發現異常文件或設備狀態應立即通報以便處置",
-            "C": "C. 只有當明顯造成損害時才需要通報資安事件",
-            "D": "D. 可疑郵件宜由個人先行處理再決定是否通報"
-        },
-        "en_options": {
-            "A": "A. Receiving suspicious emails should be reported immediately per company procedures",
-            "B": "B. Finding abnormal documents or equipment states should be reported immediately",
-            "C": "C. Security incidents only need reporting if explicit damage is caused",
-            "D": "D. Suspicious emails should be handled personally before deciding to report"
-        },
-        "ans": [
-            "A",
-            "B"
-        ],
-        "explanation": "根據 ISO 27001 (A.16.1.2 報告資訊安全事件)，快速通報是降低資安損害的關鍵。選項A正確，員工收到釣魚或可疑郵件時，應第一時間依SOP通報IT部門進行阻擋與分析。選項B正確，無論是發現不明的實體文件、陌生設備插入或系統異常，都應立即通報以利盡速查明風險。選項C錯誤，許多進階持續性威脅(APT)在初期不會造成明顯損害，若等損害發生才通報往往為時已晚。選項D錯誤，個人自行處理可疑郵件容易因缺乏專業防護而中鏢。",
-        "en_explanation": "Under ISO 27001 (A.16.1.2 Reporting info security events), rapid reporting is key to minimizing damage. Option A is correct; employees receiving phishing or suspicious emails must immediately report to IT via SOP for blocking and analysis. Option B is correct; finding unknown physical documents, unfamiliar devices, or system anomalies requires immediate reporting for risk assessment. Option C is incorrect; many Advanced Persistent Threats (APTs) show no immediate damage, and waiting until damage occurs is too late. Option D is incorrect; personally handling suspicious emails lacks professional protection and leads to compromise."
-    },
-    {
-        "id": 74,
-        "type": "MA",
-        "q": "關於外部儲存媒體與外包人員的管控，下列何者正確？(多選)",
-        "en_q": "Regarding external storage media and outsourced personnel controls, which are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 含機密資訊的USB應妥善保管以防止遺失或外洩",
-            "B": "B. 不得將含機密資訊的儲存媒體隨意丟棄於公共區域",
-            "C": "C. 任何情況下可允許外包人員在未簽NDA前接觸內網資源",
-            "D": "D. 外包人員在接觸敏感系統前應完成必要的保密與授權手續"
-        },
-        "en_options": {
-            "A": "A. Confidential USBs should be securely stored to prevent loss or leaks",
-            "B": "B. Confidential media must not be casually discarded in public areas",
-            "C": "C. Outsourced staff are allowed to access intranet without NDAs in any situation",
-            "D": "D. Outsourced staff must complete necessary NDAs and authorizations before accessing sensitive systems"
-        },
-        "ans": [
-            "A",
-            "B",
-            "D"
-        ],
-        "explanation": "結合 ISO 27001 的媒體處置與人力資源安全要求。選項A正確，機密USB體積小易遺失，必須妥善保管(如上鎖的抽屜)以防資料外洩。選項B正確，含有機密資訊的媒體絕對不可隨意放置或丟棄於公共區域。選項D正確，外包人員代表外部風險，在授予其接觸敏感系統或內網權限前，必須完成背景審查、簽署保密協議(NDA)及相關授權手續。選項C錯誤，無論任何情況，未簽署NDA前絕對禁止外包人員接觸內部機密網路資源。",
-        "en_explanation": "Combining ISO 27001 requirements for media handling and HR security: Option A is correct; small, easily lost confidential USBs must be securely stored (e.g., locked drawers) to prevent leaks. Option B is correct; confidential media must never be casually left or discarded in public areas. Option D is correct; outsourced staff represent external risks and must complete background checks, NDAs, and authorizations before accessing sensitive systems or intranets. Option C is incorrect; under no circumstances should outsourced personnel access internal confidential networks without signing an NDA first."
-    },
-    {
-        "id": 75,
-        "type": "MA",
-        "q": "關於列印資料與帳密管理，下列哪些為正確做法？(多選)",
-        "en_q": "Regarding printed data and password management, which are correct practices? (Multiple Choice)",
-        "options": {
-            "A": "A. 列印機列印出的文件可放在取件區待他人領取無需關注",
-            "B": "B. 列印資料應及時取走以免他人取得",
-            "C": "C. 可將帳號密碼貼於螢幕以方便同事共用",
-            "D": "D. 不得將帳密貼在螢幕上以避免被他人讀取"
-        },
-        "en_options": {
-            "A": "A. Printed documents can sit in the pickup tray for others without concern",
-            "B": "B. Printed materials should be promptly retrieved to prevent others from taking them",
-            "C": "C. Passwords can be stuck to the screen for colleagues to share easily",
-            "D": "D. Passwords must not be stuck on screens to prevent others from reading them"
-        },
-        "ans": [
-            "B",
-            "D"
-        ],
-        "explanation": "依據 ISO 27001 (A.11.2.9 桌面與螢幕淨空政策)，目的是確保實體資訊不被無關人員獲取。選項B正確，機密文件列印後若未即時取走，極易被路過的訪客或其他無權限員工翻閱或拿走。選項D正確，密碼是身分驗證的核心，將帳密貼在螢幕上等同於將家門鑰匙插在門上，絕對禁止。選項A錯誤，公用取件區是不安全的環境，放置越久外洩風險越高。選項C錯誤，帳號共用違反了「鑑別與存取控制」的不可否認性原則，且貼於螢幕極度不安全。",
-        "en_explanation": "Per ISO 27001 (A.11.2.9 Clear desk and clear screen policy), the goal is to secure physical information from unauthorized access. Option B is correct; confidential printouts not retrieved immediately can easily be read or taken by visitors or unauthorized staff. Option D is correct; passwords are the core of authentication, and sticking them on screens is like leaving keys in a door, which is strictly forbidden. Option A is incorrect; public pickup areas are unsecured, and leaving documents there poses high risks. Option C is incorrect; account sharing violates the non-repudiation principle of access control, and sticking them on screens is highly insecure."
-    },
-    {
-        "id": 76,
-        "type": "MA",
-        "q": "關於機房或設備區域的維護，下列哪些措施是必要的？(多選)",
-        "en_q": "Regarding server room or equipment area maintenance, which measures are necessary? (Multiple Choice)",
-        "options": {
-            "A": "A. 機房與設備機櫃內應禁止放置飲料或食物",
-            "B": "B. 機房內可放置密封飲料供值班人員飲用",
-            "C": "C. 應防範老鼠等造成線路破壞的風險",
-            "D": "D. 機房環境衛生無須特別防護即可確保設備安全"
-        },
-        "en_options": {
-            "A": "A. Drinks and food are strictly prohibited inside server rooms and racks",
-            "B": "B. Sealed drinks can be kept in server rooms for duty staff",
-            "C": "C. Rodent risks causing wire damage should be prevented",
-            "D": "D. Environmental hygiene requires no special protection for equipment safety"
-        },
-        "ans": [
-            "A",
-            "C"
-        ],
-        "explanation": "根據 ISO 27001 (A.11.2.1 設備安置與保護)，機房存放著企業的核心運算資源，必須有嚴格的環境控制。選項A正確，機房內嚴格禁止任何飲料與食物，因為液體濺灑會導致伺服器短路，食物碎屑則會影響散熱甚至引發火災。選項C正確，老鼠等嚙齒類動物咬斷網路線或電源線是常見的機房災難，必須落實防鼠與捕害蟲措施。選項B錯誤，即使是密封飲料也有打翻的風險，機房內一律禁飲。選項D錯誤，環境衛生(溫濕度、粉塵、害蟲)是維持設備正常運作的關鍵，絕不可忽視。",
-        "en_explanation": "Under ISO 27001 (A.11.2.1 Equipment siting and protection), server rooms house core computing resources and require strict environmental controls. Option A is correct; food and drinks are strictly banned because liquid spills cause short circuits, and crumbs impede cooling or cause fires. Option C is correct; rodents chewing through network or power cables is a common disaster, so pest control is mandatory. Option B is incorrect; even sealed drinks carry spill risks and are universally banned. Option D is incorrect; environmental hygiene (temperature, humidity, dust, pests) is critical for equipment operations and cannot be ignored."
-    },
-    {
-        "id": 77,
-        "type": "MA",
-        "q": "下列哪些措施屬於人員控制的範疇？(多選)",
-        "en_q": "Which of the following measures belong to the scope of Personnel Controls? (Multiple Choice)",
-        "options": {
-            "A": "A. 篩選求職者背景以確認符合資安要求",
-            "B": "B. 簽署保密協議以約定資訊保護義務",
-            "C": "C. 定期資訊安全教育訓練以提升員工認知",
-            "D": "D. 只需技術控管即可，不需要人員教育與合約約束"
-        },
-        "en_options": {
-            "A": "A. Screening applicants' backgrounds to ensure compliance with security requirements",
-            "B": "B. Signing NDAs to stipulate information protection obligations",
-            "C": "C. Regular InfoSec training to boost employee awareness",
-            "D": "D. Only technical controls are needed; education and contracts are unnecessary"
-        },
-        "ans": [
-            "A",
-            "B",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001 的人力資源安全 (A.7 人員控制) 範疇，資安不僅是IT的問題，更是人的問題。選項A正確，任用前的背景篩選能初步過濾具潛在風險的求職者。選項B正確，透過簽署保密協議(NDA)能以法律手段約束員工的資訊保護義務。選項C正確，定期的資安教育訓練能建立並維持員工的安全意識，防範社交工程等威脅。選項D錯誤，技術控管無法防範所有內部威脅或人為疏失，必須結合人員的教育與合約約束才能建立縱深防禦。",
-        "en_explanation": "Under the ISO 27001 Human Resource Security (A.7 Personnel controls) scope, security is a human issue as much as an IT issue. Option A is correct; pre-employment background screening filters candidates with potential risks. Option B is correct; signing NDAs legally binds employees to information protection obligations. Option C is correct; regular security training builds and maintains awareness to prevent threats like social engineering. Option D is incorrect; technical controls alone cannot stop all insider threats or human errors; they must be combined with personnel education and contractual rules for defense-in-depth."
-    },
-    {
-        "id": 78,
-        "type": "MA",
-        "q": "在門禁管理方面，下列哪些作法可提升安全性？(多選)",
-        "en_q": "In access control management, which practices improve security? (Multiple Choice)",
-        "options": {
-            "A": "A. 過期門禁卡必須停用以防止未授權使用",
-            "B": "B. 門禁系統應限制與紀錄進出以強化安全",
-            "C": "C. 過期卡只要交由使用者保管即可無需停用",
-            "D": "D. 允許員工自行延長門禁卡有效期以方便使用"
-        },
-        "en_options": {
-            "A": "A. Expired access cards must be disabled to prevent unauthorized use",
-            "B": "B. Access systems should restrict and log entries to strengthen security",
-            "C": "C. Expired cards can be kept by users without needing deactivation",
-            "D": "D. Employees can extend their own card validity for convenience"
-        },
-        "ans": [
-            "A",
-            "B"
-        ],
-        "explanation": "根據 ISO 27001 (A.11.1.2 實體進入控制)，有效的門禁管理能阻擋未經授權的實體存取。選項A正確，當卡片過期或員工離職時，系統應立即停用該卡片，避免被有心人士撿拾後冒用。選項B正確，門禁系統不僅要具備刷卡限制功能，還必須完整記錄進出時間與身分，以便在發生實體安全事件時進行追蹤與稽核。選項C錯誤，過期卡片若未在系統端停用，仍具有潛在風險。選項D錯誤，門禁權限變更必須由管理單位依據正當的業務需求進行審核，員工絕不可自行修改。",
-        "en_explanation": "Per ISO 27001 (A.11.1.2 Physical entry controls), effective access management prevents unauthorized physical entry. Option A is correct; when cards expire or employees leave, the system must instantly deactivate the cards to prevent malicious reuse if found. Option B is correct; access systems must not only restrict entry but fully log access times and identities for tracking and auditing during physical security incidents. Option C is incorrect; expired cards not deactivated in the system pose potential risks. Option D is incorrect; access rights modifications must be approved by administrators based on business needs, never self-modified by employees."
-    },
-    {
-        "id": 79,
-        "type": "MA",
-        "q": "關於會議視訊設備與錄影管理，下列哪些為正確做法？(多選)",
-        "en_q": "Regarding conference video equipment and recording management, which are correct practices? (Multiple Choice)",
-        "options": {
-            "A": "A. 會議室視訊鏡頭閒置時應關閉以避免拍攝敏感內容",
-            "B": "B. 鏡頭與錄影設備不應直接對準含機密資訊的區域",
-            "C": "C. 只要貼告示就可任由鏡頭對準敏感資料而不關閉",
-            "D": "D. 應對錄影與儲存設定進行管理與存取控管"
-        },
-        "en_options": {
-            "A": "A. Conference cameras should be turned off when idle to avoid filming sensitive content",
-            "B": "B. Cameras and recorders should not directly point at areas with confidential data",
-            "C": "C. Posting a notice is enough to allow cameras to point at sensitive data without closing",
-            "D": "D. Recording and storage settings must have access controls and management"
-        },
-        "ans": [
-            "A",
-            "B",
-            "D"
-        ],
-        "explanation": "針對會議室與錄影設備的實體安全管理。選項A正確，視訊設備若遭駭客遠端啟動，可能成為竊聽工具，閒置時關閉或遮蔽鏡頭是最佳實踐。選項B正確，監視器或視訊鏡頭在架設時應評估拍攝角度，避免直接對準員工電腦螢幕、機密白板或密碼輸入區域。選項D正確，錄影檔案本身即為機敏資料，其儲存位置與存取權限必須受到嚴格管理與日誌稽核。選項C錯誤，貼告示只能提醒人員，無法阻止高解析度鏡頭將機密資料拍攝並傳送出去，仍需關閉或調整角度。",
-        "en_explanation": "Regarding physical security of conference and recording equipment: Option A is correct; compromised video equipment can become listening devices, so turning off or covering idle cameras is best practice. Option B is correct; when installing cameras, angles must be evaluated to avoid directly capturing employee screens, confidential whiteboards, or password input areas. Option D is correct; recorded footage is sensitive data, and its storage and access rights must be strictly managed and audited. Option C is incorrect; posting a notice only warns people but doesn't stop high-res cameras from capturing and transmitting sensitive data; the camera must be closed or repositioned."
-    },
-    {
-        "id": 80,
-        "type": "MA",
-        "q": "關於資安事件的通報，下列哪些敘述正確？(多選)",
-        "en_q": "Regarding security incident reporting, which statements are correct? (Multiple Choice)",
-        "options": {
-            "A": "A. 員工如收到可疑郵件應立即報告IT部門",
-            "B": "B. 可疑郵件可先在個人裝置上打開以確認內容",
-            "C": "C. 發現異常文件或可疑設備應立即通報相關單位以處理",
-            "D": "D. 只有在造成影響時才需通報資安事件"
-        },
-        "en_options": {
-            "A": "A. Employees must immediately report suspicious emails to IT",
-            "B": "B. Suspicious emails can be opened on personal devices first to verify content",
-            "C": "C. Abnormal documents or suspicious devices must be immediately reported to relevant units",
-            "D": "D. Security incidents only need reporting if they cause impact"
-        },
-        "ans": [
-            "A",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001 (A.16.1.2 報告資訊安全事件)，建立全員通報文化是及早發現威脅的關鍵。選項A正確，社交工程與釣魚郵件是企業最大風險來源，員工收到可疑郵件應立即通報IT以便全公司聯防。選項C正確，不僅是郵件，若在辦公室發現不明文件、陌生隨身碟(USB Drop攻擊)或可疑設備插入，都應立刻通報相關單位處置。選項B錯誤，員工在個人裝置上打開可疑郵件同樣極危險，若連上公司網路或同步帳號，仍會引發資安事件。選項D錯誤，許多攻擊在初期(如潛伏期)並無明顯影響，必須在發現「異常」時就通報，而非等造成破壞才通報。",
-        "en_explanation": "Under ISO 27001 (A.16.1.2 Reporting info security events), building a reporting culture is key to early threat detection. Option A is correct; social engineering/phishing are top risks, and reporting suspicious emails to IT enables company-wide defense. Option C is correct; beyond emails, discovering unknown physical documents, unfamiliar USBs (USB drop attacks), or suspicious devices must be reported instantly for handling. Option B is incorrect; opening suspicious emails on personal devices is still highly dangerous and can trigger incidents if connected to corporate networks or synced accounts. Option D is incorrect; many attacks (during latency) show no immediate impact; reporting must happen upon detecting 'anomalies,' not after damage is done."
-    },
-    {
-        "id": 81,
-        "type": "MA",
-        "q": "關於機密資料與報廢設備的處理，下列哪些為公司應採取的行為？(多選)",
-        "en_q": "Regarding sensitive data and scrapped equipment, which actions should the company take? (Multiple Choice)",
-        "options": {
-            "A": "A. 報廢設備可直接轉賣給第三方而不需處理內部資料",
-            "B": "B. 報廢設備內的機密資料應被徹底清除或銷毀",
-            "C": "C. 碎紙機是處理紙本機密文件的常見工具",
-            "D": "D. 應建立報廢與銷毀流程以確保資料不被回收利用"
-        },
-        "en_options": {
-            "A": "A. Scrapped equipment can be resold directly to third parties without data wiping",
-            "B": "B. Confidential data inside scrapped equipment must be thoroughly wiped or destroyed",
-            "C": "C. Shredders are common tools for destroying confidential paper documents",
-            "D": "D. Disposal and destruction processes must be established to ensure data isn't recovered"
-        },
-        "ans": [
-            "B",
-            "C",
-            "D"
-        ],
-        "explanation": "根據 ISO 27001 (A.11.2.7 設備汰除或重新安置之安全維護)與(A.8.3.2 媒體處置)。選項B正確，報廢設備(如伺服器、筆電、影印機硬碟)中可能殘留大量機密，在離開組織前必須進行實體破壞(如消磁、絞碎)或符合標準的安全抹除。選項C正確，紙本機密文件應使用符合安全等級(如跨切式)的碎紙機銷毀。選項D正確，組織必須建立標準的報廢與銷毀SOP，確保整個銷毀過程有紀錄與稽核，防止資料被有心人回收。選項A錯誤，未經資料抹除即轉賣設備，是常見且極為嚴重的資料外洩原因。",
-        "en_explanation": "Per ISO 27001 (A.11.2.7 Secure disposal or re-use of equipment) and (A.8.3.2 Disposal of media). Option B is correct; scrapped equipment (servers, laptops, copier drives) retains massive secrets and must undergo physical destruction (degaussing, shredding) or standard secure wiping before leaving the organization. Option C is correct; confidential paper must be destroyed using security-grade (e.g., cross-cut) shredders. Option D is correct; organizations must establish standard disposal SOPs with logs and audits to ensure data isn't recovered. Option A is incorrect; reselling equipment without wiping data is a common and severe cause of data breaches."
-    },
-    {
-        "id": 82,
-        "type": "MA",
-        "q": "收到可疑電子郵件時，員工應採取下列哪些行動？(多選)",
-        "en_q": "When receiving a suspicious email, what actions should an employee take? (Multiple Choice)",
-        "options": {
-            "A": "A. 員工應將可疑郵件或附件通報IT而非直接開啟檔案",
-            "B": "B. 可疑郵件可先下載附件於個人電腦測試以判定是否安全",
-            "C": "C. 若可疑郵件看似來自內部就不需要回報",
-            "D": "D. 遇到可疑郵件可直接回覆原發件人要求說明"
-        },
-        "en_options": {
-            "A": "A. Employees should report suspicious emails/attachments to IT instead of opening them",
-            "B": "B. Attachments can be tested on personal PCs first to judge safety",
-            "C": "C. No need to report if the email looks like it's from an internal sender",
-            "D": "D. Directly reply to the sender of the suspicious email demanding an explanation"
-        },
-        "ans": [
-            "A",
-            "D"
-        ],
-        "explanation": "依據資安事件通報與惡意軟體防護原則。選項A正確，員工不應試圖自行分析，將可疑郵件或附件交由IT部門以沙箱等專業工具分析是唯一正確且安全的做法。選項D在某些企業的防禦實務中，若疑似遭到內部帳號劫持或偽造(Spoofing)寄發異常要求，可透過「另行建立新郵件」或「其他管道(如電話)」向寄件人確認，但在標準考題中被列為選項(請注意直接回覆可能確認信箱活躍度，應以組織SOP為準，依題意保留)。選項B錯誤，自行下載附件測試極可能觸發惡意程式。選項C錯誤，內部郵件地址可被偽造(BEC詐騙)或帳號被駭，看似內部寄出更需提高警覺並通報。",
-        "en_explanation": "Based on incident reporting and anti-malware principles. Option A is correct; employees should not self-analyze; forwarding suspicious emails to IT for professional analysis (e.g., via sandbox) is the only safe approach. Option D, in some enterprise practices, if an anomaly appears from an internal account (suspected hijack/spoofing), verifying with the sender (via phone or a new email) is used, though directly replying can be risky (kept as per the answer key). Option B is incorrect; self-downloading attachments easily triggers malware. Option C is incorrect; internal addresses can be spoofed (BEC scams) or compromised, so seemingly internal anomalies require even higher vigilance and reporting."
-    },
-    {
-        "id": 83,
-        "type": "MA",
-        "q": "關於外部儲存媒體（USB等）的管理，下列哪些措施是適當的？(多選)",
-        "en_q": "Regarding external storage media (USBs, etc.) management, which measures are appropriate? (Multiple Choice)",
-        "options": {
-            "A": "A. 含機密資訊的外部儲存媒體應有登記與保管機制",
-            "B": "B. 不得將含機密資訊的USB放置於桌緣或靠近門口的公共處",
-            "C": "C. 對重要儲存媒體應限定授權人員存取並做好盤點",
-            "D": "D. 含機密資訊的USB可隨意插拔於任意工作站以方便存取"
-        },
-        "en_options": {
-            "A": "A. External media with confidential data should have registry and custody mechanisms",
-            "B": "B. Confidential USBs must not be placed on desk edges or near doors",
-            "C": "C. Important storage media should be restricted to authorized access and inventoried",
-            "D": "D. Confidential USBs can be freely plugged into any workstation for convenience"
-        },
-        "ans": [
-            "A",
-            "B",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001 (A.8.3 媒體處置)，可攜式媒體是資安管控的痛點。選項A正確，對於存放機密資訊的USB等外部媒體，應建立清冊、借用登記及歸還檢查機制，確保其流向透明。選項B正確，落實桌面淨空，含機密資料的USB絕不可放置在無人看管的桌面上或靠近出入口處以免遭竊。選項C正確，重要媒體應存放在上鎖的保險櫃中，僅限授權人員存取，並定期盤點數量。選項D錯誤，允許機密USB隨意插拔於任意工作站會大幅增加惡意軟體感染與資料外流(如透過未受控的電腦上傳雲端)的風險。",
-        "en_explanation": "Under ISO 27001 (A.8.3 Media handling), portable media are a pain point for security controls. Option A is correct; external media holding confidential data must have an inventory, sign-out registry, and return check mechanisms to ensure transparent custody. Option B is correct; enforcing clear desk policies means confidential USBs must never be left unattended on desks or near exits to prevent theft. Option C is correct; important media must be stored in locked safes, restricted to authorized staff, and periodically inventoried. Option D is incorrect; allowing confidential USBs to be freely plugged into any workstation greatly increases risks of malware infection and data exfiltration."
-    },
-    {
-        "id": 84,
-        "type": "MA",
-        "q": "為保護機房設備安全，下列哪些管理是必要的？(多選)",
-        "en_q": "To protect server room equipment security, which management controls are necessary? (Multiple Choice)",
-        "options": {
-            "A": "A. 機房及機櫃內應禁止放置飲料或食物以避免損害設備",
-            "B": "B. 機房可放置食物只要遠離關鍵設備即可",
-            "C": "C. 應採取防鼠與害蟲措施以保護線路與接點",
-            "D": "D. 設備維護時無須考量鼠害與環境因素"
-        },
-        "en_options": {
-            "A": "A. Food and drinks must be prohibited inside server rooms and racks to prevent damage",
-            "B": "B. Food can be placed in server rooms as long as it's far from key equipment",
-            "C": "C. Rodent and pest control measures must be taken to protect wires and contacts",
-            "D": "D. Environmental factors and rodents can be ignored during equipment maintenance"
-        },
-        "ans": [
-            "A",
-            "C"
-        ],
-        "explanation": "根據 ISO 27001 (A.11.2 設備安全)，機房環境的實體保護是維持營運持續的基礎。選項A正確，機房內及機櫃周圍嚴禁放置任何飲料或食物，以避免液體打翻造成設備短路，或食物殘渣影響散熱系統。選項C正確，機房的地板下或機櫃內佈滿密集的網路與電源線，老鼠等嚙齒類動物的啃咬會導致嚴重的斷線與服務停擺，因此必須部署防鼠與防蟲害措施。選項B錯誤，機房內全面禁食，沒有「遠離設備即可」的例外。選項D錯誤，環境因素(溫濕度、害蟲)是設備維護的核心考量，忽視將導致設備提早損壞。",
-        "en_explanation": "Per ISO 27001 (A.11.2 Equipment security), physical protection of the server room environment is foundational for business continuity. Option A is correct; drinks and food are strictly banned inside and around racks to prevent liquid spills causing short circuits or crumbs affecting cooling. Option C is correct; server rooms have dense wiring under floors or in racks, and rodent chewing causes severe outages, making pest control mandatory. Option B is incorrect; eating is universally banned in server rooms, with no 'far from equipment' exceptions. Option D is incorrect; environmental factors (temp, humidity, pests) are core to maintenance; ignoring them leads to premature equipment failure."
-    },
-    {
-        "id": 85,
-        "type": "MA",
-        "q": "下列哪些措施有助於降低因人員行為導致的資訊安全風險？(多選)",
-        "en_q": "Which measures help reduce info security risks caused by personnel behavior? (Multiple Choice)",
-        "options": {
-            "A": "A. 透過定期資安訓練提升員工警覺可降低人為風險",
-            "B": "B. 只需依賴技術控管而不需訂定違規懲處即可達成資安",
-            "C": "C. 聘用合約中納入違規懲處與保密條款可作為行政與法律依據",
-            "D": "D. 教育訓練可完全取代保密協議與合約規範"
-        },
-        "en_options": {
-            "A": "A. Regular security training raises vigilance and lowers human risks",
-            "B": "B. InfoSec can be achieved purely with technical controls without disciplinary rules",
-            "C": "C. Including disciplinary actions and confidentiality clauses in contracts provides administrative and legal basis",
-            "D": "D. Training can completely replace NDAs and contractual rules"
-        },
-        "ans": [
-            "A",
-            "C"
-        ],
-        "explanation": "依據 ISO 27001 的人力資源控制 (A.7)，資安管理需技術與管理並重。選項A正確，人員往往是資安最脆弱的一環(如誤點釣魚信)，定期且切合時宜的資安訓練能顯著提升員工警覺，降低人為疏失風險。選項C正確，將資安規範、保密義務(NDA)與違規懲處條款納入正式聘用合約中，能為企業提供堅實的行政管理與法律追訴依據。選項B錯誤，純技術控管無法防範擁有合法權限的內部威脅，必須搭配明確的懲處規範以產生嚇阻力。選項D錯誤，教育訓練是軟性宣導，無法取代具有法律強制力的保密協議與合約規範。",
-        "en_explanation": "Under ISO 27001 Human Resource Security (A.7), security management requires both technical and administrative efforts. Option A is correct; personnel are often the weakest link (e.g., clicking phishing links), and regular, relevant training significantly raises vigilance and lowers human error risks. Option C is correct; embedding security rules, NDAs, and disciplinary clauses into formal employment contracts provides the enterprise with solid administrative and legal backing. Option B is incorrect; purely technical controls cannot stop authorized insider threats and must be paired with disciplinary rules for deterrence. Option D is incorrect; training is educational and cannot replace the legally binding force of NDAs and contracts."
-    },
-    {
-        "id": 86,
-        "type": "TF",
-        "q": "員工如收到可疑郵件或發現異常文件，應依公司標準程序立即向IT部門報告；此說法是否正確？",
-        "en_q": "If an employee receives a suspicious email or discovers abnormal documents, they should immediately report to IT per standard procedures; is this statement correct?",
-        "ans": "true",
-        "explanation": "根據 ISO 27001 (A.16.1.2 報告資訊安全事件)，員工在發現任何疑似資安事件(如釣魚郵件、異常文件或系統行為異常)時，有責任與義務立即依循公司制定的標準作業程序(SOP)通報IT或資安部門。及時的回報能讓專業團隊迅速介入，進行隔離、分析與損害控制，從而維持組織的總體資訊安全。因此，此說法為正確(True)。",
-        "en_explanation": "According to ISO 27001 (A.16.1.2 Reporting info security events), employees are obligated to immediately report any suspected security events (e.g., phishing emails, abnormal files, or abnormal system behavior) to IT or the Security department following the company's SOP. Timely reporting allows professional teams to intervene rapidly for isolation, analysis, and damage control, thereby maintaining overall organizational security. Thus, this statement is True."
-    },
-    {
-        "id": 87,
-        "type": "TF",
-        "q": "在機房等高度安全區域，未經授權且無監督人員在場時允許拍照或錄影；此說法是否正確？",
-        "en_q": "In highly secure areas like server rooms, unauthorized photography/video is allowed when unsupervised; is this statement correct?",
-        "ans": "false",
-        "explanation": "根據 ISO 27001 (A.11.1.5 在安全區域內之作業)，機房等高度安全區域存放著企業核心運算資源與機密數據。在未經明確授權且無監督人員在場的情況下，嚴格禁止任何形式的拍照或錄影行為，以防止網路實體架構、設備配置或螢幕上的機敏資訊外洩。因此，宣稱「允許拍照或錄影」的說法是完全錯誤的(False)。",
-        "en_explanation": "Per ISO 27001 (A.11.1.5 Working in secure areas), highly secure areas like server rooms house core computing resources and sensitive data. Without explicit authorization and supervision, any form of photography or video recording is strictly prohibited to prevent the leakage of physical network infrastructure, equipment configurations, or sensitive info on screens. Therefore, the claim that it is 'allowed' is entirely False."
-    },
-    {
-        "id": 88,
-        "type": "TF",
-        "q": "公司應要求正職與外包人員在接觸內網資源前完成保密協議簽署；此敘述是否正確？",
-        "en_q": "The company should require both full-time and outsourced personnel to complete NDA signing before accessing intranet resources; is this statement correct?",
-        "ans": "true",
-        "explanation": "依據 ISO 27001 (A.13.2.4 保密性或不洩密協議)，為了確保組織的敏感資訊獲得妥善保護，任何需要接觸內部網路、系統或機密資料的人員，無論是正職員工或是由第三方提供的合約/外包人員，都必須在正式獲得存取權限之前，完成具備法律效力的保密協議(NDA)簽署。因此，此說法為正確(True)。",
-        "en_explanation": "Under ISO 27001 (A.13.2.4 Confidentiality or non-disclosure agreements), to ensure the organization's sensitive info is properly protected, anyone requiring access to internal networks, systems, or confidential data—whether full-time employees or third-party contractors/outsourced staff—must complete the signing of a legally binding NDA before being granted access. Thus, this statement is True."
-    },
-    {
-        "id": 89,
-        "type": "TF",
-        "q": "維持桌面淨空與螢幕淨空可以降低機密資料外洩風險；此說法是否正確？",
-        "en_q": "Maintaining a clear desk and clear screen policy lowers the risk of confidential data leakage; is this statement correct?",
-        "ans": "true",
-        "explanation": "依據 ISO 27001 (A.11.2.9 桌面淨空與螢幕淨空政策)，實施這項政策要求員工離開座位時必須將機密文件妥善收起(桌面淨空)並鎖定電腦畫面(螢幕淨空)。這能有效防止未經授權的訪客、清潔人員或其他無權限的同事窺探或竊取桌面上或螢幕上顯示的機密資訊，確實能顯著降低資料外洩的風險。因此，此說法為正確(True)。",
-        "en_explanation": "According to ISO 27001 (A.11.2.9 Clear desk and clear screen policy), implementing this policy requires employees to securely store confidential documents (clear desk) and lock their computer screens (clear screen) when leaving their seats. This effectively prevents unauthorized visitors, cleaning staff, or unauthorized colleagues from snooping or stealing sensitive info displayed on desks or screens, significantly lowering data leak risks. Thus, this statement is True."
-    },
-    {
-        "id": 90,
-        "type": "TF",
-        "q": "列印出的機密文件可長時間放置於公用取件區，等同仁有空再來取；此說法是否正確？",
-        "en_q": "Printed confidential documents can be left in the public pickup area for a long time until colleagues are free to grab them; is this statement correct?",
-        "ans": "false",
-        "explanation": "依據 ISO 27001 (A.11.2.9 桌面淨空與螢幕淨空政策)的延伸實務，列印出的機密文件必須由列印者即時從印表機取走。公用取件區(印表機托盤)是不安全的開放環境，長時間放置會讓任何經過的人都有機會翻閱或惡意拿走機密文件，造成嚴重的資料外洩風險。因此，宣稱「可長時間放置」的說法是錯誤的(False)。",
-        "en_explanation": "Based on extended practices of ISO 27001 (A.11.2.9 Clear desk and clear screen policy), printed confidential documents must be retrieved immediately by the person printing them. The public pickup area (printer tray) is an unsecured open environment; leaving documents there for a long time gives anyone walking by the chance to read or maliciously take them, causing a severe data leak risk. Therefore, the claim that they can be 'left for a long time' is False."
+        "explanation": "設備安置及保護（控制項 7.8）除了考量環境威脅外，也要求設備的擺放位置必須能降低「遭未授權人員窺視」的風險。將處理機敏個資的螢幕面向公眾走道或窗戶，屬於典型的設備安置不當，應透過調整螢幕方向或加裝防窺設施來改善。",
+        "en_explanation": "設備安置及保護（控制項 7.8）除了考量環境威脅外，也要求設備的擺放位置必須能降低「遭未授權人員窺視」的風險。將處理機敏個資的螢幕面向公眾走道或窗戶，屬於典型的設備安置不當，應透過調整螢幕方向或加裝防窺設施來改善。"
     }
 ];
 
