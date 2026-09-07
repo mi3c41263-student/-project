@@ -67,12 +67,12 @@
                             <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="vr-title">VR 情境模擬</h3>
                             <p style="color: var(--text-light); margin-top: 10px; font-size: 0.95rem; line-height: 1.6;" data-i18n="vr-desc">開始您的沉浸式資安稽核訓練，或回顧過去的探索紀錄與正確解答。</p>
                         </div>
-                        <button id="startVrBtn" style="background-color: var(--primary-cyan); color: #000; font-weight: bold; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(0, 168, 255, 0.4); font-size: 1rem; transition: transform 0.2s;"><i class="fa-solid fa-play" style="margin-right: 8px;"></i> <span data-i18n="vr-start">啟動 VR 訓練</span></button>
+                        <button id="startVrBtn" style="background-color: var(--primary-cyan); color: var(--btn-primary-text); font-weight: bold; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(0, 168, 255, 0.4); font-size: 1rem; transition: transform 0.2s;"><i class="fa-solid fa-play" style="margin-right: 8px;"></i> <span data-i18n="vr-start">開始 VR 體驗</span></button>
                     </div>
 
                     <div style="display: flex; gap: 15px; margin-bottom: 25px;">
-                        <button id="btnShowVrHistory" style="background-color: #00a8ff; color: #000; padding: 8px 20px; border-radius: 5px; border: 1px solid #00a8ff; cursor: pointer; font-weight: bold; white-space: nowrap;"><i class="fa-solid fa-clock-rotate-left"></i> 我的探索紀錄</button>
-                        <button id="btnShowVrAnswers" style="background-color: transparent; color: #00a8ff; padding: 8px 20px; border-radius: 5px; border: 1px solid #00a8ff; cursor: pointer; font-weight: bold; white-space: nowrap;"><i class="fa-solid fa-key"></i> 關卡正確解答</button>
+                        <button id="btnShowVrHistory" style="background-color: var(--primary-cyan); color: var(--btn-primary-text); padding: 8px 20px; border-radius: 5px; border: 1px solid var(--primary-cyan); cursor: pointer; font-weight: bold; white-space: nowrap;"><i class="fa-solid fa-clock-rotate-left"></i> 我的探索紀錄</button>
+                        <button id="btnShowVrAnswers" style="background-color: transparent; color: var(--primary-cyan); padding: 8px 20px; border-radius: 5px; border: 1px solid var(--primary-cyan); cursor: pointer; font-weight: bold; white-space: nowrap;"><i class="fa-solid fa-key"></i> 關卡正確解答</button>
                     </div>
 
                     <!-- 大類別一：我的探索紀錄 -->
@@ -132,7 +132,7 @@
                 <div id="manualSection" class="section-container" style="display: none;">
                     <div class="manual-header glass-panel">
                         <h3 data-i18n="man-iso">ISO 27002:2022 資訊安全控制指南</h3>
-                        <p style="font-size: 0.80rem; line-height: 1.6;" data-i18n="man-desc">本手冊收錄本次稽核任務之重點控制措施。請熟記以下條文，以利在 VR 情境中準確判斷缺失。</p>
+                        
                     </div>
 
                     <div class="manual-layout">
@@ -234,12 +234,10 @@
                 </div> 
 
                 <div id="quizSection" class="section-container" style="display: none;">
-                    <div class="manual-header glass-panel" style="margin-bottom: 20px;">
-                        <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="quiz-title">資安稽核情境模擬測驗</h3>
-                        
-                    </div>
-
                     <div class="glass-panel" style="padding: 25px;">
+                        <div class="manual-header" style="margin-top: 0; margin-bottom: 25px;">
+                            <h3 class="clause-main-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;" data-i18n="quiz-title">資安稽核情境模擬測驗</h3>
+                        </div>
                         <form id="quizForm" class="quiz-container">
                             <div id="dynamicQuestionsContainer"></div>
 

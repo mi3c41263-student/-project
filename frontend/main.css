@@ -2,6 +2,7 @@
    主系統基礎變數與重置
 ========================================= */
 :root {
+    --btn-primary-text: #0a192f;
     --bg-dark: #050505;
     --sidebar-bg: #0a0c10;
     --panel-bg: rgba(17, 34, 64, 0.6);
@@ -40,6 +41,7 @@
 }
 
 [data-theme="light"] {
+    --btn-primary-text: #ffffff;
     --bg-dark: #f5f7fa;
     --sidebar-bg: #ffffff;
     --panel-bg: rgba(255, 255, 255, 0.9);

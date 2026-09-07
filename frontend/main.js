@@ -461,7 +461,7 @@ window.initRadarChart = async function () {
 
                                 ? 'rgba(0,0,0,0.1)'
 
-                                : 'rgba(255,255,255,0.1)'
+                                : 'rgba(255,255,255,0.3)'
                     },
 
                     angleLines: {
@@ -472,7 +472,7 @@ window.initRadarChart = async function () {
 
                                 ? 'rgba(0,0,0,0.1)'
 
-                                : 'rgba(255,255,255,0.1)'
+                                : 'rgba(255,255,255,0.3)'
                     },
 
                     pointLabels: {
@@ -488,7 +488,7 @@ window.initRadarChart = async function () {
 
                                 ? '#1a202c'
 
-                                : 'var(--text-color)'
+                                : '#f8f9fa'
                     },
 
                     ticks: {
@@ -733,7 +733,7 @@ window.initRadarChart = async function () {
                         title: '儲存成功！',
                         text: '您的個人檔案已更新。',
                         toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
-                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : 'var(--text-color)'
+                        background: document.documentElement.getAttribute('data-theme') === 'light' ? '#ffffff' : '#1c2638', color: document.documentElement.getAttribute('data-theme') === 'light' ? '#1a202c' : '#f8f9fa'
                     });
 
                     // 覆蓋 LocalStorage，讓下次重新整理時資料還在
@@ -2508,8 +2508,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Trigger chart update if radar exists
             if(window.myRadarChart) {
                 const isLight = localStorage.getItem('theme') === 'light';
-                const gridColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
-                const pointLabelColor = isLight ? '#1a202c' : 'var(--text-color)';
+                const gridColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.3)';
+                const pointLabelColor = isLight ? '#1a202c' : '#f8f9fa';
                 
                 window.myRadarChart.options.scales.r.grid.color = gridColor;
                 window.myRadarChart.options.scales.r.angleLines.color = gridColor;
@@ -2530,7 +2530,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 vrHistoryContainer.style.display = 'block';
                 vrAnswersContainer.style.display = 'none';
                 btnShowVrHistory.style.backgroundColor = 'var(--primary-cyan)';
-                btnShowVrHistory.style.color = '#0a192f';
+                btnShowVrHistory.style.color = 'var(--btn-primary-text)';
                 btnShowVrAnswers.style.backgroundColor = 'transparent';
                 btnShowVrAnswers.style.color = 'var(--primary-cyan)';
             });
@@ -2539,7 +2539,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 vrHistoryContainer.style.display = 'none';
                 vrAnswersContainer.style.display = 'block';
                 btnShowVrAnswers.style.backgroundColor = 'var(--primary-cyan)';
-                btnShowVrAnswers.style.color = '#0a192f';
+                btnShowVrAnswers.style.color = 'var(--btn-primary-text)';
                 btnShowVrHistory.style.backgroundColor = 'transparent';
                 btnShowVrHistory.style.color = 'var(--primary-cyan)';
             });
