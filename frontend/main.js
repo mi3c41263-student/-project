@@ -2047,11 +2047,7 @@ async function saveMistakesToBackend() {
             return res;
         };
 
-        let selected = [
-            ...shuffleArray(tfQuestions).slice(0, 2),
-            ...shuffleArray(scQuestions).slice(0, 3),
-            ...shuffleArray(maQuestions).slice(0, 5)
-        ];
+        let selected = shuffleArray(bigQuestionBank).slice(0, 10);
         
         currentRoundQuestions = shuffleArray(selected);
         currentQuestionIndex = 0;
