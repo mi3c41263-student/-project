@@ -2790,7 +2790,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (record.images && record.images[idx]) {
                             imgElem.style.opacity = 0;
                             setTimeout(() => {
-                                imgElem.src = record.images[idx] + '?t=' + new Date().getTime();
+                                imgElem.src = record.images[idx];
                                 imgElem.style.display = 'block';
                                 imgElem.style.opacity = 1;
                                 noImgElem.style.display = 'none';
@@ -2798,7 +2798,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else if (record.imageUrl && idx === 0) {
                             imgElem.style.opacity = 0;
                             setTimeout(() => {
-                                imgElem.src = record.imageUrl + '?t=' + new Date().getTime();
+                                imgElem.src = record.imageUrl;
                                 imgElem.style.display = 'block';
                                 imgElem.style.opacity = 1;
                                 noImgElem.style.display = 'none';
