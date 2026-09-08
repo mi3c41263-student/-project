@@ -78,6 +78,57 @@ public class BlackScreenTransition : MonoBehaviour
         Debug.Log("黑幕結束。", this);
     }
 
+    /// <summary>
+    /// 結尾黑幕使用。
+    /// 會淡入、顯示文字、停留指定秒數，最後停在黑幕畫面，不會淡出。
+    /// </summary>
+    public IEnumerator PlayEnding(string message, float endingHoldDuration)
+    {
+        Debug.Log($"結尾黑幕開始：{message}", this);
+
+        IsPlaying = true;
+        gameObject.SetActive(true);
+
+        if (canvasGroup == null)
+        {
+            Debug.LogWarning("BlackScreenTransition 沒有指定 CanvasGroup。", this);
+            yield break;
+        }
+
+        if (transitionText != null)
+        {
+            transitionText.gameObject.SetActive(true);
+            transitionText.text = message;
+        }
+        else
+        {
+            Debug.LogWarning("BlackScreenTransition 沒有指定 TransitionText。", this);
+        }
+
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = true;
+
+        yield return Fade(0f, 1f);
+
+        yield return new WaitForSeconds(endingHoldDuration);
+
+        // 結尾不淡出，讓畫面停在 The End 黑幕。
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = true;
+
+        IsPlaying = false;
+
+        Debug.Log("結尾黑幕完成，畫面停留。", this);
+    }
+
+    public void ForceHide()
+    {
+        StopAllCoroutines();
+        IsPlaying = false;
+        HideImmediate();
+    }
+
     private IEnumerator Fade(float from, float to)
     {
         float timer = 0f;

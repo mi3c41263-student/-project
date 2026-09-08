@@ -24,24 +24,31 @@ public TMP_InputField userInputField;
 public GameObject dialogueCanvas;
 public TMP_Text npcDialogueText;
 
-[Header("LLM 評分 / Web 結果上傳")]
-[Tooltip("是否在 LLM 評分完成後自動送到 Web 後端")]
-public bool uploadScoreResultToWeb = true;
+[Header("Node.js / MySQL 最終評分")]
+[Tooltip("完成本次 VR Session 並取得權威成績的 Node.js API。此 API 會從 MySQL user_answers 讀取本次 session 的 15 題作答。")]
+public string completeSessionUrl = "http://192.168.100.147:3000/api/unity/complete-session";
 
-[Tooltip("接收評分 JSON 的 Web API，例如：http://localhost/iso_audit_api/save_result.php")]
-public string scoreUploadUrl = "http://localhost/iso_audit_api/save_result.php";
+[Tooltip("資料庫 users.id。正式登入後會優先自動從 UnityAnswerApi 同步；也可由登入流程呼叫 SetLoggedInUser()。")]
+public int scoreUserId = 0;
 
-[Tooltip("目前登入或測試用的使用者 ID")]
-public string scoreUserId = "S001";
+[Tooltip("本次 training_sessions.id。正式登入後會優先自動從 UnityAnswerApi 同步。")]
+public int scoreSessionId = 0;
 
-[Tooltip("目前登入或測試用的使用者名稱")]
-public string scoreUserName = "測試使用者";
+[Tooltip("目前登入使用者名稱，僅供 LLM 回饋顯示，不參與計分。")]
+public string scoreUserName = "使用者";
+
+[Tooltip("本次訓練時數；完成 Session 時會一起寫入 vr_training_records.duration_hours。")]
+public float trainingDurationHours = 0f;
+
+[Tooltip("是否讓 LLM 產生個人化總評與學習建議。LLM 絕不參與分數計算。")]
+public bool useLlmForSummary = true;
 
 [Tooltip("評分完成後是否把總評顯示在 NPC 對話框")]
 public bool showScoreSummaryOnDialogue = true;
 
 private List<AuditAnswer> auditAnswers = new List<AuditAnswer>();
 private bool isWaitingForScoreResponse = false;
+private ScoreResult lastScoreResult;
 
 private List<Message> chatHistory = new List<Message>();
 private bool isWaitingForResponse = false;
@@ -89,7 +96,12 @@ public class Choice
 [System.Serializable]
 public class AuditAnswer
 {
+    // Unity 內部固定代碼，例如 S1_BADGE。
     public string questionId;
+
+    // 對應資料庫 questions.id / user_answers.question_id。
+    public int dbQuestionId;
+
     public string questionName;
     public string userAnswer;
     public string correctAnswer;
@@ -100,24 +112,106 @@ public class AuditAnswer
 public class ScoreItem
 {
     public string questionId;
+    public int dbQuestionId;
+    public int stageNo;
+    public string interactionType;
     public string questionName;
     public string userAnswer;
     public string correctAnswer;
+
+    // score：本題對雷達原始 10 分制的實得點數（例如 5 / 2 / 1 / 0）。
     public int score;
+
+    // databaseScore：questions.score / user_answers.score 的實際資料庫得分。
+    public int databaseScore;
+
+    // radarPoint：本題在雷達指標中的固定配分。
+    public int radarPoint;
+
+    public string isoClause;
+    public string abilityCategory;
+    public bool isCorrect;
     public string feedback;
+}
+
+
+[System.Serializable]
+public class DashboardKpi
+{
+    public int auditScore;
+    public float trainingHours;
+    public int identifiedRisks;
+    public int accuracyRate;
+}
+
+[System.Serializable]
+public class HistoryPoint
+{
+    public string session;
+    public int score;
 }
 
 [System.Serializable]
 public class ScoreResult
 {
-    public string userId;
+    public int userId;
     public string userName;
+    public int sessionId;
     public int totalScore;
+    public int radarTotalScore;
     public string level;
+    public int answeredCount;
+    public int correctCount;
+    public int accuracyRate;
+    public DashboardKpi kpi;
+    public Dictionary<string, int> radar;
+    public List<int> radarScores;
+    public List<HistoryPoint> history;
     public string summary;
     public List<ScoreItem> items;
     public string suggestion;
 }
+
+
+[System.Serializable]
+public class ScoreNarrativeResult
+{
+    public string summary;
+    public string suggestion;
+}
+
+// 與 MySQL user_answers 欄位對齊的 JSON 物件。
+[System.Serializable]
+public class CompleteSessionRequest
+{
+    public int userId;
+    public int sessionId;
+    public float duration;
+    public int blocks;
+}
+
+[System.Serializable]
+public class BackendScoreResponse
+{
+    public bool success;
+    public string message;
+    public bool finalized;
+    public bool persisted;
+    public ScoreResult data;
+    public ScoreResult progress;
+}
+
+[System.Serializable]
+public class DbAnswerPayload
+{
+    public int user_id;
+    public int session_id;
+    public int question_id;
+    public string selected_option;
+    public int is_correct;
+    public int score;
+}
+
 
 
 void Start()
@@ -207,6 +301,11 @@ defensive";
     });
 }
 
+public void OnSendButtonClick()
+{
+    OnSendButtonClicked();
+}
+
 public void OnSendButtonClicked()
 {
     if (isWaitingForResponse)
@@ -256,298 +355,645 @@ public void SendMessageToNPC(string userText)
 
 
 // ============================================================
-// LLM 評分與 Web 上傳功能
-// 原本 NPC 對話流程不動；以下是新增功能。
+// 稽核作答 / 資料庫欄位對應 / 固定評分 / LLM 總評
 // ============================================================
 
+private const string CAT_ACCESS = "身分憑證與門禁管理";
+private const string CAT_DEVICE = "設備與儲存媒體防護";
+private const string CAT_DOCUMENT = "文件與敏感資訊保護";
+private const string CAT_ENVIRONMENT = "辦公環境安全管理";
+private const string CAT_SERVER = "機房與資產管理";
+
+private class QuestionDefinition
+{
+    public int dbQuestionId;
+    public string code;
+    public string name;
+    public string correctAnswer;
+    public string isoClause;
+    public string abilityCategory;
+    public int radarRawPoint;
+
+    public QuestionDefinition(
+        int dbQuestionId,
+        string code,
+        string name,
+        string correctAnswer,
+        string isoClause,
+        string abilityCategory,
+        int radarRawPoint)
+    {
+        this.dbQuestionId = dbQuestionId;
+        this.code = code;
+        this.name = name;
+        this.correctAnswer = correctAnswer;
+        this.isoClause = isoClause;
+        this.abilityCategory = abilityCategory;
+        this.radarRawPoint = radarRawPoint;
+    }
+}
+
+// IMPORTANT：這裡就是 Unity question_code 與 MySQL question_id 的唯一對照表。
+// 依你目前資料庫的 1~10、61~65 題號整理。
+// 之後若 questions.id 有改，只要改這 15 行，不要去改評分公式。
+private static readonly List<QuestionDefinition> FormalQuestions = new List<QuestionDefinition>
+{
+    // 第一站
+    new QuestionDefinition(1,  "S1_BADGE",               "主管隨意放置主管專用識別證",      "O", "A.6 / A.7 身分憑證與門禁管理",         CAT_ACCESS,      5),
+    new QuestionDefinition(2,  "S1_EXPIRED_PASS",        "提供已失效的稽核通行證",          "C", "A.7 實體進出與門禁管理",               CAT_ACCESS,      5),
+    new QuestionDefinition(3,  "S1_USB",                 "存有重要檔案的 USB 硬碟隨意放在桌緣", "X", "A.7.10 儲存媒體",                    CAT_DEVICE,      5),
+    new QuestionDefinition(61, "S1_MANAGEMENT_REVIEW",   "管理審查報告缺失辨識",            "C", "文件與敏感資訊保護",                    CAT_DOCUMENT,    2),
+    new QuestionDefinition(62, "S1_EMPLOYEE_EVALUATION", "員工評核表缺失辨識",              "C", "人員資料與文件保護",                    CAT_DOCUMENT,    1),
+
+    // 第二站
+    new QuestionDefinition(4,  "S2_TABLET",               "未上鎖的平板放置於辦公桌面上",      "O", "A.7.7 桌面淨空及螢幕淨空",              CAT_DEVICE,      5),
+    new QuestionDefinition(5,  "S2_VISITOR_CARD",         "重要訪客名片隨意放置在辦公桌上",    "X", "文件與個人資訊保護",                    CAT_DOCUMENT,    1),
+    new QuestionDefinition(6,  "S2_COFFEE",               "未加蓋咖啡放在電腦旁",              "O", "A.7.5 防範實體與環境威脅",              CAT_ENVIRONMENT, 2),
+    new QuestionDefinition(7,  "S2_INTERNAL_DOCUMENT",    "公司內部文件隨意放置",              "X", "A.7.7 桌面淨空及螢幕淨空",              CAT_DOCUMENT,    1),
+    new QuestionDefinition(63, "S2_EMPLOYMENT_CONTRACT",  "聘用合約缺失辨識",                  "C", "A.6 人員控制 / 文件保護",                CAT_DOCUMENT,    4),
+
+    // 第三站
+    new QuestionDefinition(10, "S3_PASSWORD_NOTE",        "帳號密碼寫在便利貼上",              "X", "A.5.17 鑑別資訊",                       CAT_DOCUMENT,    1),
+    new QuestionDefinition(8,  "S3_EWASTE",               "機房堆放報廢電子設備",              "O", "A.7.5 / 資產管理",                      CAT_SERVER,      5),
+    new QuestionDefinition(9,  "S3_CAKE",                 "管制機房內放置食物",                "O", "A.7.5 防範實體與環境威脅",              CAT_ENVIRONMENT, 2),
+    new QuestionDefinition(64, "S3_SECURITY_POSTER",      "資安海報缺失辨識",                  "C", "資訊安全認知與辦公環境安全",              CAT_ENVIRONMENT, 6),
+    new QuestionDefinition(65, "S3_MAINTENANCE_RECORD",   "機房設備維修與維護登記表缺失辨識",  "C", "機房維護與資產管理",                    CAT_SERVER,      5)
+};
+
 /// <summary>
-/// 給支線問答腳本呼叫，用來記錄玩家每一題選 O / X 的結果。
-/// 建議在 DefectQuestionController 的 AnswerYes() / AnswerNo() 裡呼叫。
+/// 登入成功後可直接呼叫。正式評分需要 users.id + training_sessions.id。
+/// </summary>
+public void SetLoggedInUser(int userId, string userName, int sessionId = 0)
+{
+    if (userId <= 0)
+    {
+        Debug.LogError("SetLoggedInUser 收到無效 userId：" + userId);
+        return;
+    }
+
+    scoreUserId = userId;
+    scoreUserName = string.IsNullOrWhiteSpace(userName) ? "使用者" : userName.Trim();
+
+    if (sessionId > 0)
+    {
+        scoreSessionId = sessionId;
+    }
+
+    Debug.Log($"✅ OpenAIManager 登入資訊：user_id={scoreUserId}, session_id={scoreSessionId}");
+}
+
+// 相容舊版：第三個參數原本可能是 string。
+public void SetLoggedInUser(int userId, string userName, string sessionId)
+{
+    int parsedSessionId = 0;
+    int.TryParse(sessionId, out parsedSessionId);
+    SetLoggedInUser(userId, userName, parsedSessionId);
+}
+
+public void SetLoggedInUserFromString(string userId, string userName, string sessionId = "")
+{
+    int parsedUserId;
+    int parsedSessionId = 0;
+
+    if (!int.TryParse(userId, out parsedUserId))
+    {
+        Debug.LogError("userId 必須是資料庫 users.id 的數字。收到：" + userId);
+        return;
+    }
+
+    int.TryParse(sessionId, out parsedSessionId);
+    SetLoggedInUser(parsedUserId, userName, parsedSessionId);
+}
+
+public void SetSessionId(int sessionId)
+{
+    if (sessionId <= 0)
+    {
+        Debug.LogWarning("SetSessionId 收到無效 sessionId：" + sessionId);
+        return;
+    }
+
+    scoreSessionId = sessionId;
+}
+
+public void SetSessionId(string sessionId)
+{
+    int parsed;
+    if (int.TryParse(sessionId, out parsed))
+    {
+        SetSessionId(parsed);
+    }
+}
+
+/// <summary>
+/// 相容既有支線腳本的本地 Debug 紀錄。
+/// 注意：正式最終評分完全不使用這份 List；真正答案以 MySQL user_answers + session_id 為準。
 /// </summary>
 public void RecordAuditAnswer(
     string questionId,
     string questionName,
     string userAnswer,
     string correctAnswer,
-    string isoClause
-)
+    string isoClause)
 {
-    if (string.IsNullOrEmpty(questionId))
+    if (string.IsNullOrWhiteSpace(questionId))
     {
-        Debug.LogWarning("RecordAuditAnswer 收到空的 questionId，已忽略。");
         return;
     }
 
-    AuditAnswer existing = auditAnswers.Find(answer => answer.questionId == questionId);
+    QuestionDefinition definition = FindDefinition(questionId);
+    string canonicalCode = definition != null ? definition.code : questionId.Trim();
+    string normalizedUserAnswer = NormalizeOption(userAnswer);
 
-    if (existing != null)
+    AuditAnswer existing = auditAnswers.Find(answer => answer.questionId == canonicalCode);
+    if (existing == null)
     {
-        existing.questionName = questionName;
-        existing.userAnswer = userAnswer;
-        existing.correctAnswer = correctAnswer;
-        existing.isoClause = isoClause;
-    }
-    else
-    {
-        auditAnswers.Add(new AuditAnswer
-        {
-            questionId = questionId,
-            questionName = questionName,
-            userAnswer = userAnswer,
-            correctAnswer = correctAnswer,
-            isoClause = isoClause
-        });
+        existing = new AuditAnswer();
+        auditAnswers.Add(existing);
     }
 
-    Debug.Log($"已記錄稽核答案：{questionId} / {questionName} = {userAnswer}，正確答案 = {correctAnswer}");
+    existing.questionId = canonicalCode;
+    existing.dbQuestionId = definition != null ? definition.dbQuestionId : ParseIntOrZero(questionId);
+    existing.questionName = definition != null ? definition.name : (questionName ?? "");
+    existing.userAnswer = normalizedUserAnswer;
+    existing.correctAnswer = definition != null ? definition.correctAnswer : NormalizeOption(correctAnswer);
+    existing.isoClause = definition != null ? definition.isoClause : (isoClause ?? "");
+
+    Debug.Log($"📝 本地 Debug 作答：{canonicalCode} = {normalizedUserAnswer}（正式成績仍以 MySQL 為準）");
 }
 
-/// <summary>
-/// 清空目前記錄的所有使用者答案。
-/// 新的一輪測驗開始時可以呼叫。
-/// </summary>
+public void RecordAuditAnswerByDatabaseId(int questionId, string selectedOption)
+{
+    QuestionDefinition definition = FindDefinitionByDbId(questionId);
+    RecordAuditAnswer(
+        definition != null ? definition.code : questionId.ToString(),
+        definition != null ? definition.name : "",
+        selectedOption,
+        definition != null ? definition.correctAnswer : "",
+        definition != null ? definition.isoClause : ""
+    );
+}
+
+public void RecordAuditAnswerByBool(
+    string questionId,
+    string questionName,
+    bool userAnswerIsYes,
+    bool correctAnswerIsYes,
+    string isoClause)
+{
+    RecordAuditAnswer(
+        questionId,
+        questionName,
+        userAnswerIsYes ? "O" : "X",
+        correctAnswerIsYes ? "O" : "X",
+        isoClause
+    );
+}
+
 public void ClearAuditAnswers()
 {
     auditAnswers.Clear();
-    Debug.Log("已清空稽核作答紀錄。");
+    Debug.Log("已清空 OpenAIManager 本地 Debug 作答紀錄。MySQL 資料不受影響。");
 }
 
-/// <summary>
-/// 取得目前所有作答資料的 JSON，方便 Debug。
-/// </summary>
 public string GetAuditAnswersJson()
 {
     return JsonConvert.SerializeObject(auditAnswers, Formatting.Indented);
 }
 
+public string GetDatabaseAnswerRowsJson()
+{
+    List<DbAnswerPayload> rows = new List<DbAnswerPayload>();
+
+    foreach (AuditAnswer answer in auditAnswers)
+    {
+        QuestionDefinition definition = FindDefinition(answer.questionId);
+        if (definition == null || string.IsNullOrWhiteSpace(answer.userAnswer))
+        {
+            continue;
+        }
+
+        bool isCorrect = NormalizeOption(answer.userAnswer) == definition.correctAnswer;
+        rows.Add(new DbAnswerPayload
+        {
+            user_id = scoreUserId,
+            session_id = scoreSessionId,
+            question_id = definition.dbQuestionId,
+            selected_option = NormalizeOption(answer.userAnswer),
+            is_correct = isCorrect ? 1 : 0,
+            score = isCorrect ? 10 : 0
+        });
+    }
+
+    return JsonConvert.SerializeObject(rows, Formatting.Indented);
+}
+
+public void ImportDatabaseAnswersJson(string json)
+{
+    if (string.IsNullOrWhiteSpace(json))
+    {
+        return;
+    }
+
+    try
+    {
+        List<DbAnswerPayload> rows = JsonConvert.DeserializeObject<List<DbAnswerPayload>>(json);
+        if (rows == null)
+        {
+            return;
+        }
+
+        foreach (DbAnswerPayload row in rows)
+        {
+            RecordAuditAnswerByDatabaseId(row.question_id, row.selected_option);
+        }
+    }
+    catch (System.Exception e)
+    {
+        Debug.LogError("ImportDatabaseAnswersJson 解析失敗：" + e.Message);
+    }
+}
+
+public void ScoreDatabaseAnswersJson(string json)
+{
+    ImportDatabaseAnswersJson(json);
+    ScoreCurrentAuditAnswers();
+}
+
 /// <summary>
-/// 給「查看成績 / 完成稽核」按鈕呼叫。
-/// 會把目前已記錄的作答送給 LLM 評分。
+/// 「查看成績 / 完成訓練」正式入口。
+/// 不再拿 Unity 本地答案自己判分，也不讓 LLM 算分。
+/// 流程：MySQL 本 Session 15 題 -> Node.js 固定公式 -> 寫 vr_training_records -> LLM 只產生文字回饋。
 /// </summary>
 public void ScoreCurrentAuditAnswers()
 {
     if (isWaitingForScoreResponse)
     {
-        Debug.LogWarning("LLM 正在評分中，請稍等。");
+        Debug.LogWarning("目前正在處理成績，請稍等。");
         return;
     }
 
-    if (auditAnswers == null || auditAnswers.Count == 0)
+    TrySyncLoginContextFromUnityAnswerApi();
+
+    if (scoreUserId <= 0 || scoreSessionId <= 0)
     {
-        Debug.LogWarning("目前沒有任何作答紀錄，無法評分。");
-        ShowNPCDialogue("目前沒有作答紀錄，無法產生成績。");
+        Debug.LogError($"❌ 無法評分：userId={scoreUserId}, sessionId={scoreSessionId}。請先完成 Web → VR 登入。");
+        ShowNPCDialogue("尚未取得本次登入資訊，無法產生成績。");
         return;
     }
 
-    string answersJson = JsonConvert.SerializeObject(auditAnswers);
-    StartCoroutine(PostScoreToOpenAI(answersJson));
+    if (string.IsNullOrWhiteSpace(completeSessionUrl))
+    {
+        Debug.LogError("尚未設定 completeSessionUrl。");
+        ShowNPCDialogue("系統錯誤：尚未設定成績 API。");
+        return;
+    }
+
+    StartCoroutine(CompleteSessionAndGetAuthoritativeScore());
 }
 
 /// <summary>
-/// 如果你已經在其他腳本整理好答案 JSON，可以直接呼叫這個方法評分。
+/// 舊 Demo 按鈕保留，避免 UnityEvent Missing Method；正式版不再注入假答案。
 /// </summary>
-public void ScoreAuditAnswersJson(string answersJson)
+public void LoadMockAuditAnswersForDemo()
 {
-    if (isWaitingForScoreResponse)
-    {
-        Debug.LogWarning("LLM 正在評分中，請稍等。");
-        return;
-    }
-
-    if (string.IsNullOrEmpty(answersJson))
-    {
-        Debug.LogWarning("ScoreAuditAnswersJson 收到空資料，無法評分。");
-        ShowNPCDialogue("目前沒有作答資料，無法產生成績。");
-        return;
-    }
-
-    StartCoroutine(PostScoreToOpenAI(answersJson));
+    Debug.LogWarning("正式版已停用 Mock 15 題。請透過 UnityAnswerApi 將真實作答寫入 MySQL。");
+    ShowNPCDialogue("正式版不使用模擬答案，請完成實際稽核題目。");
 }
 
-private IEnumerator PostScoreToOpenAI(string answersJson)
+private bool TrySyncLoginContextFromUnityAnswerApi()
 {
-    if (string.IsNullOrEmpty(apiKey))
+    // VRCodeLoginManager 已把真正的 userId / sessionId 寫進 UnityAnswerApi。
+    // 為了不要求你再手動綁一次 Inspector，這裡在查看成績時自動同步。
+    try
     {
-        Debug.LogError("尚未填寫 API Key。請在 OpenAIManager 的 apiKey 欄位貼上你的 API Key。");
-        ShowNPCDialogue("系統錯誤：尚未設定 API Key，無法評分。");
-        yield break;
+        MonoBehaviour[] behaviours = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>();
+        const System.Reflection.BindingFlags flags =
+            System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.NonPublic;
+
+        foreach (MonoBehaviour behaviour in behaviours)
+        {
+            if (behaviour == null || behaviour.GetType().Name != "UnityAnswerApi")
+            {
+                continue;
+            }
+
+            System.Type type = behaviour.GetType();
+            System.Reflection.FieldInfo userField = type.GetField("userId", flags);
+            System.Reflection.FieldInfo sessionField = type.GetField("sessionId", flags);
+
+            if (userField == null || sessionField == null)
+            {
+                continue;
+            }
+
+            int detectedUserId = System.Convert.ToInt32(userField.GetValue(behaviour));
+            int detectedSessionId = System.Convert.ToInt32(sessionField.GetValue(behaviour));
+
+            if (detectedUserId > 0)
+            {
+                scoreUserId = detectedUserId;
+            }
+
+            if (detectedSessionId > 0)
+            {
+                scoreSessionId = detectedSessionId;
+            }
+
+            Debug.Log($"🔗 OpenAIManager 已從 UnityAnswerApi 同步：userId={scoreUserId}, sessionId={scoreSessionId}");
+            return scoreUserId > 0 && scoreSessionId > 0;
+        }
+    }
+    catch (System.Exception e)
+    {
+        Debug.LogWarning("自動同步 UnityAnswerApi 登入資訊失敗：" + e.Message);
     }
 
+    return scoreUserId > 0 && scoreSessionId > 0;
+}
+
+private IEnumerator CompleteSessionAndGetAuthoritativeScore()
+{
     isWaitingForScoreResponse = true;
-    ShowNPCDialogue("正在產生成績報告……");
+    ShowNPCDialogue("正在從資料庫整理本次稽核成績……");
+
+    CompleteSessionRequest requestData = new CompleteSessionRequest
+    {
+        userId = scoreUserId,
+        sessionId = scoreSessionId,
+        duration = trainingDurationHours,
+        blocks = 0
+    };
+
+    string json = JsonConvert.SerializeObject(requestData);
+    byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+
+    using (UnityWebRequest request = new UnityWebRequest(completeSessionUrl, UnityWebRequest.kHttpVerbPOST))
+    {
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json; charset=utf-8");
+        request.SetRequestHeader("ngrok-skip-browser-warning", "true");
+        request.timeout = 30;
+
+        Debug.Log($"📤 完成本次 Session：userId={scoreUserId}, sessionId={scoreSessionId}");
+        yield return request.SendWebRequest();
+
+        string responseText = request.downloadHandler != null ? request.downloadHandler.text : "";
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            isWaitingForScoreResponse = false;
+            Debug.LogError("❌ 後端最終評分失敗。HTTP=" + request.responseCode);
+            Debug.LogError(responseText);
+
+            try
+            {
+                BackendScoreResponse errorResult = JsonConvert.DeserializeObject<BackendScoreResponse>(responseText);
+                if (errorResult != null && request.responseCode == 409 && errorResult.progress != null)
+                {
+                    ShowNPCDialogue($"尚未完成全部題目：{errorResult.progress.answeredCount}/15。");
+                }
+                else if (errorResult != null && !string.IsNullOrWhiteSpace(errorResult.message))
+                {
+                    ShowNPCDialogue(errorResult.message);
+                }
+                else
+                {
+                    ShowNPCDialogue("系統錯誤：無法取得本次成績。");
+                }
+            }
+            catch
+            {
+                ShowNPCDialogue("系統錯誤：無法取得本次成績。");
+            }
+
+            yield break;
+        }
+
+        BackendScoreResponse backendResult = null;
+        try
+        {
+            backendResult = JsonConvert.DeserializeObject<BackendScoreResponse>(responseText);
+        }
+        catch (System.Exception e)
+        {
+            isWaitingForScoreResponse = false;
+            Debug.LogError("解析後端成績 JSON 失敗：" + e.Message);
+            Debug.LogError(responseText);
+            ShowNPCDialogue("系統錯誤：成績資料格式異常。");
+            yield break;
+        }
+
+        if (backendResult == null || !backendResult.success || backendResult.data == null)
+        {
+            isWaitingForScoreResponse = false;
+            Debug.LogError("後端沒有回傳有效 ScoreResult：" + responseText);
+            ShowNPCDialogue("系統錯誤：沒有取得有效成績。");
+            yield break;
+        }
+
+        ScoreResult scoreResult = backendResult.data;
+        scoreResult.userName = string.IsNullOrWhiteSpace(scoreUserName) ? "使用者" : scoreUserName.Trim();
+        lastScoreResult = scoreResult;
+
+        Debug.Log("<color=green>✅ Node.js / MySQL 權威成績：</color>");
+        Debug.Log(JsonConvert.SerializeObject(scoreResult, Formatting.Indented));
+
+        isWaitingForScoreResponse = false;
+
+        if (useLlmForSummary && !string.IsNullOrWhiteSpace(apiKey))
+        {
+            StartCoroutine(PostScoreSummaryToOpenAI(scoreResult));
+        }
+        else
+        {
+            FinalizeScoreResult(scoreResult);
+        }
+    }
+}
+
+private IEnumerator PostScoreSummaryToOpenAI(ScoreResult fixedResult)
+{
+    isWaitingForScoreResponse = true;
+    ShowNPCDialogue("成績已確認，正在產生個人化學習建議……");
+
+    // 只把後端已確認的結果交給 LLM。LLM 完全沒有修改分數的權限。
+    string fixedScoreJson = JsonConvert.SerializeObject(fixedResult);
 
     string systemPrompt =
-        "你是 VR 資安稽核訓練系統的評分模型。" +
-        "請根據使用者每一題的回答、正確答案與 ISO 條文進行評分。" +
-        "每題答對給滿分，答錯給 0 分，最後換算成 0 到 100 的總分。" +
-        "請產生總分、等級、總評、每題回饋與學習建議。" +
-        "必須使用繁體中文。" +
-        "必須只回傳 JSON，不要加任何說明文字。";
+        "你是 VR 資安稽核訓練系統的學習回饋助手。" +
+        "所有數字、答對答錯、正確答案、雷達分數與 totalScore 都已由 Node.js/MySQL 固定規則確認。" +
+        "你絕對不可重新計算、修改、補猜或推翻任何分數與 isCorrect。" +
+        "你只能根據已提供的 radar 與答錯 items 撰寫繁體中文的 summary 與 suggestion。" +
+        "不要捏造未提供的 ISO 條文；建議要具體指出應改善的行為。" +
+        "summary 80 字內，suggestion 120 字內。" +
+        "只能回傳合法 JSON，格式固定為：{\"summary\":\"...\",\"suggestion\":\"...\"}";
 
     string userPrompt =
-        "使用者 ID：" + scoreUserId + "\n" +
-        "使用者名稱：" + scoreUserName + "\n" +
-        "以下是使用者在 VR 稽核訓練中的作答資料 JSON：\n" +
-        answersJson + "\n\n" +
-        "請用以下 JSON 格式回傳：\n" +
-        "{\n" +
-        "  \"userId\": \"" + scoreUserId + "\",\n" +
-        "  \"userName\": \"" + scoreUserName + "\",\n" +
-        "  \"totalScore\": 0,\n" +
-        "  \"level\": \"優良 / 良好 / 待加強\",\n" +
-        "  \"summary\": \"總評，請控制在 60 字內\",\n" +
-        "  \"items\": [\n" +
-        "    {\n" +
-        "      \"questionId\": \"Q1\",\n" +
-        "      \"questionName\": \"題目名稱\",\n" +
-        "      \"userAnswer\": \"O\",\n" +
-        "      \"correctAnswer\": \"O\",\n" +
-        "      \"score\": 10,\n" +
-        "      \"feedback\": \"單題回饋，請控制在 40 字內\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"suggestion\": \"學習建議，請控制在 80 字內\"\n" +
-        "}";
+        "以下是後端已鎖定的最終成績。請勿回傳任何新的分數，只產生文字回饋：\n" +
+        fixedScoreJson;
 
     PostData data = new PostData
     {
         model = modelName,
-        response_format = new ResponseFormat
-        {
-            type = "json_object"
-        },
+        response_format = new ResponseFormat { type = "json_object" },
         messages = new List<Message>
         {
-            new Message
-            {
-                role = "system",
-                content = systemPrompt
-            },
-            new Message
-            {
-                role = "user",
-                content = userPrompt
-            }
+            new Message { role = "system", content = systemPrompt },
+            new Message { role = "user", content = userPrompt }
         }
     };
 
     string json = JsonConvert.SerializeObject(data);
 
-    using (UnityWebRequest request = new UnityWebRequest(apiUrl, "POST"))
+    using (UnityWebRequest request = new UnityWebRequest(apiUrl, UnityWebRequest.kHttpVerbPOST))
     {
         byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
-
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
-
-        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.SetRequestHeader("Authorization", "Bearer " + apiKey);
+        request.timeout = 60;
 
         yield return request.SendWebRequest();
-
         isWaitingForScoreResponse = false;
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            HandleScoreOpenAIResponse(request.downloadHandler.text);
+            ApplyLlmNarrativeAndFinalize(fixedResult, request.downloadHandler.text);
         }
         else
         {
-            Debug.LogError("LLM 評分失敗：" + request.error);
-            Debug.LogError("伺服器回傳：" + request.downloadHandler.text);
-            ShowNPCDialogue("系統錯誤：評分失敗。請查看 Console。");
+            Debug.LogWarning("LLM 回饋產生失敗；數字成績已由後端完成，不受影響。" + request.error);
+            Debug.LogWarning(request.downloadHandler != null ? request.downloadHandler.text : "");
+            FinalizeScoreResult(fixedResult);
         }
     }
 }
 
-private void HandleScoreOpenAIResponse(string responseText)
+private void ApplyLlmNarrativeAndFinalize(ScoreResult fixedResult, string responseText)
 {
     try
     {
         OpenAIResponse response = JsonConvert.DeserializeObject<OpenAIResponse>(responseText);
 
-        if (response == null || response.choices == null || response.choices.Count == 0)
+        if (response != null &&
+            response.choices != null &&
+            response.choices.Count > 0 &&
+            response.choices[0].message != null)
         {
-            Debug.LogError("LLM 評分回傳格式異常，沒有 choices。");
-            Debug.LogError("原始回傳內容：" + responseText);
-            ShowNPCDialogue("系統錯誤：評分回傳格式異常。");
-            return;
-        }
+            ScoreNarrativeResult narrative =
+                JsonConvert.DeserializeObject<ScoreNarrativeResult>(response.choices[0].message.content);
 
-        string scoreJson = response.choices[0].message.content;
+            if (narrative != null)
+            {
+                if (!string.IsNullOrWhiteSpace(narrative.summary))
+                {
+                    fixedResult.summary = narrative.summary.Trim();
+                }
 
-        if (string.IsNullOrEmpty(scoreJson))
-        {
-            Debug.LogError("LLM 評分內容是空的。");
-            ShowNPCDialogue("系統錯誤：評分內容是空的。");
-            return;
-        }
-
-        Debug.Log("<color=green>LLM 評分結果：</color>");
-        Debug.Log(scoreJson);
-
-        ScoreResult scoreResult = JsonConvert.DeserializeObject<ScoreResult>(scoreJson);
-
-        if (showScoreSummaryOnDialogue && scoreResult != null)
-        {
-            ShowNPCDialogue(
-                "評分完成。總分：" +
-                scoreResult.totalScore +
-                "，等級：" +
-                scoreResult.level +
-                "。" +
-                scoreResult.summary
-            );
-        }
-        else
-        {
-            ShowNPCDialogue("評分完成，結果已產生。");
-        }
-
-        if (uploadScoreResultToWeb)
-        {
-            StartCoroutine(UploadScoreResultToWeb(scoreJson));
+                if (!string.IsNullOrWhiteSpace(narrative.suggestion))
+                {
+                    fixedResult.suggestion = narrative.suggestion.Trim();
+                }
+            }
         }
     }
     catch (System.Exception e)
     {
-        Debug.LogError("解析 LLM 評分結果失敗：" + e.Message);
-        Debug.LogError("原始回傳內容：" + responseText);
-        ShowNPCDialogue("系統錯誤：解析評分結果失敗。");
+        Debug.LogWarning("解析 LLM 學習回饋失敗，沿用後端預設回饋：" + e.Message);
     }
+
+    // 注意：只覆蓋 summary/suggestion，任何分數都不會從 LLM 回寫。
+    FinalizeScoreResult(fixedResult);
 }
 
-private IEnumerator UploadScoreResultToWeb(string scoreJson)
+private void FinalizeScoreResult(ScoreResult scoreResult)
 {
-    if (string.IsNullOrEmpty(scoreUploadUrl))
+    lastScoreResult = scoreResult;
+
+    Debug.Log("<color=green>🎯 最終成績（數字由 Node.js/MySQL 決定）：</color>");
+    Debug.Log(JsonConvert.SerializeObject(scoreResult, Formatting.Indented));
+
+    if (showScoreSummaryOnDialogue)
     {
-        Debug.LogWarning("尚未設定 scoreUploadUrl，因此不會上傳成績到 Web。");
-        yield break;
-    }
-
-    byte[] bodyRaw = Encoding.UTF8.GetBytes(scoreJson);
-
-    using (UnityWebRequest request = new UnityWebRequest(scoreUploadUrl, "POST"))
-    {
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            Debug.Log("成績已送到 Web：" + request.downloadHandler.text);
-        }
-        else
-        {
-            Debug.LogError("成績送到 Web 失敗：" + request.error);
-            Debug.LogError("Web 回傳：" + request.downloadHandler.text);
-        }
+        ShowNPCDialogue(
+            "評分完成。總分：" + scoreResult.totalScore +
+            "，等級：" + scoreResult.level + "。" +
+            (scoreResult.summary ?? "")
+        );
     }
 }
 
+private static QuestionDefinition FindDefinition(string questionIdOrCode)
+{
+    if (string.IsNullOrWhiteSpace(questionIdOrCode))
+    {
+        return null;
+    }
+
+    string value = questionIdOrCode.Trim();
+
+    foreach (QuestionDefinition definition in FormalQuestions)
+    {
+        if (string.Equals(definition.code, value, System.StringComparison.OrdinalIgnoreCase))
+        {
+            return definition;
+        }
+    }
+
+    int numericId;
+    if (int.TryParse(value, out numericId))
+    {
+        return FindDefinitionByDbId(numericId);
+    }
+
+    if (value.StartsWith("Q", System.StringComparison.OrdinalIgnoreCase) &&
+        int.TryParse(value.Substring(1), out numericId))
+    {
+        return FindDefinitionByDbId(numericId);
+    }
+
+    return null;
+}
+
+private static QuestionDefinition FindDefinitionByDbId(int dbQuestionId)
+{
+    foreach (QuestionDefinition definition in FormalQuestions)
+    {
+        if (definition.dbQuestionId == dbQuestionId)
+        {
+            return definition;
+        }
+    }
+
+    return null;
+}
+
+private static string NormalizeOption(string option)
+{
+    if (string.IsNullOrWhiteSpace(option))
+    {
+        return "";
+    }
+
+    string value = option.Trim().ToUpperInvariant();
+
+    if (value == "YES" || value == "TRUE" || value == "是" || value == "○") return "O";
+    if (value == "NO" || value == "FALSE" || value == "否" || value == "×") return "X";
+    if (value == "COMPLETE" || value == "COMPLETED" || value == "DONE" || value == "完成") return "C";
+
+    return value;
+}
+
+private static int ParseIntOrZero(string value)
+{
+    int result;
+    return int.TryParse(value, out result) ? result : 0;
+}
 
 public void GenerateSideMissionHintAfterMainStory(string stageName)
 {
@@ -562,7 +1008,7 @@ public void GenerateSideMissionHintAfterMainStory(string stageName)
         "目前站點是「" + stageName + "」。" +
         "請你以資安主管的口吻，自然提醒玩家接下來巡視現場，完成後續支線稽核。" +
         "語氣要像遊戲 NPC，不要列點。" +
-        "回覆請控制在 20 到 35 字之間。" +
+        "回覆請控制在 20個字以內。" +
         "必須只回傳 JSON，格式為：" +
         "{ \"reply\": \"你的台詞\", \"emotion\": \"professional\" }";
 
