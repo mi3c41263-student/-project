@@ -81,10 +81,6 @@ public class AuditStageFlowManager : MonoBehaviour
 
         [Header("是否一開始就開啟透明牆")]
         public bool barrierActiveFromStart = true;
-
-        [Header("這一站劇情播完後是否直接結束遊戲")]
-        [Tooltip("最後一站會議室請勾選。勾選後，劇情播完會直接播放 The End 黑幕，不會開支線。")]
-        public bool finishGameAfterDialogue = false;
     }
 
     [Header("登入 / 開始畫面，暫時沒有可以空著")]
@@ -105,13 +101,6 @@ public class AuditStageFlowManager : MonoBehaviour
     [Header("所有站點")]
     [SerializeField] private AuditStage[] stages;
 
-    [Header("結尾黑幕設定")]
-    [SerializeField] private bool playEndingBlackScreen = true;
-
-    [SerializeField] private string endingText = "The End";
-
-    [SerializeField] private float endingHoldDuration = 30f;
-
     [Header("測試用：按 Play 後自動開始")]
     [SerializeField] private bool autoStartOnPlay = false;
 
@@ -129,7 +118,6 @@ public class AuditStageFlowManager : MonoBehaviour
     private bool dialogueStartedForCurrentStep;
     private bool dialogueStepTransitionRunning;
     private bool gameStarted;
-    private bool endingStarted;
 
     private void Start()
     {
@@ -152,7 +140,7 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void Update()
     {
-        if (!missionRunning || transitionStarted || endingStarted)
+        if (!missionRunning || transitionStarted)
         {
             return;
         }
@@ -247,20 +235,13 @@ public class AuditStageFlowManager : MonoBehaviour
 
     /// <summary>
     /// 給 login_Canvas 的開始按鈕，或目前的第一站開始按鈕呼叫。
-    /// 第一次呼叫會啟動整個流程。
-    /// 流程已經開始後再呼叫，會改成播放目前劇情段落。
+    /// 注意：這個只給整個遊戲第一次開始用。
     /// </summary>
     public void StartGameAfterLogin()
     {
-        if (endingStarted)
-        {
-            return;
-        }
-
         if (gameStarted)
         {
-            Debug.Log("遊戲流程已經開始，改為播放目前劇情段落。", this);
-            StartCurrentStageDialogue();
+            Debug.LogWarning("遊戲流程已經開始過，StartGameAfterLogin 不會重複執行。", this);
             return;
         }
 
@@ -300,11 +281,6 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void StartStage(int stageIndex, bool allowAutoStartDialogue)
     {
-        if (endingStarted)
-        {
-            return;
-        }
-
         if (stages == null || stageIndex < 0 || stageIndex >= stages.Length)
         {
             Debug.LogWarning("沒有下一站資料，流程結束。", this);
@@ -421,11 +397,6 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void BeginCurrentDialogueStepAfterTransition()
     {
-        if (endingStarted)
-        {
-            return;
-        }
-
         DialogueStep step = GetCurrentDialogueStep();
 
         if (step == null)
@@ -452,14 +423,10 @@ public class AuditStageFlowManager : MonoBehaviour
 
     /// <summary>
     /// 給第二站、第三站，或某段劇情的「開始劇情」按鈕呼叫。
+    /// 不要用 StartGameAfterLogin，StartGameAfterLogin 只給第一站開始用。
     /// </summary>
     public void StartCurrentStageDialogue()
     {
-        if (endingStarted)
-        {
-            return;
-        }
-
         AuditStage stage = GetCurrentStage();
         DialogueStep step = GetCurrentDialogueStep();
 
@@ -503,11 +470,6 @@ public class AuditStageFlowManager : MonoBehaviour
     /// </summary>
     public void OnCurrentStageDialogueFinished()
     {
-        if (endingStarted)
-        {
-            return;
-        }
-
         if (dialogueStepTransitionRunning)
         {
             return;
@@ -531,15 +493,8 @@ public class AuditStageFlowManager : MonoBehaviour
         }
         else
         {
-            if (ShouldFinishGameAfterDialogue(stage))
-            {
-                StartCoroutine(PlayEndingRoutine());
-            }
-            else
-            {
-                GenerateLLMHintAfterAllDialogueFinished(stage);
-                StartCurrentStageMission();
-            }
+            GenerateLLMHintAfterAllDialogueFinished(stage);
+            StartCurrentStageMission();
         }
     }
 
@@ -630,29 +585,11 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void StartCurrentStageMission()
     {
-        if (endingStarted)
-        {
-            return;
-        }
-
         AuditStage stage = GetCurrentStage();
 
         if (stage == null)
         {
             Debug.LogWarning("目前沒有有效站點，無法解鎖支線。", this);
-            return;
-        }
-
-        if (ShouldFinishGameAfterDialogue(stage))
-        {
-            StartCoroutine(PlayEndingRoutine());
-            return;
-        }
-
-        if (stage.missionRoot == null && stage.missionHintUI == null)
-        {
-            Debug.Log($"站點 {stage.stageName} 沒有支線，直接進下一站。", this);
-            BeginGoNext(0f, "此站沒有支線");
             return;
         }
 
@@ -679,11 +616,6 @@ public class AuditStageFlowManager : MonoBehaviour
 
     public void RegisterMissionComplete(MissionTarget target)
     {
-        if (endingStarted)
-        {
-            return;
-        }
-
         if (target == null)
         {
             return;
@@ -725,11 +657,6 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void BeginGoNext(float delaySeconds, string reason)
     {
-        if (endingStarted)
-        {
-            return;
-        }
-
         if (transitionStarted)
         {
             return;
@@ -783,7 +710,7 @@ public class AuditStageFlowManager : MonoBehaviour
                 }
                 else
                 {
-                    StartCoroutine(PlayEndingRoutine());
+                    Debug.Log("所有站點流程結束。", this);
                 }
             });
 
@@ -802,66 +729,8 @@ public class AuditStageFlowManager : MonoBehaviour
             }
             else
             {
-                StartCoroutine(PlayEndingRoutine());
+                Debug.Log("所有站點流程結束。", this);
             }
-        }
-    }
-
-    private bool ShouldFinishGameAfterDialogue(AuditStage stage)
-    {
-        if (stage == null)
-        {
-            return false;
-        }
-
-        if (stage.finishGameAfterDialogue)
-        {
-            return true;
-        }
-
-        bool isFinalStage =
-            stages != null &&
-            currentStageIndex >= 0 &&
-            currentStageIndex == stages.Length - 1;
-
-        bool hasNoMission =
-            stage.missionRoot == null &&
-            stage.missionHintUI == null;
-
-        return isFinalStage && hasNoMission;
-    }
-
-    private IEnumerator PlayEndingRoutine()
-    {
-        if (endingStarted)
-        {
-            yield break;
-        }
-
-        endingStarted = true;
-        missionRunning = false;
-        transitionStarted = true;
-        dialogueStepTransitionRunning = false;
-
-        HideAllDialogueCanvases();
-        SetCurrentStageInteractablesEnabled(false);
-
-        AuditStage stage = GetCurrentStage();
-
-        if (stage != null && stage.missionHintUI != null)
-        {
-            stage.missionHintUI.Hide();
-        }
-
-        Debug.Log("最後一站劇情完成，播放 The End 黑幕。", this);
-
-        if (blackTransition != null && playEndingBlackScreen)
-        {
-            yield return blackTransition.PlayEnding(endingText, endingHoldDuration);
-        }
-        else
-        {
-            Debug.Log("遊戲流程結束。", this);
         }
     }
 
