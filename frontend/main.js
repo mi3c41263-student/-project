@@ -2748,6 +2748,22 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        
+        // --- 預先載入圖片，避免第一次點擊時延遲 ---
+        vrRecords.forEach(record => {
+            if (record.images) {
+                record.images.forEach(src => {
+                    const img = new Image();
+                    img.src = src;
+                });
+            }
+            if (record.imageUrl) {
+                const img = new Image();
+                img.src = record.imageUrl;
+            }
+        });
+        // ----------------------------------------
+
         const vrAnswerLevelSelect = document.getElementById('vrAnswerLevelSelect');
         if (vrAnswerLevelSelect) {
             vrAnswerLevelSelect.innerHTML = vrRecords.map(r => `<option value="${r.levelName}">${r.levelName}</option>`).join('');
