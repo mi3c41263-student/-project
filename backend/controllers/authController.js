@@ -273,6 +273,156 @@ async function verifySessionOwnership(userId, sessionId, executor = db, forUpdat
     return sessions.length > 0 ? sessions[0] : null;
 }
 
+// ============================================================
+// AI 總評 / 學習建議持久化
+//
+// 為了不影響既有 vr_training_records 結構，
+// AI 文字回饋獨立存放於 vr_ai_feedback。
+// 第一次使用時會自動建立資料表。
+// ============================================================
+async function ensureAiFeedbackTable(executor = db) {
+    await executor.query(
+        `
+        CREATE TABLE IF NOT EXISTS vr_ai_feedback (
+            id INT NOT NULL AUTO_INCREMENT,
+            user_id INT NOT NULL,
+            session_id INT NOT NULL,
+            summary TEXT NOT NULL,
+            suggestion TEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uq_vr_ai_feedback_user_session (user_id, session_id),
+            KEY idx_vr_ai_feedback_user_updated (user_id, updated_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        `
+    );
+}
+
+async function loadLatestAiFeedback(userId, executor = db, sessionId = 0) {
+    await ensureAiFeedbackTable(executor);
+
+    const parsedSessionId = Number(sessionId) || 0;
+
+    const whereSession = parsedSessionId > 0
+        ? " AND session_id = ?"
+        : "";
+
+    const params = parsedSessionId > 0
+        ? [userId, parsedSessionId]
+        : [userId];
+
+    const [rows] = await executor.query(
+        `
+        SELECT
+            user_id AS userId,
+            session_id AS sessionId,
+            summary,
+            suggestion,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM vr_ai_feedback
+        WHERE user_id = ?${whereSession}
+        ORDER BY updated_at DESC, id DESC
+        LIMIT 1
+        `,
+        params
+    );
+
+    return rows.length > 0 ? rows[0] : null;
+}
+
+// ============================================================
+// Unity / OpenAIManager 儲存 AI 總評
+//
+// POST /api/unity/save-ai-feedback
+// Body:
+// {
+//   userId,
+//   sessionId,
+//   summary,
+//   suggestion
+// }
+//
+// 同一個 userId + sessionId 重複呼叫時會更新，不會新增重複資料。
+// ============================================================
+const saveUnityAIFeedback = async (req, res) => {
+    const userId = Number(req.body.userId ?? req.body.user_id);
+    const sessionId = Number(req.body.sessionId ?? req.body.session_id);
+    const summary = String(req.body.summary ?? "").trim();
+    const suggestion = String(req.body.suggestion ?? "").trim();
+
+    if (!Number.isInteger(userId) || userId <= 0 ||
+        !Number.isInteger(sessionId) || sessionId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "userId 或 sessionId 不正確"
+        });
+    }
+
+    if (!summary && !suggestion) {
+        return res.status(400).json({
+            success: false,
+            message: "summary 與 suggestion 不可同時為空"
+        });
+    }
+
+    // 防止異常超長內容寫入。
+    const safeSummary = summary.slice(0, 2000);
+    const safeSuggestion = suggestion.slice(0, 4000);
+
+    try {
+        const session = await verifySessionOwnership(userId, sessionId);
+        if (!session) {
+            return res.status(404).json({
+                success: false,
+                message: "找不到屬於目前使用者的 VR Session"
+            });
+        }
+
+        await ensureAiFeedbackTable();
+
+        await db.query(
+            `
+            INSERT INTO vr_ai_feedback
+                (user_id, session_id, summary, suggestion)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                summary = VALUES(summary),
+                suggestion = VALUES(suggestion),
+                updated_at = CURRENT_TIMESTAMP
+            `,
+            [
+                userId,
+                sessionId,
+                safeSummary,
+                safeSuggestion
+            ]
+        );
+
+        console.log(
+            `🤖 AI 回饋已儲存：userId=${userId}, sessionId=${sessionId}`
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "AI 總評與學習建議已儲存",
+            data: {
+                userId,
+                sessionId,
+                summary: safeSummary,
+                suggestion: safeSuggestion
+            }
+        });
+    } catch (error) {
+        console.error("❌ saveUnityAIFeedback 發生錯誤：", error);
+        return res.status(500).json({
+            success: false,
+            message: "儲存 AI 回饋失敗"
+        });
+    }
+};
+
 // =========================================
 // 1. 處理註冊邏輯 (Register)
 // =========================================
@@ -488,6 +638,23 @@ const getUserStats = async (req, res) => {
 
         const latest = latestRows.length > 0 ? latestRows[0] : null;
 
+        // 最新一局完成的 VR Session。
+        // AI 回饋必須綁定這一局，避免新分數搭到上一局的舊評語。
+        const [latestSessionRows] = await db.query(
+            `SELECT id
+             FROM training_sessions
+             WHERE user_id = ?
+               AND UPPER(COALESCE(status, '')) = 'COMPLETED'
+             ORDER BY COALESCE(completed_at, started_at) DESC, id DESC
+             LIMIT 1`,
+            [userId]
+        );
+
+        const latestCompletedSessionId =
+            latestSessionRows.length > 0
+                ? Number(latestSessionRows[0].id) || 0
+                : 0;
+
         const [totals] = await db.query(
             `SELECT COALESCE(SUM(duration_hours), 0) AS totalHours
              FROM vr_training_records
@@ -521,7 +688,11 @@ const getUserStats = async (req, res) => {
         let formattedDate = null;
         if (latest && latest.created_at) {
             const d = new Date(latest.created_at);
-            formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            formattedDate =
+                `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-` +
+                `${String(d.getDate()).padStart(2, '0')} ` +
+                `${String(d.getHours()).padStart(2, '0')}:` +
+                `${String(d.getMinutes()).padStart(2, '0')}`;
         }
 
         const placeholders = FORMAL_QUESTION_CODES.map(() => "?").join(", ");
@@ -544,18 +715,84 @@ const getUserStats = async (req, res) => {
 
         const answers = {};
         for (const row of answerRows) {
-            answers[row.questionCode] = row.isCorrect === 1 || row.isCorrect === true;
+            answers[row.questionCode] =
+                row.isCorrect === 1 ||
+                row.isCorrect === true;
         }
+
+        // =========================================
+        // 讀取最近一次 LLM 產生的 AI 總評 / 建議
+        //
+        // 這段失敗時不影響原本成績頁，
+        // 只會讓 AI 文字欄位暫時為 null。
+        // =========================================
+        let latestAiFeedback = null;
+
+        try {
+            latestAiFeedback = await loadLatestAiFeedback(userId, db, latestCompletedSessionId);
+        } catch (aiFeedbackError) {
+            console.warn(
+                "⚠️ 讀取 AI 回饋失敗，原本成績資料仍會正常回傳：",
+                aiFeedbackError.message
+            );
+        }
+
+        const aiSummary =
+            latestAiFeedback && latestAiFeedback.summary
+                ? String(latestAiFeedback.summary)
+                : null;
+
+        const aiSuggestion =
+            latestAiFeedback && latestAiFeedback.suggestion
+                ? String(latestAiFeedback.suggestion)
+                : null;
 
         const stats = {
             radarScores,
             totalScore: latest ? Number(latest.total_score) || 0 : 0,
-            trainingHours: totals.length > 0 ? Number(totals[0].totalHours) || 0 : 0,
+            trainingHours:
+                totals.length > 0
+                    ? Number(totals[0].totalHours) || 0
+                    : 0,
             blocks: latest ? Number(latest.blocks_count) || 0 : 0,
-            trendLabels: chronologicalScores.map((_, index) => `第 ${index + 1} 次`),
-            trendData: chronologicalScores.map(item => Number(item.total_score) || 0),
+            trendLabels:
+                chronologicalScores.map(
+                    (_, index) => `第 ${index + 1} 次`
+                ),
+            trendData:
+                chronologicalScores.map(
+                    item => Number(item.total_score) || 0
+                ),
             createdAt: formattedDate,
-            answers: answers
+            answers: answers,
+
+            // =====================================
+            // 新增：網站 AI 評語欄位
+            //
+            // 同時保留幾個常見名稱，方便既有前端直接取用。
+            // =====================================
+            summary: aiSummary,
+            suggestion: aiSuggestion,
+
+            aiSummary: aiSummary,
+            aiSuggestion: aiSuggestion,
+
+            aiEvaluation: aiSummary,
+            learningSuggestion: aiSuggestion,
+
+            systemSuggestion: aiSuggestion,
+
+            latestSessionId: latestCompletedSessionId,
+
+            aiFeedbackSessionId:
+                latestAiFeedback
+                    ? Number(latestAiFeedback.sessionId) || 0
+                    : 0,
+
+            aiFeedbackUpdatedAt:
+                latestAiFeedback
+                    ? latestAiFeedback.updatedAt
+                    : null
         };
 
         return res.json({
@@ -1503,6 +1740,53 @@ const saveUnityAnswer = async (req, res) => {
 
 
         // =====================================
+        // 自動完成 Session 機制：若 15 題皆作答，則自動結算寫入
+        // =====================================
+        if (totalCompleted === 15) {
+            try {
+                const connection = await db.getConnection();
+                const sessionRows = await connection.query(`SELECT status FROM training_sessions WHERE id = ? AND user_id = ?`, [parsedSessionId, parsedUserId]);
+                const currentSession = sessionRows[0][0];
+                const alreadyCompleted = String(currentSession?.status || "").toUpperCase() === "COMPLETED";
+
+                if (!alreadyCompleted) {
+                    const rows = await loadSessionAuditRows(parsedUserId, parsedSessionId, connection);
+                    // 這裡 duration 預設帶 0，若 Unity 無法呼叫 /complete-session 的話至少能結算分數
+                    const finalResult = buildAuditScore(rows, parsedUserId, parsedSessionId, 0);
+                    
+                    await connection.query(
+                        `INSERT INTO vr_training_records
+                         (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                        [
+                            parsedUserId,
+                            finalResult.radar[AUDIT_CATEGORY.IDENTITY],
+                            finalResult.radar[AUDIT_CATEGORY.ENVIRONMENT],
+                            finalResult.radar[AUDIT_CATEGORY.SERVER],
+                            finalResult.radar[AUDIT_CATEGORY.DEVICE],
+                            finalResult.radar[AUDIT_CATEGORY.DOCUMENT],
+                            finalResult.totalScore,
+                            0,
+                            finalResult.correctCount
+                        ]
+                    );
+
+                    await connection.query(
+                        `UPDATE training_sessions
+                         SET status = 'COMPLETED',
+                             completed_at = COALESCE(completed_at, NOW())
+                         WHERE id = ? AND user_id = ?`,
+                        [parsedSessionId, parsedUserId]
+                    );
+                    console.log("✅ 已自動完成本局 VR 訓練並寫入歷史紀錄！(進度 15/15)");
+                }
+                connection.release();
+            } catch (autoErr) {
+                console.error("自動完成 VR Session 失敗:", autoErr);
+            }
+        }
+
+        // =====================================
         // 13. 回傳 Unity
         // =====================================
         return res.status(200).json({
@@ -1675,15 +1959,7 @@ const completeUnitySession = async (req, res) => {
         const rows = await loadSessionAuditRows(userId, sessionId, connection);
         const result = buildAuditScore(rows, userId, sessionId, duration);
 
-        // 正式完成必須 15 題都有作答；未作答不能偷偷當成一次完成紀錄。
-        if (result.answeredCount < TOTAL_QUESTION_COUNT) {
-            await connection.rollback();
-            return res.status(409).json({
-                success: false,
-                message: `本次訓練尚未完成：${result.answeredCount}/${TOTAL_QUESTION_COUNT}`,
-                progress: result
-            });
-        }
+
 
         let persisted = false;
         const alreadyCompleted = String(session.status || "").toUpperCase() === "COMPLETED";
@@ -1691,8 +1967,8 @@ const completeUnitySession = async (req, res) => {
         if (!alreadyCompleted) {
             await connection.query(
                 `INSERT INTO vr_training_records
-                 (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                 (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count, session_id)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     userId,
                     result.radar[AUDIT_CATEGORY.IDENTITY],
@@ -1702,7 +1978,8 @@ const completeUnitySession = async (req, res) => {
                     result.radar[AUDIT_CATEGORY.DOCUMENT],
                     result.totalScore,
                     duration,
-                    requestedBlocks > 0 ? requestedBlocks : result.correctCount
+                    requestedBlocks > 0 ? requestedBlocks : result.correctCount,
+                    sessionId
                 ]
             );
 
@@ -2169,7 +2446,64 @@ const handleUnityData = async (req, res) => {
 };
 
 
+
+const getUserHistory = async (req, res) => {
+    try {
+        const userId = req.query.userId || req.body.userId;
+        if (!userId) {
+            return res.status(400).json({ success: false, message: '缺少 userId' });
+        }
+
+        // Fetch completed and incomplete sessions
+        const [sessions] = await db.execute(`
+            SELECT id, total_score as score, session_id, created_at 
+            FROM vr_training_records 
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+        `, [userId]);
+
+        if (!sessions || sessions.length === 0) {
+            return res.json({ success: true, data: [] });
+        }
+
+        const results = [];
+        for (const session of sessions) {
+            const sid = session.session_id;
+            const answers = {};
+            
+            if (sid) {
+                const [answerRows] = await db.execute(`
+                    SELECT questionCode, isCorrect 
+                    FROM user_answers 
+                    WHERE session_id = ?
+                `, [sid]);
+                
+                for (const row of answerRows) {
+                    answers[row.questionCode] = row.isCorrect === 1 || row.isCorrect === true;
+                }
+            }
+
+            // format created_at
+            const dt = new Date(session.created_at);
+            const dateStr = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0') + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0');
+
+            results.push({
+                id: session.id,
+                score: session.score,
+                createdAt: dateStr,
+                answers: answers
+            });
+        }
+
+        return res.json({ success: true, data: results });
+    } catch (error) {
+        console.error("getUserHistory error:", error);
+        return res.status(500).json({ success: false, message: '伺服器錯誤' });
+    }
+};
+
 module.exports = {
+    getUserHistory,
     checkVerificationStatus,
     resendVerifyEmail,
     registerUser,
@@ -2191,6 +2525,7 @@ module.exports = {
     getUnitySessionAnswers,
     getUnitySessionResult,
     completeUnitySession,
+    saveUnityAIFeedback,
     // Web → Unity 登入
     createVRTicket,
     exchangeVRTicket,

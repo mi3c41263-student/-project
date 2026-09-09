@@ -71,13 +71,13 @@
                     </div>
 
                     <div style="display: flex; gap: 15px; margin-bottom: 25px;">
-                        <button id="btnShowVrHistory" style="background-color: var(--primary-cyan); color: var(--btn-primary-text); padding: 8px 20px; border-radius: 5px; border: 1px solid var(--primary-cyan); cursor: pointer; font-weight: bold; white-space: nowrap;"><i class="fa-solid fa-clock-rotate-left"></i> 我的探索紀錄</button>
+                        <button id="btnShowVrHistory" style="background-color: var(--primary-cyan); color: var(--btn-primary-text); padding: 8px 20px; border-radius: 5px; border: 1px solid var(--primary-cyan); cursor: pointer; font-weight: bold; white-space: nowrap; "><i class="fa-solid fa-clock-rotate-left"></i> 我的探索紀錄</button>
                         <button id="btnShowVrAnswers" style="background-color: transparent; color: var(--primary-cyan); padding: 8px 20px; border-radius: 5px; border: 1px solid var(--primary-cyan); cursor: pointer; font-weight: bold; white-space: nowrap;"><i class="fa-solid fa-key"></i> 關卡正確解答</button>
                     </div>
 
                     <!-- 大類別一：我的探索紀錄 -->
                     <div id="vrHistoryContainer" class="glass-panel" style="margin-bottom: 40px; border-color: rgba(46, 213, 115, 0.4);">
-                        <h4 style="color: #2ed573; margin-bottom: 15px; border-bottom: 1px dashed rgba(46, 213, 115, 0.4); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                        <h4 style="color: #2ed573; margin-bottom: 15px; border-bottom: 1px dashed rgba(46, 213, 115, 0.4); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 1.15rem;">
                             <i class="fa-solid fa-clock-rotate-left"></i> 我的探索紀錄
                         </h4>
                         <div id="vrHistoryList" style="display: flex; flex-direction: column; gap: 15px;">
@@ -441,7 +441,7 @@
     </div>
 
     <div id="vrHistoryModal" class="note-modal-overlay">
-        <div class="settings-modal-content glass-panel" style="max-width: 700px; height: auto; max-height: 85vh; overflow-y: auto;">
+        <div class="settings-modal-content glass-panel" style="max-width: 700px; height: auto; max-height: 85vh; overflow-y: auto; display: block;">
             <button class="close-modal-btn" id="closeVrHistoryModal"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="modal-title" style="margin-bottom: 15px; color: var(--primary-cyan); display: flex; align-items: center; justify-content: space-between;">
                 <span><i class="fa-solid fa-file-invoice"></i> 訓練結果總結</span>
@@ -466,12 +466,7 @@
                 </div>
             </div>
 
-            <div style="margin-top: 25px; background: rgba(0, 168, 255, 0.05); border: 1px solid rgba(0, 168, 255, 0.2); border-radius: 8px; padding: 15px;">
-                <h4 style="color: var(--primary-cyan); margin-bottom: 10px;" data-i18n="vr-modal-sug-title">
-                    <i class="fa-solid fa-lightbulb"></i> 系統綜合建議
-                </h4>
-                <p id="vrModalSuggestion" style="color: var(--text-color); font-size: 0.95rem; line-height: 1.6; margin: 0;"></p>
-            </div>
+            
         </div>
     </div>
 
@@ -486,6 +481,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="main.js?v=1788838320129"></script>
+    <script src="main.js?v=1788969945"></script>
 </body>
 </html>

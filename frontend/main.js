@@ -1,4 +1,4 @@
-
+﻿
 const API_BASE_URL = window.location.port === '5500' ? 'http://localhost:3000' : window.location.origin;
 document.addEventListener('DOMContentLoaded', () => {
     // =========================================
@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const menuId = this.getAttribute('data-i18n');
                 if (menuId === 'nav-vr') {
                     if (vrSection) vrSection.style.display = 'block';
+                    if (window.fetchVrHistory) window.fetchVrHistory();
 
                 } else if (menuId === 'nav-manual') {
                     if (manualSection) manualSection.style.display = 'block';
@@ -336,9 +337,7 @@ window.initRadarChart = async function () {
                 `${stats.blocks}<small>次</small>`;
         }
 
-        if (window.renderVrHistoryCard) {
-            window.renderVrHistoryCard(stats.totalScore, stats.trainingHours, stats.createdAt, stats.answers);
-        }
+        // VR history is now fetched separately, so we don't call renderVrHistoryCard here anymore.
 
     } catch (error) {
 
@@ -1950,7 +1949,7 @@ async function saveMistakesToBackend() {
                 if (q.type === 'MC' || q.type === 'SC' || q.type === 'MA') {
                     const opts = isEn ? (q.en_options || q.options) : q.options;
                     if (opts) {
-                        optionsHtml = '<div style="margin-top: 5px; margin-bottom: 15px; color: var(--text-secondary); font-size: 0.95rem;">';
+                        optionsHtml = '<div style="margin-top: 5px; margin-bottom: 15px; color: var(--text-secondary); ">';
                         for (let k in opts) {
                             optionsHtml += `<div style="margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #3b82f6;">${opts[k]}</div>`;
                         }
@@ -1959,7 +1958,7 @@ async function saveMistakesToBackend() {
                 } else if (q.type === 'TF') {
                     const trueText = isEn ? 'True' : '是';
                     const falseText = isEn ? 'False' : '否';
-                    optionsHtml = `<div style="margin-top: 5px; margin-bottom: 15px; color: var(--text-secondary); font-size: 0.95rem;">
+                    optionsHtml = `<div style="margin-top: 5px; margin-bottom: 15px; color: var(--text-secondary); ">
                         <div style="margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #3b82f6;">○ ${trueText}</div>
                         <div style="margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #3b82f6;">○ ${falseText}</div>
                     </div>`;
@@ -2528,6 +2527,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnShowVrHistory && btnShowVrAnswers && vrHistoryContainer && vrAnswersContainer) {
             btnShowVrHistory.addEventListener('click', () => {
                 vrHistoryContainer.style.display = 'block';
+                if (window.fetchVrHistory) window.fetchVrHistory();
                 vrAnswersContainer.style.display = 'none';
                 btnShowVrHistory.style.backgroundColor = 'var(--primary-cyan)';
                 btnShowVrHistory.style.color = 'var(--btn-primary-text)';
@@ -2622,129 +2622,143 @@ document.addEventListener('DOMContentLoaded', () => {
             correctAnswers: vrRecords.flatMap(r => r.correctAnswers || [])
         }];
 
-        window.renderVrHistoryCard = (score, duration, date, answers) => {
-            if (score !== undefined) combinedVrRecord[0].score = score;
+        // ==== NEW VR HISTORY LOGIC ====
+window.renderVrHistoryCard = (historyArray) => {
+    const vrHistoryList = document.getElementById('vrHistoryList');
+    if (!vrHistoryList) return;
+    
+    if (!historyArray || historyArray.length === 0) {
+        vrHistoryList.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">尚無訓練紀錄</p>';
+        return;
+    }
+
+    const formatAns = (ans, text) => {
+        if (ans === undefined) {
+            return '<div style="margin-bottom: 8px; margin-left: 10px;"><span style="color: #ffa502;">⚠ 尚未作答：' + text + '</span></div>';
+        } else if (ans === true) {
+            return '<div style="margin-bottom: 8px; margin-left: 10px;"><span style="color: #2ed573;">✔ 成功辨識：' + text + '</span></div>';
+        } else {
+            return '<div style="margin-bottom: 8px; margin-left: 10px;"><span style="color: #ff4757;">✖ 未能辨識：' + text + '</span></div>';
+        }
+    };
+
+    vrHistoryList.innerHTML = historyArray.map((record, index) => {
+        return `
+            <div class="note-card glass-panel vr-history-card" data-index="${index}" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; transition: transform 0.2s, box-shadow 0.2s; gap: 10px;">
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin: 0 0 5px 0; "><i class="fa-solid fa-vr-cardboard"></i> 模擬探索 - 完整模擬探索紀錄 (全部站點)</h3>
+                    <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; text-align: center;">${record.createdAt || record.date || ''}</p>
+                </div>
+                <div style="text-align: center;">
+                    <span style="font-size: 1.5rem; font-weight: bold; color: ${record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757')};">${record.score} 分</span>
+                    <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Bind click events
+    const historyCards = document.querySelectorAll('.vr-history-card');
+    historyCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const idx = this.getAttribute('data-index');
+            const record = historyArray[idx];
             
-            if (answers) {
-                const questionMap = {
-                    S1_BADGE: "主管隨意放置主管專用識別證",
-                    S1_EXPIRED_PASS: "提供已失效的稽核通行證",
-                    S1_USB: "存有重要檔案的 USB 硬碟隨意放在桌緣",
-                    S1_MANAGEMENT_REVIEW: "管理審查報告缺失辨識",
-                    S1_EMPLOYEE_EVALUATION: "員工評核表缺失辨識",
-                    S2_TABLET: "未上鎖的平板放置於辦公桌面上",
-                    S2_VISITOR_CARD: "重要訪客名片隨意放置在辦公桌上",
-                    S2_COFFEE: "未加蓋咖啡放在電腦旁",
-                    S2_INTERNAL_DOCUMENT: "公司內部文件隨意放置",
-                    S2_EMPLOYMENT_CONTRACT: "聘用合約缺失辨識",
-                    S3_PASSWORD_NOTE: "帳號密碼寫在便利貼上",
-                    S3_EWASTE: "機房堆放報廢電子設備",
-                    S3_CAKE: "管制機房內放置食物",
-                    S3_SECURITY_POSTER: "資安海報缺失辨識",
-                    S3_MAINTENANCE_RECORD: "機房設備維修與維護登記表缺失辨識"
-                };
+            if (record) {
+                const dateElem = document.getElementById('vrModalDate');
+                if (dateElem) dateElem.textContent = record.createdAt || record.date || '';
+
+                const scoreElem = document.getElementById('vrModalScore');
+                if (scoreElem) {
+                    scoreElem.textContent = '綜合評分: ' + record.score + ' / 100';
+                    scoreElem.style.color = record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757');
+                }
                 
-                const newFound = [];
-                for (const [qId, qDesc] of Object.entries(questionMap)) {
-                    const isCorrect = answers[qId];
-                    if (isCorrect) {
-                        newFound.push(`<span style="color: #2ed573;">✔ 成功辨識：${qDesc}</span>`);
+                const foundList = document.getElementById('vrModalFoundList');
+                if (foundList) {
+                    const answers = record.answers || {};
+                    const itemsHTML = [
+                        '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第一站【啟動會議】&【高階訪談】</div>',
+                        formatAns(answers["S1_BADGE"], '主管隨意放置主管專用識別證'),
+                        formatAns(answers["S1_EXPIRED_PASS"], '提供已失效的稽核通行證'),
+                        formatAns(answers["S1_USB"], '存有重要檔案的 USB 硬碟隨意放在桌緣'),
+                        formatAns(answers["S1_MANAGEMENT_REVIEW"], '管理審查報告缺失辨識'),
+                        formatAns(answers["S1_EMPLOYEE_EVALUATION"], '員工評核表缺失辨識'),
+                        
+                        '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第二站【條文檢查 Session 1】</div>',
+                        formatAns(answers["S2_TABLET"], '未上鎖的平板放置於辦公桌面上'),
+                        formatAns(answers["S2_VISITOR_CARD"], '重要訪客名片隨意放置在辦公桌上'),
+                        formatAns(answers["S2_COFFEE"], '未加蓋咖啡放在電腦旁'),
+                        formatAns(answers["S2_INTERNAL_DOCUMENT"], '公司內部文件隨意放置'),
+                        formatAns(answers["S2_EMPLOYMENT_CONTRACT"], '聘用合約缺失辨識'),
+                        
+                        '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第三站【條文檢查 Session 2】</div>',
+                        formatAns(answers["S3_PASSWORD_NOTE"], '帳號密碼寫在便利貼上'),
+                        formatAns(answers["S3_EWASTE"], '機房堆放報廢電子設備'),
+                        formatAns(answers["S3_CAKE"], '管制機房內放置食物'),
+                        formatAns(answers["S3_SECURITY_POSTER"], '資安海報缺失辨識'),
+                        formatAns(answers["S3_MAINTENANCE_RECORD"], '機房設備維修與維護登記表缺失辨識')
+                    ];
+                    foundList.innerHTML = itemsHTML.map(item => '<li style="margin-bottom: 8px;">' + item + '</li>').join('');
+                }
+                
+                const vrHistoryModal = document.getElementById('vrHistoryModal');
+                if (vrHistoryModal) {
+                    vrHistoryModal.classList.add('show');
+                    vrHistoryModal.style.display = 'flex';
+                }
+            }
+        });
+    });
+};
+
+window.fetchVrHistory = () => {
+    const vrList = document.getElementById('vrHistoryList');
+    if(vrList) vrList.innerHTML = '<p style="text-align: center; color: var(--primary-cyan); padding: 20px;">載入中...</p>';
+    
+    const currentUserStr = localStorage.getItem('currentUser');
+    if (currentUserStr) {
+        try {
+            const userObj = JSON.parse(currentUserStr);
+            fetch(`${API_BASE_URL}/api/vr-history?userId=${userObj.id}`)
+                .then(res => {
+                    if(!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(resData => {
+                    if (resData.success && resData.data) {
+                        window.renderVrHistoryCard(resData.data);
                     } else {
-                        newFound.push(`<span style="color: #ff4757;">✖ 未能辨識：${qDesc}</span>`);
+                        if(vrList) vrList.innerHTML = '<p style="text-align: center; color: #ff4757; padding: 20px;">載入失敗: ' + (resData.message || '未知錯誤') + '</p>';
                     }
-                }
-                if (newFound.length > 0) {
-                    combinedVrRecord[0].found = newFound;
-                }
-            }
-            
-            if (date) {
-                combinedVrRecord[0].date = date;
-            } else if (score !== undefined) {
-                // If a new score was provided but no date, use current date
-                const now = new Date();
-                combinedVrRecord[0].date = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-            }
-
-            if (duration !== undefined) {
-                // format duration to HH:MM if it's a number (hours)
-                if (!isNaN(duration)) {
-                    const totalMins = Math.round(Number(duration) * 60);
-                    const hrs = Math.floor(totalMins / 60);
-                    const mins = totalMins % 60;
-                    combinedVrRecord[0].duration = `${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}`;
-                } else {
-                    combinedVrRecord[0].duration = duration;
-                }
-            }
-
-            if (vrHistoryList) {
-                vrHistoryList.innerHTML = combinedVrRecord.map(record => `
-                    <div class="note-card glass-panel vr-history-card" data-id="` + record.id + `" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; transition: transform 0.2s, box-shadow 0.2s; gap: 10px;">
-                        <div>
-                            <h3 style="color: var(--primary-cyan); margin: 0 0 5px 0;"><i class="fa-solid fa-vr-cardboard"></i> 模擬探索 - ${record.levelName}</h3>
-                            <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; text-align: center;">${record.date}</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <span style="font-size: 1.5rem; font-weight: bold; color: ${record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757')};">${record.score} 分</span>
-                            <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
-                        </div>
-                    </div>
-                `).join('');
-
-                const historyCards = document.querySelectorAll('.vr-history-card');
-                historyCards.forEach(card => {
-                    card.addEventListener('click', function() {
-                        const recordId = this.getAttribute('data-id');
-                        const record = combinedVrRecord.find(r => String(r.id) === String(recordId));
-                        
-                        if (record) {
-                            document.getElementById('vrModalDate').textContent = record.date;
-
-                        
-                        const scoreElem = document.getElementById('vrModalScore');
-                        if (scoreElem) {
-                            scoreElem.textContent = '綜合評分: ' + record.score + ' / 100';
-                            scoreElem.style.color = record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757');
-                        }
-                        
-                        const foundList = document.getElementById('vrModalFoundList');
-                        if (foundList) {
-                            foundList.innerHTML = record.found.map(item => '<li style="margin-bottom: 8px;">' + item + '</li>').join('');
-                        }
-                        
-                        document.getElementById('vrModalSuggestion').textContent = record.suggestion;
-                        vrHistoryModal.classList.add('show');
-                    }
+                })
+                .catch(e => {
+                    console.error("Error fetching VR stats on load:", e);
+                    if(vrList) vrList.innerHTML = '<p style="text-align: center; color: #ff4757; padding: 20px;">網路連線錯誤: ' + e.message + '</p>';
                 });
-            });
+        } catch(e) {
+            if(vrList) vrList.innerHTML = '<p style="text-align: center; color: #ff4757; padding: 20px;">使用者資料解析錯誤</p>';
         }
-        }; // End of renderVrHistoryCard
+    } else {
+        if(vrList) vrList.innerHTML = '<p style="text-align: center; color: #ff4757; padding: 20px;">請先登入</p>';
+    }
+};
+// Fetch on page load
+window.fetchVrHistory();
 
-        // Call it initially
-        window.renderVrHistoryCard();
-
-        const currentUserStr = localStorage.getItem('currentUser');
-        if (currentUserStr) {
-            try {
-                const userObj = JSON.parse(currentUserStr);
-                fetch(`${API_BASE_URL}/api/stats?userId=${userObj.id}`)
-                    .then(res => res.json())
-                    .then(resData => {
-                        if (resData.success && resData.data) {
-                            window.renderVrHistoryCard(resData.data.totalScore, resData.data.trainingHours, resData.data.createdAt, resData.data.answers);
-                        }
-                    })
-                    .catch(e => console.error("Error fetching VR stats on load:", e));
-            } catch(e) {}
-        }
 
         if (closeVrHistoryModalBtn) {
-            closeVrHistoryModalBtn.addEventListener('click', () => vrHistoryModal.classList.remove('show'));
+            closeVrHistoryModalBtn.addEventListener('click', () => {
+                vrHistoryModal.classList.remove('show');
+                setTimeout(() => vrHistoryModal.style.display = 'none', 300); // Wait for transition
+            });
         }
         if (vrHistoryModal) {
             vrHistoryModal.addEventListener('click', (e) => {
-                if (e.target === vrHistoryModal) vrHistoryModal.classList.remove('show');
+                if (e.target === vrHistoryModal) {
+                    vrHistoryModal.classList.remove('show');
+                    setTimeout(() => vrHistoryModal.style.display = 'none', 300);
+                }
             });
         }
 
@@ -2970,30 +2984,129 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// --- Load Unity LLM Latest Result ---
+// ============================================================
+// 最新 VR / LLM 綜合評估
+//
+// 重要：舊版讀取 /api/latest-result，會一直顯示舊的 82 分與舊評語。
+// 新版統一讀取目前登入使用者的 /api/stats，和雷達圖使用同一份資料。
+// ============================================================
+function getAuditLevelFromScore(score) {
+    const value = Number(score) || 0;
+
+    if (value >= 90) return "優秀";
+    if (value >= 80) return "良好";
+    if (value >= 70) return "尚可";
+    if (value >= 60) return "待加強";
+    return "需重新訓練";
+}
+
+function buildFallbackAiFeedback(stats) {
+    const labels = [
+        "身分憑證與門禁管理",
+        "設備與儲存媒體防護",
+        "文件與敏感資訊保護",
+        "辦公環境安全管理",
+        "機房與資產管理"
+    ];
+
+    const scores = Array.isArray(stats?.radarScores)
+        ? stats.radarScores.map(v => Number(v) || 0)
+        : [0, 0, 0, 0, 0];
+
+    let lowestIndex = 0;
+    for (let i = 1; i < scores.length; i++) {
+        if (scores[i] < scores[lowestIndex]) lowestIndex = i;
+    }
+
+    const totalScore = Number(stats?.totalScore) || 0;
+    const weakest = labels[lowestIndex] || "資安風險辨識";
+    const weakestScore = scores[lowestIndex] ?? 0;
+
+    return {
+        summary: `本次綜合稽核得分 ${totalScore} 分，整體能力評估為「${getAuditLevelFromScore(totalScore)}」。目前五項能力中較需留意「${weakest}」（${weakestScore} 分）。`,
+        suggestion: `建議優先複習「${weakest}」相關情境與 ISO/IEC 27002:2022 控制要求，並針對本次判斷錯誤的題目再次練習。`
+    };
+}
+
 async function loadLatestResult() {
     try {
-        const response = await fetch("/api/latest-result");
-        const data = await response.json();
+        const userStr = localStorage.getItem('currentUser');
 
-        console.log("最新 Unity LLM 成績：", data);
-
-        if (!data || data.success === false) {
-            console.warn("目前沒有 LLM 成績資料");
+        if (!userStr) {
+            console.warn("找不到 currentUser，無法取得最新 VR / LLM 成績");
             return;
         }
+
+        const user = JSON.parse(userStr);
+
+        if (!user || !user.id) {
+            console.warn("currentUser 缺少 user.id，無法取得最新 VR / LLM 成績");
+            return;
+        }
+
+        // 加時間戳 + no-store，避免瀏覽器快取舊的 82 分。
+        const response = await fetch(
+            `${API_BASE_URL}/api/stats?userId=${encodeURIComponent(user.id)}&_=${Date.now()}`,
+            { cache: 'no-store' }
+        );
+
+        const resData = await response.json();
+
+        console.log("最新 VR / LLM 成績 (/api/stats)：", resData);
+
+        if (!response.ok || !resData || resData.success === false || !resData.data) {
+            console.warn("目前沒有可用的 VR / LLM 成績資料：", resData?.message);
+            return;
+        }
+
+        const stats = resData.data;
 
         const totalScoreEl = document.getElementById("totalScore");
         const levelTextEl = document.getElementById("levelText");
         const summaryTextEl = document.getElementById("summaryText");
         const suggestionTextEl = document.getElementById("suggestionText");
 
-        if (totalScoreEl) totalScoreEl.textContent = data.totalScore ?? 0;
-        if (levelTextEl) levelTextEl.textContent = data.level ?? "未評分";
-        if (summaryTextEl) summaryTextEl.textContent = data.summary ?? "尚無總評";
-        if (suggestionTextEl) suggestionTextEl.textContent = data.suggestion ?? "尚無建議";
+        const totalScore = Number(stats.totalScore) || 0;
+        const level = stats.level || getAuditLevelFromScore(totalScore);
+
+        // 後端現在會回傳多組相容欄位。優先使用真正的 LLM 回饋。
+        const aiSummary =
+            stats.summary ||
+            stats.aiSummary ||
+            stats.aiEvaluation ||
+            null;
+
+        const aiSuggestion =
+            stats.suggestion ||
+            stats.aiSuggestion ||
+            stats.learningSuggestion ||
+            stats.systemSuggestion ||
+            null;
+
+        const fallback = buildFallbackAiFeedback(stats);
+
+        if (totalScoreEl) totalScoreEl.textContent = totalScore;
+        if (levelTextEl) levelTextEl.textContent = level;
+
+        // 如果 LLM 尚未寫回 DB，先顯示依本次最新分數動態產生的備援文字，
+        // 絕不再顯示 /api/latest-result 的舊資料。
+        if (summaryTextEl) {
+            summaryTextEl.textContent = aiSummary || fallback.summary;
+            summaryTextEl.dataset.feedbackSource = aiSummary ? "llm" : "fallback";
+        }
+
+        if (suggestionTextEl) {
+            suggestionTextEl.textContent = aiSuggestion || fallback.suggestion;
+            suggestionTextEl.dataset.feedbackSource = aiSuggestion ? "llm" : "fallback";
+        }
+
+        console.log(
+            aiSummary || aiSuggestion
+                ? `✅ 已載入 LLM 回饋，sessionId=${stats.aiFeedbackSessionId || 0}`
+                : "⚠️ 本次 /api/stats 尚無 LLM 回饋，先顯示依最新成績產生的備援文字。"
+        );
 
     } catch (error) {
-        console.error("讀取 LLM 成績失敗：", error);
+        console.error("讀取最新 VR / LLM 成績失敗：", error);
     }
 }
