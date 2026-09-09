@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
@@ -81,10 +82,20 @@ public class AuditStageFlowManager : MonoBehaviour
 
         [Header("是否一開始就開啟透明牆")]
         public bool barrierActiveFromStart = true;
+
+        [Header("此站劇情播完後是否直接結束遊戲")]
+        public bool finishGameAfterDialogue = false;
     }
 
     [Header("登入 / 開始畫面，暫時沒有可以空著")]
     [SerializeField] private GameObject loginCanvas;
+
+    [Header("登入鎖定設定")]
+    [Tooltip("有指定 loginCanvas 時，必須等 VR 登入成功呼叫 StartGameAfterLogin() 後，劇情與支線才會啟動。")]
+    [SerializeField] private bool requireLoginBeforeStart = true;
+
+    [Tooltip("登入前額外搜尋場景中名為 StartStoryButton / ContinueButton 的物件並關閉，避免玩家繞過登入直接點劇情開始。")]
+    [SerializeField] private bool hideAnySceneStartButtonsBeforeLogin = true;
 
     [Header("玩家 XR Origin")]
     [SerializeField] private Transform xrOrigin;
@@ -97,6 +108,13 @@ public class AuditStageFlowManager : MonoBehaviour
 
     [Header("進入第一站前的黑幕文字")]
     [SerializeField] private string openingTransitionText = "第一站：主管辦公室";
+
+    [Header("結尾黑幕設定")]
+    [SerializeField] private bool playEndingBlackScreen = true;
+
+    [SerializeField] private string endingText = "The End";
+
+    [SerializeField] private float endingHoldDuration = 30f;
 
     [Header("所有站點")]
     [SerializeField] private AuditStage[] stages;
@@ -118,9 +136,14 @@ public class AuditStageFlowManager : MonoBehaviour
     private bool dialogueStartedForCurrentStep;
     private bool dialogueStepTransitionRunning;
     private bool gameStarted;
+    private bool endingStarted;
+    private Coroutine loginLockCoroutine;
 
     private void Start()
     {
+        gameStarted = false;
+        endingStarted = false;
+
         if (loginCanvas != null)
         {
             loginCanvas.SetActive(true);
@@ -132,6 +155,17 @@ public class AuditStageFlowManager : MonoBehaviour
         {
             StartGameAfterLogin();
         }
+        else if (IsLoginRequiredAndNotCompleted())
+        {
+            LockAllGameplayBeforeLogin();
+
+            if (loginLockCoroutine != null)
+            {
+                StopCoroutine(loginLockCoroutine);
+            }
+
+            loginLockCoroutine = StartCoroutine(LoginLockRoutine());
+        }
         else
         {
             ShowInitialStartButtonIfNeeded();
@@ -140,7 +174,7 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void Update()
     {
-        if (!missionRunning || transitionStarted)
+        if (!missionRunning || transitionStarted || endingStarted)
         {
             return;
         }
@@ -204,6 +238,236 @@ public class AuditStageFlowManager : MonoBehaviour
         }
     }
 
+    private IEnumerator LoginLockRoutine()
+    {
+        while (IsLoginRequiredAndNotCompleted())
+        {
+            LockAllGameplayBeforeLogin();
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        loginLockCoroutine = null;
+    }
+
+    private bool IsLoginRequiredAndNotCompleted()
+    {
+        return requireLoginBeforeStart &&
+               loginCanvas != null &&
+               !gameStarted &&
+               !autoStartOnPlay;
+    }
+
+    private bool CanRunGameFlow(string actionName)
+    {
+        if (!IsLoginRequiredAndNotCompleted())
+        {
+            return true;
+        }
+
+        LockAllGameplayBeforeLogin();
+
+        Debug.LogWarning($"尚未完成 VR 登入，已阻止流程：{actionName}", this);
+        return false;
+    }
+
+    private void LockAllGameplayBeforeLogin()
+    {
+        HideAllDialogueCanvases();
+
+        if (stages != null)
+        {
+            foreach (AuditStage stage in stages)
+            {
+                if (stage == null)
+                {
+                    continue;
+                }
+
+                if (stage.missionRoot != null)
+                {
+                    XRBaseInteractable[] interactables =
+                        stage.missionRoot.GetComponentsInChildren<XRBaseInteractable>(true);
+
+                    foreach (XRBaseInteractable interactable in interactables)
+                    {
+                        if (interactable != null)
+                        {
+                            interactable.enabled = false;
+                        }
+                    }
+                }
+
+                if (stage.missionHintUI != null)
+                {
+                    stage.missionHintUI.Hide();
+                }
+
+                if (stage.dialogueSteps == null)
+                {
+                    continue;
+                }
+
+                foreach (DialogueStep step in stage.dialogueSteps)
+                {
+                    LockDialogueStepBeforeLogin(step);
+                }
+            }
+        }
+
+        if (hideAnySceneStartButtonsBeforeLogin)
+        {
+            HideSceneStartButtonsByName();
+        }
+    }
+
+    private void LockDialogueStepBeforeLogin(DialogueStep step)
+    {
+        if (step == null || step.dialogue == null)
+        {
+            return;
+        }
+
+        if (step.dialogue.dialogueCanvas != null)
+        {
+            step.dialogue.dialogueCanvas.SetActive(false);
+        }
+
+        SetDialogueFieldObjectActive(step.dialogue, "startStoryButton", false);
+        SetDialogueFieldObjectActive(step.dialogue, "continueButton", false);
+    }
+
+    private void ShowDialogueStartButtonForWaitingStep(OpeningDialogueSequence dialogue)
+    {
+        if (dialogue == null)
+        {
+            return;
+        }
+
+        if (dialogue.dialogueCanvas != null)
+        {
+            dialogue.dialogueCanvas.SetActive(true);
+        }
+
+        SetDialogueFieldObjectActive(dialogue, "startStoryButton", true);
+        SetDialogueFieldObjectActive(dialogue, "continueButton", false);
+        SetChildObjectActiveByName(dialogue.dialogueCanvas, "StartStoryButton", true);
+        SetChildObjectActiveByName(dialogue.dialogueCanvas, "ContinueButton", false);
+    }
+
+    private void SetDialogueFieldObjectActive(OpeningDialogueSequence dialogue, string fieldName, bool active)
+    {
+        if (dialogue == null || string.IsNullOrEmpty(fieldName))
+        {
+            return;
+        }
+
+        FieldInfo fieldInfo = dialogue.GetType().GetField(
+            fieldName,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase
+        );
+
+        if (fieldInfo == null)
+        {
+            return;
+        }
+
+        object value = fieldInfo.GetValue(dialogue);
+
+        if (value is GameObject gameObjectValue)
+        {
+            gameObjectValue.SetActive(active);
+            return;
+        }
+
+        if (value is Component componentValue)
+        {
+            componentValue.gameObject.SetActive(active);
+        }
+    }
+
+    private void SetChildObjectActiveByName(GameObject root, string childNameKeyword, bool active)
+    {
+        if (root == null || string.IsNullOrEmpty(childNameKeyword))
+        {
+            return;
+        }
+
+        string keyword = childNameKeyword.ToLowerInvariant();
+        Transform[] children = root.GetComponentsInChildren<Transform>(true);
+
+        foreach (Transform child in children)
+        {
+            if (child == null)
+            {
+                continue;
+            }
+
+            if (child.name.ToLowerInvariant().Contains(keyword))
+            {
+                child.gameObject.SetActive(active);
+            }
+        }
+    }
+
+    private void HideSceneStartButtonsByName()
+    {
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+
+        foreach (GameObject sceneObject in allObjects)
+        {
+            if (sceneObject == null)
+            {
+                continue;
+            }
+
+            if (!sceneObject.scene.IsValid())
+            {
+                continue;
+            }
+
+            if (loginCanvas != null && IsChildOf(sceneObject.transform, loginCanvas.transform))
+            {
+                continue;
+            }
+
+            string lowerName = sceneObject.name.ToLowerInvariant();
+
+            bool shouldHide =
+                lowerName.Contains("startstorybutton") ||
+                lowerName.Contains("start story button") ||
+                lowerName.Contains("劇情開始") ||
+                lowerName.Contains("continuestorybutton") ||
+                lowerName.Contains("continuebutton");
+
+            if (shouldHide)
+            {
+                sceneObject.SetActive(false);
+            }
+        }
+    }
+
+    private bool IsChildOf(Transform target, Transform possibleParent)
+    {
+        if (target == null || possibleParent == null)
+        {
+            return false;
+        }
+
+        Transform current = target;
+
+        while (current != null)
+        {
+            if (current == possibleParent)
+            {
+                return true;
+            }
+
+            current = current.parent;
+        }
+
+        return false;
+    }
+
     private void ShowInitialStartButtonIfNeeded()
     {
         if (loginCanvas != null)
@@ -234,8 +498,8 @@ public class AuditStageFlowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 給 login_Canvas 的開始按鈕，或目前的第一站開始按鈕呼叫。
-    /// 注意：這個只給整個遊戲第一次開始用。
+    /// 給 login_Canvas 登入成功後呼叫。
+    /// 這個只給整個遊戲第一次開始用。
     /// </summary>
     public void StartGameAfterLogin()
     {
@@ -246,6 +510,13 @@ public class AuditStageFlowManager : MonoBehaviour
         }
 
         gameStarted = true;
+        endingStarted = false;
+
+        if (loginLockCoroutine != null)
+        {
+            StopCoroutine(loginLockCoroutine);
+            loginLockCoroutine = null;
+        }
 
         if (loginCanvas != null)
         {
@@ -253,6 +524,8 @@ public class AuditStageFlowManager : MonoBehaviour
         }
 
         HideAllDialogueCanvases();
+
+        Debug.Log("VR 登入完成，正式啟動遊戲流程。", this);
 
         StartCoroutine(StartGameAfterLoginRoutine());
     }
@@ -284,6 +557,7 @@ public class AuditStageFlowManager : MonoBehaviour
         if (stages == null || stageIndex < 0 || stageIndex >= stages.Length)
         {
             Debug.LogWarning("沒有下一站資料，流程結束。", this);
+            StartCoroutine(PlayEndingRoutine());
             return;
         }
 
@@ -324,6 +598,12 @@ public class AuditStageFlowManager : MonoBehaviour
         }
         else
         {
+            if (stage.finishGameAfterDialogue)
+            {
+                StartCoroutine(PlayEndingRoutine());
+                return;
+            }
+
             if (allowAutoStartDialogue)
             {
                 StartCurrentStageMission();
@@ -397,11 +677,26 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void BeginCurrentDialogueStepAfterTransition()
     {
+        if (endingStarted)
+        {
+            return;
+        }
+
         DialogueStep step = GetCurrentDialogueStep();
 
         if (step == null)
         {
-            StartCurrentStageMission();
+            AuditStage stage = GetCurrentStage();
+
+            if (stage != null && stage.finishGameAfterDialogue)
+            {
+                StartCoroutine(PlayEndingRoutine());
+            }
+            else
+            {
+                StartCurrentStageMission();
+            }
+
             return;
         }
 
@@ -417,6 +712,7 @@ public class AuditStageFlowManager : MonoBehaviour
         }
         else
         {
+            ShowDialogueStartButtonForWaitingStep(step.dialogue);
             Debug.Log($"等待玩家按開始劇情：{step.stepName}", this);
         }
     }
@@ -427,6 +723,16 @@ public class AuditStageFlowManager : MonoBehaviour
     /// </summary>
     public void StartCurrentStageDialogue()
     {
+        if (!CanRunGameFlow("開始劇情"))
+        {
+            return;
+        }
+
+        if (endingStarted)
+        {
+            return;
+        }
+
         AuditStage stage = GetCurrentStage();
         DialogueStep step = GetCurrentDialogueStep();
 
@@ -470,6 +776,16 @@ public class AuditStageFlowManager : MonoBehaviour
     /// </summary>
     public void OnCurrentStageDialogueFinished()
     {
+        if (!CanRunGameFlow("劇情播放完成通知"))
+        {
+            return;
+        }
+
+        if (endingStarted)
+        {
+            return;
+        }
+
         if (dialogueStepTransitionRunning)
         {
             return;
@@ -493,6 +809,12 @@ public class AuditStageFlowManager : MonoBehaviour
         }
         else
         {
+            if (stage.finishGameAfterDialogue)
+            {
+                StartCoroutine(PlayEndingRoutine());
+                return;
+            }
+
             GenerateLLMHintAfterAllDialogueFinished(stage);
             StartCurrentStageMission();
         }
@@ -585,6 +907,11 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void StartCurrentStageMission()
     {
+        if (endingStarted)
+        {
+            return;
+        }
+
         AuditStage stage = GetCurrentStage();
 
         if (stage == null)
@@ -616,6 +943,16 @@ public class AuditStageFlowManager : MonoBehaviour
 
     public void RegisterMissionComplete(MissionTarget target)
     {
+        if (!CanRunGameFlow("完成支線"))
+        {
+            return;
+        }
+
+        if (endingStarted)
+        {
+            return;
+        }
+
         if (target == null)
         {
             return;
@@ -657,7 +994,7 @@ public class AuditStageFlowManager : MonoBehaviour
 
     private void BeginGoNext(float delaySeconds, string reason)
     {
-        if (transitionStarted)
+        if (transitionStarted || endingStarted)
         {
             return;
         }
@@ -700,37 +1037,59 @@ public class AuditStageFlowManager : MonoBehaviour
 
         int nextIndex = currentStageIndex + 1;
 
+        if (stages == null || nextIndex >= stages.Length)
+        {
+            yield return PlayEndingRoutine();
+            yield break;
+        }
+
         if (blackTransition != null)
         {
             yield return blackTransition.Play(stage.transitionText, () =>
             {
-                if (stages != null && nextIndex < stages.Length)
-                {
-                    StartStage(nextIndex, false);
-                }
-                else
-                {
-                    Debug.Log("所有站點流程結束。", this);
-                }
+                StartStage(nextIndex, false);
             });
 
-            if (stages != null && nextIndex < stages.Length)
-            {
-                BeginCurrentDialogueStepAfterTransition();
-            }
+            BeginCurrentDialogueStepAfterTransition();
         }
         else
         {
             Debug.LogWarning("尚未指定 BlackTransition，將直接切換站點。", this);
+            StartStage(nextIndex, true);
+        }
+    }
 
-            if (stages != null && nextIndex < stages.Length)
-            {
-                StartStage(nextIndex, true);
-            }
-            else
-            {
-                Debug.Log("所有站點流程結束。", this);
-            }
+    private IEnumerator PlayEndingRoutine()
+    {
+        if (endingStarted)
+        {
+            yield break;
+        }
+
+        endingStarted = true;
+        missionRunning = false;
+        transitionStarted = true;
+        dialogueStepTransitionRunning = false;
+
+        HideAllDialogueCanvases();
+        SetCurrentStageInteractablesEnabled(false);
+
+        AuditStage stage = GetCurrentStage();
+
+        if (stage != null && stage.missionHintUI != null)
+        {
+            stage.missionHintUI.Hide();
+        }
+
+        Debug.Log("最後一站劇情完成，準備播放 The End 黑幕。", this);
+
+        if (blackTransition != null && playEndingBlackScreen)
+        {
+            yield return blackTransition.PlayEnding(endingText, endingHoldDuration);
+        }
+        else
+        {
+            Debug.Log("遊戲流程結束。", this);
         }
     }
 

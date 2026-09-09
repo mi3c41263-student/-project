@@ -14,7 +14,7 @@ public class BlackScreenTransition : MonoBehaviour
     [Header("淡入淡出秒數")]
     [SerializeField] private float fadeDuration = 1.0f;
 
-    [Header("黑幕停留秒數")]
+    [Header("一般黑幕停留秒數")]
     [SerializeField] private float holdDuration = 1.5f;
 
     public bool IsPlaying { get; private set; }
@@ -76,6 +76,49 @@ public class BlackScreenTransition : MonoBehaviour
         IsPlaying = false;
 
         Debug.Log("黑幕結束。", this);
+    }
+
+    public IEnumerator PlayEnding(string message, float endingHoldDuration)
+    {
+        Debug.Log($"結尾黑幕開始：{message}", this);
+
+        IsPlaying = true;
+        gameObject.SetActive(true);
+
+        if (canvasGroup == null)
+        {
+            Debug.LogWarning("BlackScreenTransition 沒有指定 CanvasGroup。", this);
+            yield break;
+        }
+
+        if (transitionText != null)
+        {
+            transitionText.gameObject.SetActive(true);
+            transitionText.text = message;
+        }
+        else
+        {
+            Debug.LogWarning("BlackScreenTransition 沒有指定 TransitionText。", this);
+        }
+
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = true;
+
+        yield return Fade(0f, 1f);
+
+        if (endingHoldDuration > 0f)
+        {
+            yield return new WaitForSeconds(endingHoldDuration);
+        }
+
+        // 結尾黑幕不淡出，停在黑畫面，讓使用者知道遊戲結束。
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = true;
+
+        IsPlaying = false;
+
+        Debug.Log("結尾黑幕完成，畫面停留。", this);
     }
 
     private IEnumerator Fade(float from, float to)
