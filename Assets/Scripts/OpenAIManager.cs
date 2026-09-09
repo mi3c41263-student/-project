@@ -1507,23 +1507,77 @@ private static int ParseIntOrZero(string value)
 
 public void GenerateSideMissionHintAfterMainStory(string stageName)
 {
+    // 每一站主線結束後都呼叫這裡。
+    // 不再因為前一個 LLM 回覆尚未結束就直接放棄提示，
+    // 而是排隊等待，確保第一、二、三站都會產生一次支線提示。
+    StartCoroutine(GenerateSideMissionHintWhenReady(stageName));
+}
+
+private IEnumerator GenerateSideMissionHintWhenReady(string stageName)
+{
+    string safeStageName = string.IsNullOrWhiteSpace(stageName)
+        ? "目前站點"
+        : stageName.Trim();
+
+    Debug.Log($"🟡 準備產生支線提示：{safeStageName}");
+
+    // 等待上一個一般 NPC LLM 回覆完成，避免提示被直接吃掉。
+    float waited = 0f;
+    const float maxWaitSeconds = 20f;
+
+    while (isWaitingForResponse && waited < maxWaitSeconds)
+    {
+        yield return new WaitForSeconds(0.2f);
+        waited += 0.2f;
+    }
+
     if (isWaitingForResponse)
     {
-        Debug.LogWarning("LLM 正在回覆中，暫時不產生支線提示。");
-        return;
+        Debug.LogWarning(
+            $"⚠️ 等待上一個 LLM 回覆超過 {maxWaitSeconds:0} 秒，" +
+            $"這次改用固定提示，避免 {safeStageName} 沒有引導。"
+        );
+
+        ShowNPCDialogue(
+            $"「{safeStageName}」主線已完成，請開始巡視現場並完成這一站的支線稽核。"
+        );
+
+        yield break;
+    }
+
+    // 避免跟 OpeningDialogueSequence 結束事件發生在同一幀。
+    yield return new WaitForSeconds(0.3f);
+
+    if (string.IsNullOrWhiteSpace(apiKey))
+    {
+        Debug.LogError(
+            $"❌ {safeStageName} 無法呼叫 LLM：OpenAI API Key 為空。"
+        );
+
+        // 即使 API Key 沒有設定，也至少顯示固定提示。
+        ShowNPCDialogue(
+            $"「{safeStageName}」主線已完成，請開始巡視現場並完成這一站的支線稽核。"
+        );
+
+        yield break;
     }
 
     string prompt =
         "系統事件：主線劇情已播放完畢。" +
-        "目前站點是「" + stageName + "」。" +
-        "請你以資安主管的口吻，自然提醒玩家接下來巡視現場，完成後續支線稽核。" +
-        "語氣要像遊戲 NPC，不要列點。" +
-        "回覆請控制在 20個字以內。" +
+        "目前站點是「" + safeStageName + "」。" +
+        "請以目前站點的遊戲引導 NPC 口吻，" +
+        "自然提醒玩家現在要開始巡視這一站的環境，" +
+        "找出可能存在的資訊安全缺失並完成所有支線稽核任務。" +
+        "不要直接說出缺失位置，不要透露正確答案，不要列點。" +
+        "請使用繁體中文，語氣自然簡短，控制在 20 到 35 個中文字。" +
         "必須只回傳 JSON，格式為：" +
         "{ \"reply\": \"你的台詞\", \"emotion\": \"professional\" }";
 
+    Debug.Log($"🤖 正式送出 LLM 支線提示：{safeStageName}");
+
     SendMessageToNPC(prompt);
 }
+
 IEnumerator PostToOpenAI()
 {
     isWaitingForResponse = true;
