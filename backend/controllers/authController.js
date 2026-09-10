@@ -1756,8 +1756,8 @@ const saveUnityAnswer = async (req, res) => {
                     
                     await connection.query(
                         `INSERT INTO vr_training_records
-                         (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count)
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                         (user_id, score_physical, score_social, score_server, score_device, score_legal, total_score, duration_hours, blocks_count, session_id)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                         [
                             parsedUserId,
                             finalResult.radar[AUDIT_CATEGORY.IDENTITY],
@@ -1767,7 +1767,8 @@ const saveUnityAnswer = async (req, res) => {
                             finalResult.radar[AUDIT_CATEGORY.DOCUMENT],
                             finalResult.totalScore,
                             0,
-                            finalResult.correctCount
+                            finalResult.correctCount,
+                            parsedSessionId
                         ]
                     );
 
@@ -2473,9 +2474,10 @@ const getUserHistory = async (req, res) => {
             
             if (sid) {
                 const [answerRows] = await db.execute(`
-                    SELECT questionCode, isCorrect 
-                    FROM user_answers 
-                    WHERE session_id = ?
+                    SELECT q.question_code as questionCode, ua.is_correct as isCorrect 
+                    FROM user_answers ua
+                    JOIN questions q ON ua.question_id = q.id
+                    WHERE ua.session_id = ?
                 `, [sid]);
                 
                 for (const row of answerRows) {

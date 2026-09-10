@@ -1,4 +1,4 @@
-﻿
+
 const API_BASE_URL = window.location.port === '5500' ? 'http://localhost:3000' : window.location.origin;
 document.addEventListener('DOMContentLoaded', () => {
     // =========================================
@@ -1951,7 +1951,7 @@ async function saveMistakesToBackend() {
                     if (opts) {
                         optionsHtml = '<div style="margin-top: 5px; margin-bottom: 15px; color: var(--text-secondary); ">';
                         for (let k in opts) {
-                            optionsHtml += `<div style="margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #3b82f6;">${opts[k]}</div>`;
+                            optionsHtml += `<div style="margin-bottom: 12px; padding-left: 12px; border-left: 3px solid #3b82f6; font-size: 1.05rem; line-height: 1.6; color: var(--text-color);">${opts[k]}</div>`;
                         }
                         optionsHtml += '</div>';
                     }
@@ -2554,7 +2554,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 score: 85,
                 suggestion: '在第一站啟動會議與高階訪談中，您成功找出了大部分的資安缺失。建議未來在會議中可多加留意桌面上的敏感資訊以及無人看管的設備。',
                 levelName: '第一站【啟動會議】&【高階訪談】',
-                images: ['vr-ans-1.png', 'vr-ans-1-2.png', 'vr-ans-1-3.png', 'vr-ans-1-4.png'],
+                images: ['vr-ans-1.png', 'vr-ans-1-2.png', 'vr-ans-1-4.png', 'vr-ans-1-3.png'],
                 found: [],
                 correctAnswers: [
                     `A6.1 清潔桌面與淨空螢幕：\n                    <div style="margin-left: 25px; margin-top: 5px; color: #a8b2d1; font-size: 0.9rem; line-height: 1.5;">\n                        <div style="color: #ff4757; margin-top: 5px; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 缺失：會議室桌面上遺留了包含機密資訊的便條紙或文件，未遵守桌面淨空原則。</div>\n                    </div>`,
@@ -2642,74 +2642,101 @@ window.renderVrHistoryCard = (historyArray) => {
         }
     };
 
-    vrHistoryList.innerHTML = historyArray.map((record, index) => {
-        return `
-            <div class="note-card glass-panel vr-history-card" data-index="${index}" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; transition: transform 0.2s, box-shadow 0.2s; gap: 10px;">
-                <div>
-                    <h3 style="color: var(--primary-cyan); margin: 0 0 5px 0; "><i class="fa-solid fa-vr-cardboard"></i> 模擬探索 - 完整模擬探索紀錄 (全部站點)</h3>
-                    <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; text-align: center;">${record.createdAt || record.date || ''}</p>
-                </div>
-                <div style="text-align: center;">
-                    <span style="font-size: 1.5rem; font-weight: bold; color: ${record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757')};">${record.score} 分</span>
-                    <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
-                </div>
-            </div>
-        `;
-    }).join('');
+    window.currentVrHistoryArray = historyArray;
+    window.currentVrHistoryPage = 1;
+    const itemsPerPage = 5;
 
-    // Bind click events
-    const historyCards = document.querySelectorAll('.vr-history-card');
-    historyCards.forEach(card => {
-        card.addEventListener('click', function() {
-            const idx = this.getAttribute('data-index');
-            const record = historyArray[idx];
-            
-            if (record) {
-                const dateElem = document.getElementById('vrModalDate');
-                if (dateElem) dateElem.textContent = record.createdAt || record.date || '';
+    window.renderVrPage = () => {
+        const start = (window.currentVrHistoryPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = window.currentVrHistoryArray.slice(start, end);
+        
+        let html = pageItems.map((record, relIdx) => {
+            const index = start + relIdx;
+            return `
+                <div class="note-card glass-panel vr-history-card" data-index="${index}" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; transition: transform 0.2s, box-shadow 0.2s; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="color: var(--primary-cyan); margin: 0 0 5px 0; "><i class="fa-solid fa-vr-cardboard"></i> 模擬探索 - 完整模擬探索紀錄 (全部站點)</h3>
+                        <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; text-align: center;">${record.createdAt || record.date || ''}</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <span style="font-size: 1.5rem; font-weight: bold; color: ${record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757')};">${record.score} 分</span>
+                        <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.8rem;" data-i18n="c-readmore">點擊查看詳細紀錄 <i class="fa-solid fa-arrow-right"></i></p>
+                    </div>
+                </div>
+            `;
+        }).join('');
 
-                const scoreElem = document.getElementById('vrModalScore');
-                if (scoreElem) {
-                    scoreElem.textContent = '綜合評分: ' + record.score + ' / 100';
-                    scoreElem.style.color = record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757');
-                }
-                
-                const foundList = document.getElementById('vrModalFoundList');
-                if (foundList) {
-                    const answers = record.answers || {};
-                    const itemsHTML = [
-                        '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第一站【啟動會議】&【高階訪談】</div>',
-                        formatAns(answers["S1_BADGE"], '主管隨意放置主管專用識別證'),
-                        formatAns(answers["S1_EXPIRED_PASS"], '提供已失效的稽核通行證'),
-                        formatAns(answers["S1_USB"], '存有重要檔案的 USB 硬碟隨意放在桌緣'),
-                        formatAns(answers["S1_MANAGEMENT_REVIEW"], '管理審查報告缺失辨識'),
-                        formatAns(answers["S1_EMPLOYEE_EVALUATION"], '員工評核表缺失辨識'),
-                        
-                        '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第二站【條文檢查 Session 1】</div>',
-                        formatAns(answers["S2_TABLET"], '未上鎖的平板放置於辦公桌面上'),
-                        formatAns(answers["S2_VISITOR_CARD"], '重要訪客名片隨意放置在辦公桌上'),
-                        formatAns(answers["S2_COFFEE"], '未加蓋咖啡放在電腦旁'),
-                        formatAns(answers["S2_INTERNAL_DOCUMENT"], '公司內部文件隨意放置'),
-                        formatAns(answers["S2_EMPLOYMENT_CONTRACT"], '聘用合約缺失辨識'),
-                        
-                        '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第三站【條文檢查 Session 2】</div>',
-                        formatAns(answers["S3_PASSWORD_NOTE"], '帳號密碼寫在便利貼上'),
-                        formatAns(answers["S3_EWASTE"], '機房堆放報廢電子設備'),
-                        formatAns(answers["S3_CAKE"], '管制機房內放置食物'),
-                        formatAns(answers["S3_SECURITY_POSTER"], '資安海報缺失辨識'),
-                        formatAns(answers["S3_MAINTENANCE_RECORD"], '機房設備維修與維護登記表缺失辨識')
-                    ];
-                    foundList.innerHTML = itemsHTML.map(item => '<li style="margin-bottom: 8px;">' + item + '</li>').join('');
-                }
-                
-                const vrHistoryModal = document.getElementById('vrHistoryModal');
-                if (vrHistoryModal) {
-                    vrHistoryModal.classList.add('show');
-                    vrHistoryModal.style.display = 'flex';
-                }
+        const totalPages = Math.ceil(window.currentVrHistoryArray.length / itemsPerPage);
+        
+        if (totalPages > 1) {
+            html += '<div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; margin-bottom: 20px;">';
+            for (let i = 1; i <= totalPages; i++) {
+                const btnColor = i === window.currentVrHistoryPage ? 'var(--primary-cyan)' : 'var(--panel-bg)';
+                const textColor = i === window.currentVrHistoryPage ? '#fff' : 'var(--text-color)';
+                html += `<button onclick="window.currentVrHistoryPage = ${i}; window.renderVrPage();" style="background: ${btnColor}; color: ${textColor}; border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 5px; cursor: pointer; transition: 0.2s;">${i}</button>`;
             }
+            html += '</div>';
+        }
+
+        vrHistoryList.innerHTML = html;
+
+        // Bind click events
+        const historyCards = document.querySelectorAll('.vr-history-card');
+        historyCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const idx = this.getAttribute('data-index');
+                const record = window.currentVrHistoryArray[idx];
+                
+                if (record) {
+                    const dateElem = document.getElementById('vrModalDate');
+                    if (dateElem) dateElem.textContent = record.createdAt || record.date || '';
+
+                    const scoreElem = document.getElementById('vrModalScore');
+                    if (scoreElem) {
+                        scoreElem.textContent = '綜合評分: ' + record.score + ' / 100';
+                        scoreElem.style.color = record.score >= 80 ? '#2ed573' : (record.score >= 60 ? '#ffa502' : '#ff4757');
+                    }
+                    
+                    const foundList = document.getElementById('vrModalFoundList');
+                    if (foundList) {
+                        const answers = record.answers || {};
+                        const itemsHTML = [
+                            '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第一站【啟動會議】&【高階訪談】</div>',
+                            formatAns(answers["S1_BADGE"], '主管隨意放置主管專用識別證'),
+                            formatAns(answers["S1_EXPIRED_PASS"], '提供已失效的稽核通行證'),
+                            formatAns(answers["S1_USB"], '存有重要檔案的 USB 硬碟隨意放在桌緣'),
+                            formatAns(answers["S1_MANAGEMENT_REVIEW"], '管理審查報告缺失辨識'),
+                            formatAns(answers["S1_EMPLOYEE_EVALUATION"], '員工評核表缺失辨識'),
+                            
+                            '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第二站【條文檢查 Session 1】</div>',
+                            formatAns(answers["S2_TABLET"], '未上鎖的平板放置於辦公桌面上'),
+                            formatAns(answers["S2_VISITOR_CARD"], '重要訪客名片隨意放置在辦公桌上'),
+                            formatAns(answers["S2_COFFEE"], '未加蓋咖啡放在電腦旁'),
+                            formatAns(answers["S2_INTERNAL_DOCUMENT"], '公司內部文件隨意放置'),
+                            formatAns(answers["S2_EMPLOYMENT_CONTRACT"], '聘用合約缺失辨識'),
+                            
+                            '<div style="margin-top: 15px; margin-bottom: 8px; font-weight: bold; color: var(--primary-cyan); border-bottom: 1px dashed rgba(0, 168, 255, 0.3); padding-bottom: 5px;">第三站【條文檢查 Session 2】</div>',
+                            formatAns(answers["S3_PASSWORD_NOTE"], '帳號密碼寫在便利貼上'),
+                            formatAns(answers["S3_EWASTE"], '機房堆放報廢電子設備'),
+                            formatAns(answers["S3_CAKE"], '管制機房內放置食物'),
+                            formatAns(answers["S3_SECURITY_POSTER"], '資安海報缺失辨識'),
+                            formatAns(answers["S3_MAINTENANCE_RECORD"], '機房設備維修與維護登記表缺失辨識')
+                        ];
+                        foundList.innerHTML = itemsHTML.map(item => '<li style="margin-bottom: 8px;">' + item + '</li>').join('');
+                    }
+                    
+                    const vrHistoryModal = document.getElementById('vrHistoryModal');
+                    if (vrHistoryModal) {
+                        vrHistoryModal.classList.add('show');
+                        vrHistoryModal.style.display = 'flex';
+                    }
+                }
+            });
         });
-    });
+    };
+    
+    window.renderVrPage();
 };
 
 window.fetchVrHistory = () => {
@@ -2896,6 +2923,26 @@ window.fetchVrHistory();
                     const data = await response.json();
                     if (data.success) {
                         vrTicketCode.textContent = data.ticket;
+                        let timeLeft = 300; // 5 minutes in seconds
+                        const timerElem = document.getElementById('vrTicketTimer');
+                        if (timerElem) {
+                            timerElem.textContent = '05:00';
+                            if (window.vrTicketInterval) clearInterval(window.vrTicketInterval);
+                            window.vrTicketInterval = setInterval(() => {
+                                timeLeft--;
+                                if (timeLeft <= 0) {
+                                    clearInterval(window.vrTicketInterval);
+                                    timerElem.textContent = '00:00';
+                                    vrTicketCode.textContent = '已失效';
+                                    vrTicketCode.style.color = '#ff4757';
+                                } else {
+                                    const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+                                    const s = String(timeLeft % 60).padStart(2, '0');
+                                    timerElem.textContent = `${m}:${s}`;
+                                }
+                            }, 1000);
+                        }
+
                     } else {
                         vrTicketCode.textContent = '連線失敗';
                         alert('無法取得連線代碼：' + data.message);
@@ -2908,6 +2955,7 @@ window.fetchVrHistory();
             });
             
             closeVrTicketModal.addEventListener('click', () => {
+                if (window.vrTicketInterval) clearInterval(window.vrTicketInterval);
                 vrTicketModal.classList.remove('show');
                 setTimeout(() => vrTicketModal.style.display = 'none', 300);
             });
@@ -2959,11 +3007,13 @@ window.fetchVrHistory();
         const btnShowLine = document.getElementById('btnShowLine');
         const radarContainer = document.getElementById('radarContainer');
         const lineContainer = document.getElementById('lineContainer');
+        const llmContainer = document.querySelector('.llm-analysis-container');
 
         if (btnShowRadar && btnShowLine && radarContainer && lineContainer) {
             btnShowRadar.addEventListener('click', () => {
                 radarContainer.style.display = 'block';
                 lineContainer.style.display = 'none';
+                if(llmContainer) llmContainer.style.display = 'flex';
                 btnShowRadar.style.backgroundColor = '#00a8ff';
                 btnShowRadar.style.color = '#000';
                 btnShowLine.style.backgroundColor = 'transparent';
@@ -2973,6 +3023,7 @@ window.fetchVrHistory();
             btnShowLine.addEventListener('click', () => {
                 radarContainer.style.display = 'none';
                 lineContainer.style.display = 'block';
+                if(llmContainer) llmContainer.style.display = 'none';
                 btnShowLine.style.backgroundColor = '#00a8ff';
                 btnShowLine.style.color = '#000';
                 btnShowRadar.style.backgroundColor = 'transparent';

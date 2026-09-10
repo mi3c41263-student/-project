@@ -335,7 +335,7 @@
 
                             <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
                                 <div>
-                                    <label style="color: var(--text-main); margin-bottom: 8px; display: block;">顯示名稱 (Display Name)</label>
+                                    <label style="color: var(--text-main); margin-bottom: 8px; display: block;">顯示名稱</label>
                                     <input type="text" id="profileName" class="cyber-input" placeholder="請輸入您想顯示的名稱" style="width: 100%; padding: 10px 15px; border-radius: 6px;">
                                 </div>
                                 
@@ -435,7 +435,7 @@
                 <span id="vrTicketCode" style="font-size: 2.5rem; font-weight: bold; letter-spacing: 5px; color: var(--primary-cyan); word-break: break-all;">載入中...</span>
             </div>
             <p style="color: var(--text-muted); font-size: 0.9rem;">
-                <i class="fa-solid fa-circle-info"></i> 此代碼將於 5 分鐘後失效，請盡快完成連線。
+                <i class="fa-solid fa-circle-info"></i> 此代碼將於 <span id="vrTicketTimer" style="margin: 0 2px;">05:00</span> 後失效，請盡快完成連線。
             </p>
         </div>
     </div>
@@ -445,7 +445,7 @@
             <button class="close-modal-btn" id="closeVrHistoryModal"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="modal-title" style="margin-bottom: 15px; color: var(--primary-cyan); display: flex; align-items: center; justify-content: space-between;">
                 <span><i class="fa-solid fa-file-invoice"></i> 訓練結果總結</span>
-                <span id="vrModalDate" style="font-size: 0.9rem; color: var(--text-light); font-weight: normal;"></span>
+                <span id="vrModalDate" style="font-size: 0.9rem; color: var(--text-light); font-weight: normal;; margin-right: 35px;"></span>
             </h2>
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(0, 168, 255, 0.2);">
@@ -481,6 +481,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="main.js?v=1788969945"></script>
+    <script src="main.js?v=1789014144"></script>
 </body>
 </html>
