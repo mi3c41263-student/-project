@@ -29,6 +29,7 @@
     --warning-bg: rgba(255, 165, 2, 0.15);
     --text-secondary: #a0aec0;
     --text-bright: #ffffff;
+    --text-light: #ffffff;
     --text-lighter: #cbd5e1;
     --overlay-bg: rgba(0, 0, 0, 0.5);
     --overlay-bg-dark: rgba(0, 0, 0, 0.6);
@@ -67,6 +68,7 @@
     --warning-bg: rgba(221, 107, 32, 0.15);
     --text-secondary: #4a5568;
     --text-bright: #1a202c;
+    --text-light: #2d3748;
     --text-lighter: var(--text-secondary);
     --overlay-bg: rgba(255, 255, 255, 0.6);
     --overlay-bg-dark: rgba(255, 255, 255, 0.8);

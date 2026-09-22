@@ -371,7 +371,7 @@ window.initRadarChart = async function () {
     }
 
 
-    Chart.defaults.color = 'var(--text-light)';
+    Chart.defaults.color = document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : '#ffffff';
 
 
     const langSelectElem =
@@ -598,7 +598,7 @@ window.initRadarChart = async function () {
                                 'rgba(28, 38, 56, 0.9)',
 
                             titleColor:
-                                'var(--text-light)',
+                                document.documentElement.getAttribute('data-theme') === 'light' ? '#718096' : '#ffffff',
 
                             bodyColor:
                                 '#fff',
@@ -631,7 +631,7 @@ window.initRadarChart = async function () {
 
                                         ? '#718096'
 
-                                        : 'var(--text-light)'
+                                        : '#ffffff'
                             }
                         },
 
@@ -649,7 +649,7 @@ window.initRadarChart = async function () {
 
                                         ? '#718096'
 
-                                        : 'var(--text-light)'
+                                        : '#ffffff'
                             }
                         }
                     }
